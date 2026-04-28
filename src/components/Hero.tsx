@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
 import { useRef } from 'react'
-import { ArrowRight, Play, Command } from 'lucide-react'
+import { ArrowRight, Play } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
 
@@ -102,16 +102,6 @@ export function Hero() {
             Start your IP
             <ArrowRight size={16} strokeWidth={2.4} />
           </Button>
-          <Button variant="secondary" className="magnetic">
-            See it work
-            <Play size={14} strokeWidth={2} />
-          </Button>
-          <span className="hidden sm:inline-flex items-center gap-2 ml-1 text-rom-fg-muted">
-            <span className="micro-label font-mono">or</span>
-            <kbd className="inline-flex items-center gap-1.5 rounded-md border border-rom-green/30 bg-rom-card px-2.5 py-1.5 text-[11px] font-mono text-rom-green">
-              <Command size={11} strokeWidth={2.4} /> K
-            </kbd>
-          </span>
         </motion.div>
 
         <motion.div
