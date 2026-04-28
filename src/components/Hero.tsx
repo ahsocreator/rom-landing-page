@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, BookOpen, Hexagon, ImageIcon } from 'lucide-react'
+import { ArrowRight, Hexagon, ImageIcon } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
 import { GlowIcon } from './ui/GlowIcon'
@@ -15,12 +15,11 @@ const lineage = [
 export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
-      {/* hero-only grid floor at the bottom */}
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[40%] grid-floor opacity-40" />
 
       <div className="relative mx-auto w-full max-w-[1800px] px-6 md:px-10 lg:px-16 pt-16 md:pt-20 pb-20 md:pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          {/* LEFT — Manifesto + CTAs */}
+          {/* LEFT — IP narrative */}
           <motion.div
             initial="hidden"
             animate="show"
@@ -31,52 +30,68 @@ export function Hero() {
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.55, ease }}
             >
-              <Badge>[ The Protocol for Programmable Media ]</Badge>
+              <Badge>[ Build IP // Build Story // Build Money ]</Badge>
             </motion.div>
 
             <h1 className="mt-7 text-[44px] md:text-[60px] xl:text-[72px] leading-[0.96] font-mono font-bold tracking-[-0.025em] text-rom-fg">
-              <RevealLine delay={0.18}>Media is evolving.</RevealLine>
+              <RevealLine delay={0.18}>Your IP.</RevealLine>
               <RevealLine
                 delay={0.32}
                 className="gradient-text-arcade glitch-hover"
-                dataText="ROM defines it."
+                dataText="Your story."
               >
-                ROM defines it.
+                Your story.
               </RevealLine>
+              <RevealLine delay={0.46}>Your money.</RevealLine>
             </h1>
 
             <motion.p
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.7, delay: 0.55 }}
-              className="mt-7 max-w-[520px] text-[14.5px] md:text-[15.5px] leading-[1.65] text-rom-fg-dim"
+              transition={{ duration: 0.7, delay: 0.6 }}
+              className="mt-7 max-w-[520px] text-[14.5px] md:text-[16px] leading-[1.6] text-rom-fg-dim"
             >
-              ROM is the open protocol for creating, remixing, owning, and monetizing media on-chain.
+              One character becomes a franchise. One franchise becomes a business. One business compounds for years.
             </motion.p>
             <motion.p
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.7, delay: 0.65 }}
-              className="mt-3 max-w-[520px] text-[14.5px] md:text-[15.5px] leading-[1.65] text-rom-fg-dim"
+              transition={{ duration: 0.7, delay: 0.72 }}
+              className="mt-4 max-w-[520px] text-[13.5px] md:text-[14.5px] leading-[1.7] font-mono text-rom-fg"
             >
-              Build programmable videos as composable assets with provenance, permissions, and payments.
+              ROM is the layer. <span className="gradient-text-arcade font-semibold">You bring the IP.</span>
             </motion.p>
 
             <motion.div
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.6, delay: 0.8, ease }}
+              transition={{ duration: 0.6, delay: 0.85, ease }}
               className="mt-9 flex flex-wrap items-center gap-4"
             >
               <Button variant="primary" className="magnetic">
-                Explore the Protocol
+                Start your IP
                 <ArrowRight size={16} strokeWidth={2.4} />
               </Button>
-              <Button variant="secondary" className="magnetic">
-                Read the Docs
-                <BookOpen size={15} strokeWidth={1.8} />
-              </Button>
+            </motion.div>
+
+            <motion.div
+              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+              transition={{ duration: 0.7, delay: 1.0 }}
+              className="mt-10 flex flex-wrap gap-x-8 gap-y-4"
+            >
+              {[
+                ['1', 'character locks the IP'],
+                ['25', 'credits per drop · refund on fail'],
+                ['6', 'revenue formats · ∞ drops'],
+              ].map(([n, l]) => (
+                <div key={l}>
+                  <div className="text-[22px] md:text-[26px] font-mono font-bold text-rom-green text-glow leading-none">
+                    {n}
+                  </div>
+                  <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
 
-          {/* CENTER — Main asset card */}
+          {/* CENTER — ROM Asset card */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
@@ -130,7 +145,6 @@ function RevealLine({
 function MainAssetCard() {
   return (
     <div className="relative rounded-3xl border border-rom-green/55 bg-rom-card overflow-hidden border-glow">
-      {/* Header */}
       <div className="flex items-center justify-between px-5 md:px-6 py-3.5 border-b border-rom-green/20">
         <div className="flex items-center gap-2 text-rom-green">
           <span className="size-2 rounded-full bg-rom-green pulse-dot" />
@@ -141,14 +155,12 @@ function MainAssetCard() {
         </span>
       </div>
 
-      {/* Hero image */}
       <div className="px-5 md:px-6 pt-4 pb-3">
         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-rom-green/40 bg-rom-bg">
           <CyberpunkScenePlaceholder />
         </div>
       </div>
 
-      {/* Title row */}
       <div className="px-5 md:px-6 pt-2 pb-4 flex items-end justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-[24px] md:text-[28px] font-mono font-semibold text-rom-green-bright leading-tight truncate">
@@ -163,17 +175,13 @@ function MainAssetCard() {
         </div>
       </div>
 
-      {/* Bottom metadata strip */}
       <div className="grid grid-cols-3 border-t border-rom-green/30">
         {[
           { l: 'Scenes', v: '12' },
           { l: 'Duration', v: '01:32' },
           { l: 'Resolution', v: '1080p' },
         ].map((m, i) => (
-          <div
-            key={m.l}
-            className={`px-5 md:px-6 py-3.5 ${i < 2 ? 'border-r border-rom-green/20' : ''}`}
-          >
+          <div key={m.l} className={`px-5 md:px-6 py-3.5 ${i < 2 ? 'border-r border-rom-green/20' : ''}`}>
             <div className="micro-label font-mono text-rom-fg-muted text-[10px]">{m.l}</div>
             <div className="mt-1 text-[16px] md:text-[17px] font-mono font-semibold text-rom-fg">{m.v}</div>
           </div>
@@ -274,20 +282,15 @@ function LineageColumn() {
             transition={{ duration: 0.5, delay: 0.6 + i * 0.12, ease }}
             className="relative rounded-2xl border border-rom-green/45 bg-rom-card p-3 hover:border-rom-green hover:bg-rom-card-hover transition-all"
           >
-            {/* Inbound stub line */}
             <span aria-hidden className="hidden lg:block absolute right-full top-1/2 -translate-y-1/2 h-px w-4 xl:w-6 bg-gradient-to-r from-transparent to-rom-green/70" />
             <div className="flex items-start gap-3">
               <LineageThumb tone={it.tone} index={i} />
               <div className="min-w-0 flex-1">
-                <div className="micro-label font-mono text-rom-green text-[10px] tracking-[0.22em]">
-                  {it.tag}
-                </div>
+                <div className="micro-label font-mono text-rom-green text-[10px] tracking-[0.22em]">{it.tag}</div>
                 <div className="mt-1 text-[13px] font-mono font-semibold text-rom-fg leading-tight truncate">
                   {it.title}
                 </div>
-                <div className="mt-0.5 text-[10.5px] font-mono text-rom-fg-muted truncate">
-                  By {it.author}
-                </div>
+                <div className="mt-0.5 text-[10.5px] font-mono text-rom-fg-muted truncate">By {it.author}</div>
               </div>
             </div>
           </motion.div>
@@ -327,9 +330,7 @@ function LineageThumb({ tone, index }: { tone: 'green' | 'amber' | 'cyan'; index
         />
       </div>
       <div className="absolute inset-x-0 bottom-0 flex justify-center pb-0.5">
-        <div
-          className={`${index === 0 ? 'w-2 h-4' : index === 1 ? 'w-2.5 h-3.5' : 'w-1.5 h-5'} rounded-t-full bg-black/85`}
-        />
+        <div className={`${index === 0 ? 'w-2 h-4' : index === 1 ? 'w-2.5 h-3.5' : 'w-1.5 h-5'} rounded-t-full bg-black/85`} />
       </div>
     </div>
   )

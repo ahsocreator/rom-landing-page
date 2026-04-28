@@ -1,11 +1,11 @@
-import { Box, GitBranch, Fingerprint, DollarSign } from 'lucide-react'
+import { Lock, Infinity as InfinityIcon, TrendingUp, Coins } from 'lucide-react'
 import { GlowIcon } from './ui/GlowIcon'
 
 const items = [
-  { icon: Box, label: 'On-Chain Ownership' },
-  { icon: GitBranch, label: 'Programmable Permissions' },
-  { icon: Fingerprint, label: 'Automatic Attribution' },
-  { icon: DollarSign, label: 'Native Monetization' },
+  { icon: Lock, label: 'Your IP · On-Chain' },
+  { icon: InfinityIcon, label: 'Same Face · Every Drop' },
+  { icon: TrendingUp, label: 'Franchise Compounds 24/7' },
+  { icon: Coins, label: 'Earn Per Drop · Per License' },
 ]
 
 export function TickerBar() {
