@@ -57,6 +57,10 @@ export function Hero() {
         zIndex={2}
       />
 
+      {/* Flybys — cards that slide across the screen, OVER the title */}
+      <HeroFlybys ringOpacity={ringOpacity} />
+
+
       {/* Centered title + CTAs */}
       <motion.div
         style={{ y: titleY, opacity: titleOpacity }}
@@ -259,6 +263,62 @@ function Ring({
           </motion.div>
         </div>
       </div>
+    </motion.div>
+  )
+}
+
+function HeroFlybys({ ringOpacity }: { ringOpacity: MotionValue<number> }) {
+  // Three cards that cycle across the screen at different times / heights / directions.
+  // They render at z-30, above the title (z-20), so they actually fly OVER the text.
+  const flybys = [
+    { storyIndex: 2, delay: 2.5, duration: 4.5, repeatDelay: 11, direction: 'right' as const, yOffset: -10, rotate: -6 },
+    { storyIndex: 5, delay: 7.5, duration: 5.0, repeatDelay: 11, direction: 'left' as const, yOffset: 80, rotate: 7 },
+    { storyIndex: 8, delay: 12, duration: 4.8, repeatDelay: 11, direction: 'right' as const, yOffset: -90, rotate: -4 },
+  ]
+
+  return (
+    <motion.div
+      aria-hidden
+      style={{ opacity: ringOpacity }}
+      className="absolute inset-0 z-30 pointer-events-none overflow-hidden"
+    >
+      {flybys.map((f, i) => {
+        const story = stories[f.storyIndex % stories.length]
+        const fromX = f.direction === 'right' ? '-55vw' : '55vw'
+        const toX = f.direction === 'right' ? '55vw' : '-55vw'
+        return (
+          <motion.div
+            key={i}
+            initial={{ x: fromX, opacity: 0, scale: 0.85, rotate: 0 }}
+            animate={{
+              x: [fromX, '0vw', toX],
+              opacity: [0, 1, 1, 0],
+              scale: [0.85, 1.05, 1.05, 0.9],
+              rotate: [0, f.rotate, f.rotate, 0],
+            }}
+            transition={{
+              duration: f.duration,
+              delay: f.delay,
+              repeat: Infinity,
+              repeatDelay: f.repeatDelay,
+              times: [0, 0.4, 0.6, 1],
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="absolute"
+            style={{
+              top: '50%',
+              left: '50%',
+              width: 168,
+              height: 240,
+              marginLeft: -84,
+              marginTop: -120 + f.yOffset,
+              filter: 'drop-shadow(0 12px 32px oklch(0.85 0.22 145 / 0.25))',
+            }}
+          >
+            <StoryCard story={story} index={i} />
+          </motion.div>
+        )
+      })}
     </motion.div>
   )
 }
