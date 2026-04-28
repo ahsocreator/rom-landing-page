@@ -1,120 +1,114 @@
 import { motion } from 'framer-motion'
-import { Film, Sparkles, Globe2, ArrowRight, Play, ImageIcon, Command, Activity, Hexagon } from 'lucide-react'
+import { ArrowRight, Play, Command } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
-import { GlowIcon } from './ui/GlowIcon'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
+const stories = [
+  { title: 'Pilot Episode', duration: '1:32', type: 'cinematic_story' },
+  { title: 'Brand Spot', duration: '0:30', type: 'ad_spot' },
+  { title: 'Music Drop', duration: '2:48', type: 'music_video' },
+  { title: 'Q&A Channel', duration: '4:15', type: 'persona_channel' },
+  { title: 'Action Scene', duration: '0:54', type: 'cinematic_story' },
+  { title: 'Behind Scenes', duration: '1:18', type: 'youtube_clone' },
+  { title: 'Mood Piece', duration: '0:45', type: 'music_video' },
+  { title: 'Series Finale', duration: '3:02', type: 'cinematic_story' },
+]
+
 export function Hero() {
   return (
-    <section id="top" className="relative overflow-hidden min-h-[100svh] flex flex-col">
-      {/* hero-only grid floor */}
-      <div aria-hidden className="absolute inset-x-0 bottom-0 h-[40%] grid-floor opacity-40" />
+    <section
+      id="top"
+      className="relative overflow-hidden min-h-[100svh] flex flex-col items-center justify-center"
+    >
+      {/* hero-only grid floor at the bottom */}
+      <div aria-hidden className="absolute inset-x-0 bottom-0 h-[35%] grid-floor opacity-40" />
 
-      <div className="relative flex-1 mx-auto w-full max-w-[1800px] px-6 md:px-10 lg:px-16 pt-20 md:pt-28 pb-12 md:pb-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          {/* LEFT — Manifesto, 7 cols, asymmetric */}
-          <motion.div
-            initial="hidden"
-            animate="show"
-            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }}
-            className="lg:col-span-7"
+      {/* 3D orbital carousel — sits behind title */}
+      <OrbitalRing />
+
+      {/* Centered title + CTAs — sits in front of the carousel */}
+      <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-16 pt-24 md:pt-32 pb-12 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.1, ease }}
+          className="flex justify-center"
+        >
+          <Badge>[ Build IP // Build Story // Build Money ]</Badge>
+        </motion.div>
+
+        <h1 className="mt-10 display-1 font-mono text-rom-fg leading-[0.92]">
+          <RevealLine delay={0.2}>Your IP.</RevealLine>
+          <RevealLine
+            delay={0.36}
+            className="gradient-text-arcade glitch-hover"
+            dataText="Your story."
           >
-            <motion.div
-              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.55, ease }}
-            >
-              <Badge>[ Build IP // Build Story // Build Money ]</Badge>
-            </motion.div>
+            Your story.
+          </RevealLine>
+          <RevealLine delay={0.52}>Your money.</RevealLine>
+        </h1>
 
-            <h1 className="mt-8 display-1 font-mono text-rom-fg">
-              <RevealLine delay={0.18}>Your IP.</RevealLine>
-              <RevealLine
-                delay={0.32}
-                className="gradient-text-arcade glitch-hover"
-                dataText="Your story."
-              >
-                Your story.
-              </RevealLine>
-              <RevealLine delay={0.48}>Your money.</RevealLine>
-            </h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.7 }}
+          className="mt-10 mx-auto max-w-[640px] text-[15px] md:text-[18px] leading-[1.55] text-rom-fg-dim"
+        >
+          ROM is the protocol for owning IP. Drop a character. Lock the canonical look. Spin out a franchise. Every drop is yours, every license earns you.
+        </motion.p>
 
-            <motion.p
-              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.7, delay: 0.62 }}
-              className="mt-8 max-w-[560px] text-[15px] md:text-[17px] leading-[1.55] text-rom-fg-dim"
-            >
-              ROM is the protocol for owning IP. Drop a character. Lock the canonical look. Spin out a franchise. Every drop is yours, every license earns you.
-            </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.85, ease }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+        >
+          <Button variant="primary" className="magnetic">
+            Start your IP
+            <ArrowRight size={16} strokeWidth={2.4} />
+          </Button>
+          <Button variant="secondary" className="magnetic">
+            See it work
+            <Play size={14} strokeWidth={2} />
+          </Button>
+          <span className="hidden sm:inline-flex items-center gap-2 ml-1 text-rom-fg-muted">
+            <span className="micro-label font-mono">or</span>
+            <kbd className="inline-flex items-center gap-1.5 rounded-md border border-rom-green/30 bg-rom-card px-2.5 py-1.5 text-[11px] font-mono text-rom-green">
+              <Command size={11} strokeWidth={2.4} /> K
+            </kbd>
+          </span>
+        </motion.div>
 
-            <motion.p
-              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.7, delay: 0.72 }}
-              className="mt-5 max-w-[540px] text-[13.5px] leading-[1.7] text-rom-fg-muted"
-            >
-              Studios used to gatekeep IP. Platforms used to keep the upside. ROM hands both back.
-            </motion.p>
-
-            <motion.div
-              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.6, delay: 0.85, ease }}
-              className="mt-10 flex flex-wrap items-center gap-4"
-            >
-              <Button variant="primary" className="magnetic">
-                Start your IP
-                <ArrowRight size={16} strokeWidth={2.4} />
-              </Button>
-              <Button variant="secondary" className="magnetic">
-                See it work
-                <Play size={14} strokeWidth={2} />
-              </Button>
-              <span className="hidden sm:inline-flex items-center gap-2 ml-2 text-rom-fg-muted">
-                <span className="micro-label font-mono">or</span>
-                <kbd className="inline-flex items-center gap-1.5 rounded-md border border-rom-green/30 bg-rom-card px-2.5 py-1.5 text-[11px] font-mono text-rom-green">
-                  <Command size={11} strokeWidth={2.4} /> K
-                </kbd>
-              </span>
-            </motion.div>
-
-            <motion.div
-              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.7, delay: 1.0 }}
-              className="mt-12 flex flex-wrap gap-x-10 gap-y-5"
-            >
-              {[
-                ['1', 'character locks the IP'],
-                ['25', 'credits per drop · refund on fail'],
-                ['6', 'revenue formats · ∞ drops'],
-              ].map(([n, l]) => (
-                <div key={l}>
-                  <div className="text-[28px] md:text-[34px] font-mono font-bold text-rom-green text-glow leading-none">
-                    {n}
-                  </div>
-                  <div className="mt-2 micro-label font-mono text-rom-fg-muted">{l}</div>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* RIGHT — IP slot, 5 cols, with bleed */}
-          <motion.div
-            initial={{ opacity: 0, x: 32 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.95, delay: 0.32, ease }}
-            className="lg:col-span-5 lg:-mr-6 xl:-mr-12"
-          >
-            <HeroSlate />
-          </motion.div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7, delay: 1.0 }}
+          className="mt-12 flex flex-wrap justify-center gap-x-10 gap-y-5"
+        >
+          {[
+            ['1', 'character locks the IP'],
+            ['25', 'credits per drop · refund on fail'],
+            ['6', 'revenue formats · ∞ drops'],
+          ].map(([n, l]) => (
+            <div key={l} className="text-left">
+              <div className="text-[26px] md:text-[32px] font-mono font-bold text-rom-green text-glow leading-none">
+                {n}
+              </div>
+              <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
+            </div>
+          ))}
+        </motion.div>
       </div>
 
-      {/* Bottom status bar — hero anchor */}
+      {/* Bottom live status bar */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 1.2, ease }}
-        className="relative mx-auto w-full max-w-[1800px] px-6 md:px-10 lg:px-16 pb-6"
+        className="relative z-10 w-full mx-auto max-w-[1800px] px-6 md:px-10 lg:px-16 pb-6"
       >
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-rom-green/20 pt-4 text-rom-green">
           <span className="flex items-center gap-2 micro-label font-mono">
@@ -160,97 +154,123 @@ function RevealLine({
   )
 }
 
-function HeroSlate() {
+function OrbitalRing() {
+  const radius = 540
   return (
-    <div className="relative">
-      {/* Outer holo ring */}
-      <div className="relative rounded-[24px] holo-frame">
-        <div className="relative aspect-[5/6] lg:aspect-[4/5] overflow-hidden rounded-[24px] border border-rom-green/50 bg-rom-card">
-          <div className="absolute inset-0 grid-floor opacity-30" />
-
-          {/* Top header bar */}
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between border-b border-rom-green/25 px-4 py-3 micro-label font-mono">
-            <div className="flex items-center gap-2 text-rom-green">
-              <span className="size-1.5 rounded-full bg-rom-green pulse-dot" />
-              <span>IP_LOCKED · Series_001</span>
-            </div>
-            <span className="text-rom-green">ROM_7x3f...9aE1</span>
-          </div>
-
-          {/* Drop in your IP — center */}
-          <div className="absolute inset-0 flex items-center justify-center px-8 pt-12 pb-32">
-            <div className="relative w-full max-w-[78%] aspect-[3/4]">
-              <div className="absolute inset-0 rounded-2xl border-2 border-dashed border-rom-green/45 bg-rom-card flex flex-col items-center justify-center text-center px-6">
-                <GlowIcon icon={ImageIcon} size={36} intensity="lg" />
-                <p className="mt-3 micro-label font-mono text-rom-green">
-                  Drop your IP
-                </p>
-                <p className="mt-2 text-[11px] font-mono leading-[1.55] text-rom-fg-muted max-w-[260px]">
-                  Character. Look. Voice. Locked as a canonical record on Solana.
-                </p>
+    <div
+      aria-hidden
+      className="absolute inset-0 flex items-center justify-center pointer-events-none"
+      style={{ perspective: '1600px' }}
+    >
+      {/* Outer wrapper applies the tilt */}
+      <div
+        className="relative size-0"
+        style={{ transform: 'rotateX(14deg)', transformStyle: 'preserve-3d' }}
+      >
+        {/* Inner ring spins around Y */}
+        <motion.div
+          animate={{ rotateY: 360 }}
+          transition={{ duration: 48, repeat: Infinity, ease: 'linear' }}
+          className="relative"
+          style={{ transformStyle: 'preserve-3d' }}
+        >
+          {stories.map((s, i) => {
+            const angle = (i / stories.length) * 360
+            return (
+              <div
+                key={i}
+                className="absolute"
+                style={{
+                  width: 180,
+                  height: 260,
+                  left: -90,
+                  top: -130,
+                  transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
+                  transformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden',
+                }}
+              >
+                {/* Counter-rotate so the card always faces the viewer */}
+                <div
+                  className="size-full"
+                  style={{ transform: `rotateY(${-angle}deg)` }}
+                >
+                  <StoryCard story={s} index={i} />
+                </div>
               </div>
-              {/* corner brackets */}
-              <span className="absolute -left-2 -top-2 size-4 border-l border-t border-rom-green" />
-              <span className="absolute -right-2 -top-2 size-4 border-r border-t border-rom-green" />
-              <span className="absolute -left-2 -bottom-2 size-4 border-l border-b border-rom-green" />
-              <span className="absolute -right-2 -bottom-2 size-4 border-r border-b border-rom-green" />
-            </div>
-          </div>
+            )
+          })}
+        </motion.div>
+      </div>
+    </div>
+  )
+}
 
-          {/* Lower readout strip */}
-          <div className="absolute inset-x-4 bottom-4 grid grid-cols-3 gap-2">
-            {[
-              { l: 'Drops', v: '042' },
-              { l: 'Royalty 24h', v: '0.42 SOL' },
-              { l: 'Drift', v: '0.00%' },
-            ].map((m) => (
-              <div key={m.l} className="rounded-lg border border-rom-green/30 bg-rom-card px-3 py-2">
-                <div className="micro-label font-mono text-rom-fg-muted text-[9px]">{m.l}</div>
-                <div className="mt-0.5 text-[12px] font-mono font-bold text-rom-green">{m.v}</div>
-              </div>
-            ))}
-          </div>
+function StoryCard({ story, index }: { story: typeof stories[number]; index: number }) {
+  // Stable but varied pseudo-content for each card
+  const tilt = (index % 2 === 0 ? -1 : 1) * (1 + (index % 3))
+  return (
+    <motion.div
+      animate={{ rotate: [tilt, -tilt, tilt] }}
+      transition={{ duration: 6 + index, repeat: Infinity, ease: 'easeInOut' }}
+      className="relative size-full rounded-2xl border border-rom-green/40 bg-rom-card overflow-hidden shadow-[0_12px_40px_oklch(0.05_0.005_150_/_0.6),0_0_24px_oklch(0.85_0.22_145/0.12)]"
+    >
+      {/* Animated gradient simulating video frame */}
+      <div className="absolute inset-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `radial-gradient(ellipse at ${(index * 13) % 100}% ${(index * 23) % 100}%, oklch(0.85 0.22 145 / 0.35), oklch(0.10 0.012 150) 70%)`,
+          }}
+        />
+        <div className="absolute inset-0 grid-floor opacity-25" />
+        {/* shimmer pass — fakes video motion */}
+        <motion.div
+          animate={{ y: ['-100%', '120%'] }}
+          transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
+          className="absolute inset-x-0 h-1/2"
+          style={{
+            background:
+              'linear-gradient(180deg, transparent, oklch(0.85 0.22 145 / 0.18), transparent)',
+          }}
+        />
+      </div>
 
-          {/* Top-right ID chip */}
-          <div className="absolute right-4 top-14 px-2 py-1 rounded-md border border-rom-green/40 bg-rom-card micro-label font-mono text-rom-green flex items-center gap-1.5">
-            <Hexagon size={10} className="icon-glow-sm text-rom-green" />
-            CHAR_VELA
-          </div>
+      {/* Top HUD */}
+      <div className="absolute inset-x-0 top-0 flex items-center justify-between px-2.5 py-2 micro-label font-mono text-[8px]">
+        <span className="flex items-center gap-1 text-rom-green">
+          <span className="size-1 rounded-full bg-rom-green pulse-dot" />
+          REC
+        </span>
+        <span className="text-rom-green">{story.duration}</span>
+      </div>
+
+      {/* Center play icon */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="grid size-12 place-items-center rounded-full border border-rom-green/60 bg-rom-bg/60 backdrop-blur-sm">
+          <Play size={18} className="text-rom-green icon-glow translate-x-0.5" strokeWidth={2.2} fill="currentColor" />
         </div>
       </div>
 
-      {/* Floating lineage chip */}
-      <motion.div
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute -left-3 -bottom-4 z-10 hidden md:block"
-      >
-        <div className="rounded-xl border border-rom-green/45 bg-rom-card px-3 py-2 shadow-[0_8px_30px_oklch(0.85_0.22_145/0.18)]">
-          <div className="micro-label font-mono text-rom-fg-muted text-[9px]">Lineage</div>
-          <div className="mt-1 flex items-center gap-1.5">
-            {[Film, Sparkles, Globe2].map((Icon, i) => (
-              <div key={i} className="grid size-7 place-items-center rounded-md border border-rom-green/30 bg-rom-card">
-                <GlowIcon icon={Icon} size={12} intensity="md" />
-              </div>
-            ))}
-            <span className="ml-1 micro-label font-mono text-rom-green text-[10px]">+39</span>
-          </div>
+      {/* Bottom title strip */}
+      <div className="absolute inset-x-0 bottom-0 px-2.5 py-2 bg-gradient-to-t from-rom-bg via-rom-bg/60 to-transparent">
+        <div className="text-[10px] font-mono font-semibold text-rom-fg truncate">{story.title}</div>
+        <code className="text-[8.5px] font-mono text-rom-green/80 truncate block">{story.type}</code>
+        {/* Fake play-head bar */}
+        <div className="mt-1.5 h-0.5 w-full bg-rom-green/15 overflow-hidden rounded-full">
+          <motion.div
+            animate={{ width: ['0%', '100%'] }}
+            transition={{ duration: 8 + (index % 4), repeat: Infinity, ease: 'linear', delay: index * 0.6 }}
+            className="h-full bg-rom-green"
+          />
         </div>
-      </motion.div>
+      </div>
 
-      {/* Floating live earnings chip */}
-      <motion.div
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
-        className="absolute -right-2 -top-3 z-10 hidden md:block"
-      >
-        <div className="rounded-xl border border-rom-green/45 bg-rom-card px-3 py-2 shadow-[0_8px_30px_oklch(0.85_0.22_145/0.18)]">
-          <div className="flex items-center gap-2 micro-label font-mono text-rom-green">
-            <Activity size={11} className="icon-glow-pulse" strokeWidth={2.4} />
-            +0.42 SOL today
-          </div>
-        </div>
-      </motion.div>
-    </div>
+      {/* Corner brackets */}
+      <span className="absolute left-1.5 top-1.5 size-2 border-l border-t border-rom-green" />
+      <span className="absolute right-1.5 top-1.5 size-2 border-r border-t border-rom-green" />
+      <span className="absolute left-1.5 bottom-1.5 size-2 border-l border-b border-rom-green" />
+      <span className="absolute right-1.5 bottom-1.5 size-2 border-r border-b border-rom-green" />
+    </motion.div>
   )
 }
