@@ -2,13 +2,8 @@ import { Backdrop } from './components/ui/Backdrop'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { TickerBar } from './components/TickerBar'
-import { HowItWorks } from './components/HowItWorks'
-import { ContentUniverse } from './components/ContentUniverse'
-import { IPShowcase } from './components/IPShowcase'
-import { SeriesProtocol } from './components/SeriesProtocol'
-import { AssetAnatomy } from './components/AssetAnatomy'
-import { MakeMoney } from './components/MakeMoney'
-import { DeveloperCTA } from './components/DeveloperCTA'
+import { FeatureCards } from './components/FeatureCards'
+import { BuildOnRom } from './components/BuildOnRom'
 import { Footer } from './components/Footer'
 
 function App() {
@@ -19,13 +14,8 @@ function App() {
       <main className="relative">
         <Hero />
         <TickerBar />
-        <HowItWorks />
-        <ContentUniverse />
-        <IPShowcase />
-        <SeriesProtocol />
-        <AssetAnatomy />
-        <MakeMoney />
-        <DeveloperCTA />
+        <FeatureCards />
+        <BuildOnRom />
       </main>
       <Footer />
     </div>
