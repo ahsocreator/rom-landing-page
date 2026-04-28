@@ -1,10 +1,10 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 
-// 3D mouse-tilt + slow ambient floating wrapper.
-// Wrap a card to make it look like it's floating in space and reactive
-// to the cursor. Skill consulted: 3d-web-experience (davila7) — for the
-// CSS perspective + parallax-by-cursor pattern (no Three.js needed).
+// 3D mouse-tilt + ambient self-tilting + floating wrapper.
+// Idle: card drifts through random-feeling tilt angles via summed
+// sine frequencies (pseudo-random natural motion).
+// Hover: cursor takes over and drives tilt directly.
 export function TiltFloat({
   children,
   maxTilt = 11,
@@ -21,26 +21,60 @@ export function TiltFloat({
   const x = useMotionValue(0) // -0.5 .. 0.5
   const y = useMotionValue(0)
 
-  // Spring smoothing for a buttery feel
-  const sx = useSpring(x, { stiffness: 130, damping: 18 })
-  const sy = useSpring(y, { stiffness: 130, damping: 18 })
+  // Spring-smoothed motion values. Driven by either auto-tilt loop or cursor.
+  const sx = useSpring(x, { stiffness: 90, damping: 22 })
+  const sy = useSpring(y, { stiffness: 90, damping: 22 })
 
-  // Map cursor position → rotation (inverted on Y-axis for natural tilt)
   const rotateY = useTransform(sx, [-0.5, 0.5], [-maxTilt, maxTilt])
   const rotateX = useTransform(sy, [-0.5, 0.5], [maxTilt, -maxTilt])
 
-  // Light reflection — translate a sheen overlay opposite to tilt
+  // Light reflection — sheen offset opposite to tilt
   const sheenX = useTransform(sx, [-0.5, 0.5], ['25%', '-25%'])
   const sheenY = useTransform(sy, [-0.5, 0.5], ['25%', '-25%'])
 
+  // Hover state held in a ref so the rAF loop can read it without re-running.
+  const hovering = useRef(false)
+  // Random phase offsets so each instance drifts differently
+  const phaseRef = useRef({
+    px: Math.random() * Math.PI * 2,
+    py: Math.random() * Math.PI * 2,
+  })
+
+  useEffect(() => {
+    let raf = 0
+    let last = performance.now()
+    function tick(now: number) {
+      const dt = (now - last) / 1000
+      last = now
+
+      if (!hovering.current) {
+        // Advance phases at slow rates — feels organic, not predictable
+        phaseRef.current.px += dt * 0.35
+        phaseRef.current.py += dt * 0.28
+        const { px, py } = phaseRef.current
+
+        // Sum 2 sines per axis for non-repeating natural drift
+        const ax = Math.sin(px) * 0.24 + Math.sin(px * 1.7 + 1.2) * 0.10
+        const ay = Math.cos(py) * 0.24 + Math.sin(py * 1.4 + 0.8) * 0.10
+
+        x.set(ax)
+        y.set(ay)
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [x, y])
+
   function onMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    hovering.current = true
     const rect = e.currentTarget.getBoundingClientRect()
     x.set((e.clientX - rect.left) / rect.width - 0.5)
     y.set((e.clientY - rect.top) / rect.height - 0.5)
   }
-  function reset() {
-    x.set(0)
-    y.set(0)
+  function onLeave() {
+    // Don't snap to 0 — let the auto-tilt loop pick up smoothly via the spring.
+    hovering.current = false
   }
 
   return (
@@ -52,15 +86,11 @@ export function TiltFloat({
     >
       <motion.div
         onMouseMove={onMouseMove}
-        onMouseLeave={reset}
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
-        }}
+        onMouseLeave={onLeave}
+        style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
         className="relative"
       >
-        {/* Bottom shadow that grows when card lifts forward */}
+        {/* Soft drop-shadow that hints at depth */}
         <motion.div
           aria-hidden
           className="absolute -inset-2 -z-10 rounded-3xl"
@@ -72,14 +102,13 @@ export function TiltFloat({
           }}
         />
         {children}
-        {/* Sheen overlay tracking the cursor — gives glass-like reflection */}
+        {/* Sheen overlay tracking the cursor — glass reflection */}
         <motion.div
           aria-hidden
           className="absolute inset-0 rounded-3xl pointer-events-none mix-blend-screen"
           style={{
             background:
               'radial-gradient(ellipse 60% 50% at var(--sx, 50%) var(--sy, 50%), oklch(0.92 0.24 145 / 0.18), transparent 60%)',
-            // Use motion values via custom CSS variables
             ['--sx' as never]: sheenX,
             ['--sy' as never]: sheenY,
           }}
