@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform, AnimatePresence, type MotionValue } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { useRef } from 'react'
 import { ArrowRight, Play, Command } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
@@ -22,19 +22,6 @@ const stories: Story[] = [
   { title: 'Trailer Cut', duration: '1:08', type: 'ad_spot' },
 ]
 
-// Side-slot showcase — cards that rotate through fixed corner positions
-const topRightSlot: Story[] = [
-  { title: 'Reveal Cut', duration: '1:05', type: 'cinematic_story' },
-  { title: 'Lore Drop', duration: '2:10', type: 'news_analysis' },
-  { title: 'Cameo', duration: '0:22', type: 'ad_spot' },
-  { title: 'Recap', duration: '1:42', type: 'news_analysis' },
-]
-const bottomLeftSlot: Story[] = [
-  { title: 'Origin', duration: '4:50', type: 'cinematic_story' },
-  { title: 'Promo', duration: '0:24', type: 'ad_spot' },
-  { title: 'Side Story', duration: '0:38', type: 'ad_spot' },
-  { title: 'Interview', duration: '7:14', type: 'news_analysis' },
-]
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null)
@@ -55,31 +42,19 @@ export function Hero() {
     >
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[35%] grid-floor opacity-40" />
 
-      {/* Single row swaying back and forth around the title */}
+      {/* Single ring spinning right, continuous, slow */}
       <Ring
         stories={stories}
         yOffset={0}
         radius={620}
         tilt={6}
         direction={1}
-        speed={11}
+        speed={70}
         blur={0}
         cardSize={{ w: 168, h: 240 }}
         ringScale={ringScale}
         opacity={ringOpacity}
         zIndex={2}
-      />
-
-      {/* Side slot showcases — cards shuffle into fixed corner positions */}
-      <SideSlot
-        stories={topRightSlot}
-        position="top-right"
-        intervalMs={3800}
-      />
-      <SideSlot
-        stories={bottomLeftSlot}
-        position="bottom-left"
-        intervalMs={4400}
       />
 
       {/* Centered title + CTAs */}
@@ -261,9 +236,9 @@ function Ring({
           }}
         >
           <motion.div
-            // Faster back-and-forth sway. Cards visibly shuffle their front/back depths.
-            animate={{ rotateY: [direction * -55, direction * 55, direction * -55] }}
-            transition={{ duration: speed, repeat: Infinity, ease: 'easeInOut' }}
+            // Continuous right-spin (one direction, linear, infinite)
+            animate={{ rotateY: direction * 360 }}
+            transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}
             className="relative size-0"
             style={{ transformStyle: 'preserve-3d' }}
           >
@@ -295,59 +270,6 @@ function Ring({
         </div>
       </div>
     </motion.div>
-  )
-}
-
-type SlotPosition = 'top-right' | 'bottom-left' | 'top-left' | 'bottom-right'
-
-function SideSlot({
-  stories,
-  position,
-  intervalMs,
-}: {
-  stories: Story[]
-  position: SlotPosition
-  intervalMs: number
-}) {
-  const [index, setIndex] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => {
-      setIndex((i) => (i + 1) % stories.length)
-    }, intervalMs)
-    return () => clearInterval(t)
-  }, [intervalMs, stories.length])
-
-  const story = stories[index]
-  const xDir = position.includes('right') ? 80 : -80
-  const yDir = position.includes('bottom') ? 30 : -30
-  const tiltDeg = position.includes('right') ? 6 : -6
-
-  const posClasses: Record<SlotPosition, string> = {
-    'top-right': 'top-[14%] right-[6%]',
-    'bottom-left': 'bottom-[18%] left-[6%]',
-    'top-left': 'top-[14%] left-[6%]',
-    'bottom-right': 'bottom-[18%] right-[6%]',
-  }
-
-  return (
-    <div
-      aria-hidden
-      className={`absolute z-[5] hidden lg:block pointer-events-none ${posClasses[position]}`}
-      style={{ width: 156, height: 220 }}
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`${story.title}-${index}`}
-          initial={{ x: xDir, y: yDir, opacity: 0, rotate: 0, scale: 0.9 }}
-          animate={{ x: 0, y: 0, opacity: 1, rotate: tiltDeg, scale: 1 }}
-          exit={{ x: -xDir, y: -yDir, opacity: 0, rotate: -tiltDeg, scale: 0.92 }}
-          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-          className="size-full"
-        >
-          <StoryCard story={story} index={index} />
-        </motion.div>
-      </AnimatePresence>
-    </div>
   )
 }
 
