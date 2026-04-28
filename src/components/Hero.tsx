@@ -6,43 +6,44 @@ import { Button } from './ui/Button'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
-// Two staggered story sets — each becomes a ring above/below the title.
-// `flyThrough` cards orbit at a smaller radius + bigger z so they swoop past the title.
-type Story = {
-  title: string
-  duration: string
-  type: string
-  flyThrough?: boolean
-}
+type Story = { title: string; duration: string; type: string; flyThrough?: boolean }
 
-const topStories: Story[] = [
+// Stories split across 4 rings (top-inner, top-outer, bottom-inner, bottom-outer)
+const topInner: Story[] = [
   { title: 'Pilot Episode', duration: '1:32', type: 'cinematic_story' },
   { title: 'Brand Spot', duration: '0:30', type: 'ad_spot', flyThrough: true },
   { title: 'Music Drop', duration: '2:48', type: 'music_video' },
   { title: 'Q&A Channel', duration: '4:15', type: 'persona_channel' },
-  { title: 'Action Scene', duration: '0:54', type: 'cinematic_story' },
-  { title: 'Trailer Cut', duration: '1:08', type: 'ad_spot' },
 ]
-const bottomStories: Story[] = [
+const topOuter: Story[] = [
+  { title: 'Trailer Cut', duration: '1:08', type: 'ad_spot' },
+  { title: 'Action Scene', duration: '0:54', type: 'cinematic_story' },
+  { title: 'Live Drop', duration: '5:20', type: 'persona_channel' },
+  { title: 'Cameo', duration: '0:22', type: 'ad_spot' },
+  { title: 'Lore Recap', duration: '2:10', type: 'news_analysis' },
+]
+const bottomInner: Story[] = [
   { title: 'Behind Scenes', duration: '1:18', type: 'youtube_clone' },
   { title: 'Mood Piece', duration: '0:45', type: 'music_video', flyThrough: true },
   { title: 'Series Finale', duration: '3:02', type: 'cinematic_story' },
-  { title: 'Live Drop', duration: '5:20', type: 'persona_channel' },
   { title: 'Interview', duration: '7:14', type: 'news_analysis' },
+]
+const bottomOuter: Story[] = [
+  { title: 'Reveal Cut', duration: '1:05', type: 'cinematic_story' },
   { title: 'Side Story', duration: '0:38', type: 'ad_spot' },
+  { title: 'Promo Drop', duration: '0:24', type: 'ad_spot' },
+  { title: 'Origin', duration: '4:50', type: 'cinematic_story' },
+  { title: 'Recap', duration: '1:42', type: 'news_analysis' },
 ]
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null)
-  // Track scroll progress through hero. 0 at top, 1 when section's bottom passes the viewport top.
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
   })
-  // As user scrolls down, rings spread outward (cards fly out) and fade.
-  const ringScale = useTransform(scrollYProgress, [0, 1], [1, 1.65])
+  const ringScale = useTransform(scrollYProgress, [0, 1], [1, 1.6])
   const ringOpacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 0.85, 0.25])
-  // Title gets a parallax pull as you leave hero
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -80])
   const titleOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 1, 0.4])
 
@@ -52,29 +53,65 @@ export function Hero() {
       ref={ref}
       className="relative overflow-hidden min-h-[100svh] flex flex-col items-center justify-center"
     >
-      {/* hero-only grid floor at the bottom */}
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[35%] grid-floor opacity-40" />
 
-      {/* TWO 3D orbital rings — above + below title */}
+      {/* 4 concentric rings: each y-level has inner (sharp) + outer (blurred) */}
+      {/* TOP outer (back, blurred, slow) */}
       <Ring
-        stories={topStories}
-        yOffset={-310}
-        radius={520}
-        tilt={-14}
+        stories={topOuter}
+        yOffset={-300}
+        radius={780}
+        tilt={-12}
         direction={1}
-        speed={56}
+        speed={88}
+        blur={5}
+        cardSize={{ w: 144, h: 200 }}
         ringScale={ringScale}
         opacity={ringOpacity}
+        zIndex={1}
       />
+      {/* BOTTOM outer (back, blurred, slow) */}
       <Ring
-        stories={bottomStories}
-        yOffset={310}
-        radius={540}
-        tilt={14}
+        stories={bottomOuter}
+        yOffset={300}
+        radius={800}
+        tilt={12}
         direction={-1}
-        speed={62}
+        speed={94}
+        blur={5}
+        cardSize={{ w: 144, h: 200 }}
         ringScale={ringScale}
         opacity={ringOpacity}
+        zIndex={1}
+      />
+
+      {/* TOP inner (sharp, faster) */}
+      <Ring
+        stories={topInner}
+        yOffset={-280}
+        radius={420}
+        tilt={-15}
+        direction={-1}
+        speed={48}
+        blur={0}
+        cardSize={{ w: 168, h: 240 }}
+        ringScale={ringScale}
+        opacity={ringOpacity}
+        zIndex={2}
+      />
+      {/* BOTTOM inner (sharp, faster) */}
+      <Ring
+        stories={bottomInner}
+        yOffset={280}
+        radius={440}
+        tilt={15}
+        direction={1}
+        speed={52}
+        blur={0}
+        cardSize={{ w: 168, h: 240 }}
+        ringScale={ringScale}
+        opacity={ringOpacity}
+        zIndex={2}
       />
 
       {/* Centered title + CTAs */}
@@ -155,7 +192,6 @@ export function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Bottom live status bar */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -213,8 +249,11 @@ function Ring({
   tilt,
   direction,
   speed,
+  blur,
+  cardSize,
   ringScale,
   opacity,
+  zIndex,
 }: {
   stories: Story[]
   yOffset: number
@@ -222,14 +261,22 @@ function Ring({
   tilt: number
   direction: 1 | -1
   speed: number
+  blur: number
+  cardSize: { w: number; h: number }
   ringScale: MotionValue<number>
   opacity: MotionValue<number>
+  zIndex: number
 }) {
   return (
     <motion.div
       aria-hidden
-      style={{ scale: ringScale, opacity }}
-      className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
+      style={{
+        scale: ringScale,
+        opacity,
+        filter: blur > 0 ? `blur(${blur}px)` : 'none',
+        zIndex,
+      }}
+      className="absolute inset-0 flex items-center justify-center pointer-events-none"
     >
       <div
         className="relative size-0"
@@ -240,7 +287,10 @@ function Ring({
       >
         <div
           className="relative size-0"
-          style={{ transform: `translateY(${yOffset}px) rotateX(${tilt}deg)`, transformStyle: 'preserve-3d' }}
+          style={{
+            transform: `translateY(${yOffset}px) rotateX(${tilt}deg)`,
+            transformStyle: 'preserve-3d',
+          }}
         >
           <motion.div
             animate={{ rotateY: direction * 360 }}
@@ -257,16 +307,15 @@ function Ring({
                   key={i}
                   className="absolute"
                   style={{
-                    width: 168,
-                    height: 240,
-                    left: -84,
-                    top: -120,
+                    width: cardSize.w,
+                    height: cardSize.h,
+                    left: -cardSize.w / 2,
+                    top: -cardSize.h / 2,
                     transform: `rotateY(${angle}deg) translateZ(${r}px) scale(${cardScale})`,
                     transformStyle: 'preserve-3d',
                     backfaceVisibility: 'hidden',
                   }}
                 >
-                  {/* counter-rotate so face stays toward camera */}
                   <div className="size-full" style={{ transform: `rotateY(${-angle}deg)` }}>
                     <StoryCard story={s} index={i} />
                   </div>
@@ -288,7 +337,6 @@ function StoryCard({ story, index }: { story: Story; index: number }) {
       transition={{ duration: 6 + index, repeat: Infinity, ease: 'easeInOut' }}
       className="relative size-full rounded-2xl border border-rom-green/40 bg-rom-card overflow-hidden shadow-[0_12px_40px_oklch(0.05_0.005_150_/_0.6),0_0_24px_oklch(0.85_0.22_145/0.14)]"
     >
-      {/* Animated gradient simulating video frame */}
       <div className="absolute inset-0">
         <div
           className="absolute inset-0"
@@ -297,7 +345,6 @@ function StoryCard({ story, index }: { story: Story; index: number }) {
           }}
         />
         <div className="absolute inset-0 grid-floor opacity-25" />
-        {/* shimmer pass — fakes video motion */}
         <motion.div
           animate={{ y: ['-100%', '120%'] }}
           transition={{ duration: 4 + (index % 3), repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
@@ -309,7 +356,6 @@ function StoryCard({ story, index }: { story: Story; index: number }) {
         />
       </div>
 
-      {/* Top HUD */}
       <div className="absolute inset-x-0 top-0 flex items-center justify-between px-2.5 py-2 micro-label font-mono text-[8px]">
         <span className="flex items-center gap-1 text-rom-green">
           <span className="size-1 rounded-full bg-rom-green pulse-dot" />
@@ -318,14 +364,12 @@ function StoryCard({ story, index }: { story: Story; index: number }) {
         <span className="text-rom-green">{story.duration}</span>
       </div>
 
-      {/* Center play icon */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="grid size-12 place-items-center rounded-full border border-rom-green/60 bg-rom-bg/60 backdrop-blur-sm">
           <Play size={18} className="text-rom-green icon-glow translate-x-0.5" strokeWidth={2.2} fill="currentColor" />
         </div>
       </div>
 
-      {/* Bottom title strip */}
       <div className="absolute inset-x-0 bottom-0 px-2.5 py-2 bg-gradient-to-t from-rom-bg via-rom-bg/60 to-transparent">
         <div className="text-[10px] font-mono font-semibold text-rom-fg truncate">{story.title}</div>
         <code className="text-[8.5px] font-mono text-rom-green/80 truncate block">{story.type}</code>
@@ -338,7 +382,6 @@ function StoryCard({ story, index }: { story: Story; index: number }) {
         </div>
       </div>
 
-      {/* Corner brackets */}
       <span className="absolute left-1.5 top-1.5 size-2 border-l border-t border-rom-green" />
       <span className="absolute right-1.5 top-1.5 size-2 border-r border-t border-rom-green" />
       <span className="absolute left-1.5 bottom-1.5 size-2 border-l border-b border-rom-green" />
