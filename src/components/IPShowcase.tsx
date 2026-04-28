@@ -1,20 +1,19 @@
-import { ImageIcon, Sparkles } from 'lucide-react'
-import { GlowIcon } from './ui/GlowIcon'
+import { Sparkles } from 'lucide-react'
 import { MotionFade, MotionStagger } from './ui/Motion'
 import { Section } from './ui/Section'
 import { SectionIndex } from './ui/SectionIndex'
+import { AssetImage } from './ui/AssetImage'
 
-// Asymmetric magazine grid. No aspect-ratio on tiles — grid auto-rows + spans determine size.
-// Mobile: 2-col flat grid. md+: 4-col asymmetric with one tall portrait + wide hero blocks.
-const tiles: { label: string; span: string }[] = [
-  { label: 'Character · Lead', span: 'col-span-2 md:col-span-1 md:row-span-2' },
-  { label: 'Hero shot', span: 'col-span-2' },
-  { label: 'Key visual', span: 'col-span-1' },
-  { label: 'Character · Side', span: 'col-span-1' },
-  { label: 'Showreel still', span: 'col-span-2' },
-  { label: 'Prop / item', span: 'col-span-1' },
-  { label: 'Mood · color', span: 'col-span-1' },
-  { label: 'World establish', span: 'col-span-2' },
+// Asymmetric magazine grid with anime-character placeholders.
+const tiles: { label: string; span: string; seed: string }[] = [
+  { label: 'Character · Lead', span: 'col-span-2 md:col-span-1 md:row-span-2', seed: 'rom-ip-lead' },
+  { label: 'Hero shot', span: 'col-span-2', seed: 'rom-ip-hero' },
+  { label: 'Key visual', span: 'col-span-1', seed: 'rom-ip-keyvis' },
+  { label: 'Character · Side', span: 'col-span-1', seed: 'rom-ip-side' },
+  { label: 'Showreel still', span: 'col-span-2', seed: 'rom-ip-showreel' },
+  { label: 'Prop / item', span: 'col-span-1', seed: 'rom-ip-prop' },
+  { label: 'Mood · color', span: 'col-span-1', seed: 'rom-ip-mood' },
+  { label: 'World establish', span: 'col-span-2', seed: 'rom-ip-world' },
 ]
 
 export function IPShowcase() {
@@ -45,17 +44,17 @@ export function IPShowcase() {
               key={i}
               className={`relative ${t.span} group`}
             >
-              <div className="absolute inset-0 rounded-2xl border-2 border-dashed border-rom-green/40 hover:border-rom-green bg-rom-card overflow-hidden transition-all duration-500 group-hover:bg-rom-card-hover">
-                <div className="absolute inset-0 grid-floor opacity-25" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                  <GlowIcon icon={ImageIcon} size={28} intensity="md" />
-                  <p className="mt-3 micro-label font-mono text-rom-green">{t.label}</p>
-                </div>
+              <div className="absolute inset-0 rounded-2xl border border-rom-green/40 hover:border-rom-green bg-rom-card overflow-hidden transition-all duration-500">
+                <AssetImage seed={t.seed} className="absolute inset-0 size-full" />
+                {/* Label overlay (functional UI, not a tint layer) */}
+                <span className="absolute left-2 bottom-2 z-10 px-2 py-1 rounded-md border border-rom-green/40 bg-rom-card/85 backdrop-blur micro-label font-mono text-rom-green text-[9px]">
+                  {t.label}
+                </span>
                 {/* corner brackets */}
-                <span className="absolute left-2 top-2 size-3 border-l border-t border-rom-green" />
-                <span className="absolute right-2 top-2 size-3 border-r border-t border-rom-green" />
-                <span className="absolute left-2 bottom-2 size-3 border-l border-b border-rom-green" />
-                <span className="absolute right-2 bottom-2 size-3 border-r border-b border-rom-green" />
+                <span className="absolute left-2 top-2 size-3 border-l border-t border-rom-green z-10" />
+                <span className="absolute right-2 top-2 size-3 border-r border-t border-rom-green z-10" />
+                <span className="absolute left-2 bottom-2 size-3 border-l border-b border-rom-green z-10" />
+                <span className="absolute right-2 bottom-2 size-3 border-r border-b border-rom-green z-10" />
               </div>
             </MotionFade>
           ))}
