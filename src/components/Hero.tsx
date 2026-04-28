@@ -8,32 +8,18 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 type Story = { title: string; duration: string; type: string; flyThrough?: boolean }
 
-// Stories split across 4 rings (top-inner, top-outer, bottom-inner, bottom-outer)
-const topInner: Story[] = [
+// Single horizontal row of stories orbiting around the title
+const stories: Story[] = [
   { title: 'Pilot Episode', duration: '1:32', type: 'cinematic_story' },
   { title: 'Brand Spot', duration: '0:30', type: 'ad_spot', flyThrough: true },
   { title: 'Music Drop', duration: '2:48', type: 'music_video' },
   { title: 'Q&A Channel', duration: '4:15', type: 'persona_channel' },
-]
-const topOuter: Story[] = [
-  { title: 'Trailer Cut', duration: '1:08', type: 'ad_spot' },
   { title: 'Action Scene', duration: '0:54', type: 'cinematic_story' },
-  { title: 'Live Drop', duration: '5:20', type: 'persona_channel' },
-  { title: 'Cameo', duration: '0:22', type: 'ad_spot' },
-  { title: 'Lore Recap', duration: '2:10', type: 'news_analysis' },
-]
-const bottomInner: Story[] = [
   { title: 'Behind Scenes', duration: '1:18', type: 'youtube_clone' },
-  { title: 'Mood Piece', duration: '0:45', type: 'music_video', flyThrough: true },
+  { title: 'Mood Piece', duration: '0:45', type: 'music_video' },
   { title: 'Series Finale', duration: '3:02', type: 'cinematic_story' },
-  { title: 'Interview', duration: '7:14', type: 'news_analysis' },
-]
-const bottomOuter: Story[] = [
-  { title: 'Reveal Cut', duration: '1:05', type: 'cinematic_story' },
-  { title: 'Side Story', duration: '0:38', type: 'ad_spot' },
-  { title: 'Promo Drop', duration: '0:24', type: 'ad_spot' },
-  { title: 'Origin', duration: '4:50', type: 'cinematic_story' },
-  { title: 'Recap', duration: '1:42', type: 'news_analysis' },
+  { title: 'Live Drop', duration: '5:20', type: 'persona_channel', flyThrough: true },
+  { title: 'Trailer Cut', duration: '1:08', type: 'ad_spot' },
 ]
 
 export function Hero() {
@@ -55,58 +41,14 @@ export function Hero() {
     >
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[35%] grid-floor opacity-40" />
 
-      {/* 4 concentric rings: each y-level has inner (sharp) + outer (blurred) */}
-      {/* TOP outer (back, blurred, slow) */}
+      {/* Single row of cards swaying back and forth around the title */}
       <Ring
-        stories={topOuter}
-        yOffset={-300}
-        radius={780}
-        tilt={-12}
+        stories={stories}
+        yOffset={0}
+        radius={620}
+        tilt={6}
         direction={1}
-        speed={88}
-        blur={5}
-        cardSize={{ w: 144, h: 200 }}
-        ringScale={ringScale}
-        opacity={ringOpacity}
-        zIndex={1}
-      />
-      {/* BOTTOM outer (back, blurred, slow) */}
-      <Ring
-        stories={bottomOuter}
-        yOffset={300}
-        radius={800}
-        tilt={12}
-        direction={-1}
-        speed={94}
-        blur={5}
-        cardSize={{ w: 144, h: 200 }}
-        ringScale={ringScale}
-        opacity={ringOpacity}
-        zIndex={1}
-      />
-
-      {/* TOP inner (sharp, faster) */}
-      <Ring
-        stories={topInner}
-        yOffset={-280}
-        radius={420}
-        tilt={-15}
-        direction={-1}
-        speed={48}
-        blur={0}
-        cardSize={{ w: 168, h: 240 }}
-        ringScale={ringScale}
-        opacity={ringOpacity}
-        zIndex={2}
-      />
-      {/* BOTTOM inner (sharp, faster) */}
-      <Ring
-        stories={bottomInner}
-        yOffset={280}
-        radius={440}
-        tilt={15}
-        direction={1}
-        speed={52}
+        speed={26}
         blur={0}
         cardSize={{ w: 168, h: 240 }}
         ringScale={ringScale}
@@ -293,8 +235,10 @@ function Ring({
           }}
         >
           <motion.div
-            animate={{ rotateY: direction * 360 }}
-            transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}
+            // Slow back-and-forth sway instead of continuous rotation.
+            // Cards visibly shuffle their front/back depths as the ring rocks.
+            animate={{ rotateY: [direction * -45, direction * 45, direction * -45] }}
+            transition={{ duration: speed, repeat: Infinity, ease: 'easeInOut' }}
             className="relative size-0"
             style={{ transformStyle: 'preserve-3d' }}
           >
