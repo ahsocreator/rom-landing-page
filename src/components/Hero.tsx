@@ -158,19 +158,7 @@ function MainAssetCard() {
 
       <div className="px-5 md:px-6 pt-4 pb-3">
         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-rom-green/40 bg-rom-bg">
-          <AssetImage seed="rom-last-signal-hero" alt="The Last Signal" intensity="hard" className="size-full" />
-          {/* Optional rotating ring overlay on top of the image */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingTop: '6%' }}>
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
-              className="size-28 md:size-32 rounded-full border-[3px] border-rom-green-bright"
-              style={{
-                boxShadow: '0 0 50px oklch(0.92 0.24 145 / 0.7)',
-                borderStyle: 'dashed',
-              }}
-            />
-          </div>
+          <AssetImage seed="rom-last-signal-hero" alt="The Last Signal" className="size-full" />
         </div>
       </div>
 
