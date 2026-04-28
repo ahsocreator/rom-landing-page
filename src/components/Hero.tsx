@@ -1,35 +1,87 @@
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { useRef } from 'react'
 import { ArrowRight, Play, Command } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
-const stories = [
+// Two staggered story sets — each becomes a ring above/below the title.
+// `flyThrough` cards orbit at a smaller radius + bigger z so they swoop past the title.
+type Story = {
+  title: string
+  duration: string
+  type: string
+  flyThrough?: boolean
+}
+
+const topStories: Story[] = [
   { title: 'Pilot Episode', duration: '1:32', type: 'cinematic_story' },
-  { title: 'Brand Spot', duration: '0:30', type: 'ad_spot' },
+  { title: 'Brand Spot', duration: '0:30', type: 'ad_spot', flyThrough: true },
   { title: 'Music Drop', duration: '2:48', type: 'music_video' },
   { title: 'Q&A Channel', duration: '4:15', type: 'persona_channel' },
   { title: 'Action Scene', duration: '0:54', type: 'cinematic_story' },
+  { title: 'Trailer Cut', duration: '1:08', type: 'ad_spot' },
+]
+const bottomStories: Story[] = [
   { title: 'Behind Scenes', duration: '1:18', type: 'youtube_clone' },
-  { title: 'Mood Piece', duration: '0:45', type: 'music_video' },
+  { title: 'Mood Piece', duration: '0:45', type: 'music_video', flyThrough: true },
   { title: 'Series Finale', duration: '3:02', type: 'cinematic_story' },
+  { title: 'Live Drop', duration: '5:20', type: 'persona_channel' },
+  { title: 'Interview', duration: '7:14', type: 'news_analysis' },
+  { title: 'Side Story', duration: '0:38', type: 'ad_spot' },
 ]
 
 export function Hero() {
+  const ref = useRef<HTMLElement>(null)
+  // Track scroll progress through hero. 0 at top, 1 when section's bottom passes the viewport top.
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start'],
+  })
+  // As user scrolls down, rings spread outward (cards fly out) and fade.
+  const ringScale = useTransform(scrollYProgress, [0, 1], [1, 1.65])
+  const ringOpacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 0.85, 0.25])
+  // Title gets a parallax pull as you leave hero
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -80])
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 1, 0.4])
+
   return (
     <section
       id="top"
+      ref={ref}
       className="relative overflow-hidden min-h-[100svh] flex flex-col items-center justify-center"
     >
       {/* hero-only grid floor at the bottom */}
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[35%] grid-floor opacity-40" />
 
-      {/* 3D orbital carousel — sits behind title */}
-      <OrbitalRing />
+      {/* TWO 3D orbital rings — above + below title */}
+      <Ring
+        stories={topStories}
+        yOffset={-310}
+        radius={520}
+        tilt={-14}
+        direction={1}
+        speed={56}
+        ringScale={ringScale}
+        opacity={ringOpacity}
+      />
+      <Ring
+        stories={bottomStories}
+        yOffset={310}
+        radius={540}
+        tilt={14}
+        direction={-1}
+        speed={62}
+        ringScale={ringScale}
+        opacity={ringOpacity}
+      />
 
-      {/* Centered title + CTAs — sits in front of the carousel */}
-      <div className="relative z-10 mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-16 pt-24 md:pt-32 pb-12 text-center">
+      {/* Centered title + CTAs */}
+      <motion.div
+        style={{ y: titleY, opacity: titleOpacity }}
+        className="relative z-20 mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-16 text-center"
+      >
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,7 +91,7 @@ export function Hero() {
           <Badge>[ Build IP // Build Story // Build Money ]</Badge>
         </motion.div>
 
-        <h1 className="mt-10 display-1 font-mono text-rom-fg leading-[0.92]">
+        <h1 className="mt-8 display-1 font-mono text-rom-fg leading-[0.92]">
           <RevealLine delay={0.2}>Your IP.</RevealLine>
           <RevealLine
             delay={0.36}
@@ -55,7 +107,7 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 0.7 }}
-          className="mt-10 mx-auto max-w-[640px] text-[15px] md:text-[18px] leading-[1.55] text-rom-fg-dim"
+          className="mt-8 mx-auto max-w-[640px] text-[15px] md:text-[17px] leading-[1.55] text-rom-fg-dim"
         >
           ROM is the protocol for owning IP. Drop a character. Lock the canonical look. Spin out a franchise. Every drop is yours, every license earns you.
         </motion.p>
@@ -64,7 +116,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.85, ease }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          className="mt-9 flex flex-wrap items-center justify-center gap-4"
         >
           <Button variant="primary" className="magnetic">
             Start your IP
@@ -86,7 +138,7 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 1.0 }}
-          className="mt-12 flex flex-wrap justify-center gap-x-10 gap-y-5"
+          className="mt-10 flex flex-wrap justify-center gap-x-10 gap-y-5"
         >
           {[
             ['1', 'character locks the IP'],
@@ -94,21 +146,21 @@ export function Hero() {
             ['6', 'revenue formats · ∞ drops'],
           ].map(([n, l]) => (
             <div key={l} className="text-left">
-              <div className="text-[26px] md:text-[32px] font-mono font-bold text-rom-green text-glow leading-none">
+              <div className="text-[24px] md:text-[30px] font-mono font-bold text-rom-green text-glow leading-none">
                 {n}
               </div>
               <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
             </div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Bottom live status bar */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 1.2, ease }}
-        className="relative z-10 w-full mx-auto max-w-[1800px] px-6 md:px-10 lg:px-16 pb-6"
+        className="absolute inset-x-0 bottom-0 z-20 w-full mx-auto max-w-[1800px] px-6 md:px-10 lg:px-16 pb-6"
       >
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-rom-green/20 pt-4 text-rom-green">
           <span className="flex items-center gap-2 micro-label font-mono">
@@ -154,73 +206,94 @@ function RevealLine({
   )
 }
 
-function OrbitalRing() {
-  const radius = 540
+function Ring({
+  stories,
+  yOffset,
+  radius,
+  tilt,
+  direction,
+  speed,
+  ringScale,
+  opacity,
+}: {
+  stories: Story[]
+  yOffset: number
+  radius: number
+  tilt: number
+  direction: 1 | -1
+  speed: number
+  ringScale: MotionValue<number>
+  opacity: MotionValue<number>
+}) {
   return (
-    <div
+    <motion.div
       aria-hidden
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      style={{ perspective: '1600px' }}
+      style={{ scale: ringScale, opacity }}
+      className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
     >
-      {/* Outer wrapper applies the tilt */}
       <div
         className="relative size-0"
-        style={{ transform: 'rotateX(14deg)', transformStyle: 'preserve-3d' }}
+        style={{
+          perspective: '1800px',
+          transformStyle: 'preserve-3d',
+        }}
       >
-        {/* Inner ring spins around Y */}
-        <motion.div
-          animate={{ rotateY: 360 }}
-          transition={{ duration: 48, repeat: Infinity, ease: 'linear' }}
-          className="relative"
-          style={{ transformStyle: 'preserve-3d' }}
+        <div
+          className="relative size-0"
+          style={{ transform: `translateY(${yOffset}px) rotateX(${tilt}deg)`, transformStyle: 'preserve-3d' }}
         >
-          {stories.map((s, i) => {
-            const angle = (i / stories.length) * 360
-            return (
-              <div
-                key={i}
-                className="absolute"
-                style={{
-                  width: 180,
-                  height: 260,
-                  left: -90,
-                  top: -130,
-                  transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                  transformStyle: 'preserve-3d',
-                  backfaceVisibility: 'hidden',
-                }}
-              >
-                {/* Counter-rotate so the card always faces the viewer */}
+          <motion.div
+            animate={{ rotateY: direction * 360 }}
+            transition={{ duration: speed, repeat: Infinity, ease: 'linear' }}
+            className="relative size-0"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
+            {stories.map((s, i) => {
+              const angle = (i / stories.length) * 360
+              const r = s.flyThrough ? radius * 0.55 : radius
+              const cardScale = s.flyThrough ? 1.3 : 1.0
+              return (
                 <div
-                  className="size-full"
-                  style={{ transform: `rotateY(${-angle}deg)` }}
+                  key={i}
+                  className="absolute"
+                  style={{
+                    width: 168,
+                    height: 240,
+                    left: -84,
+                    top: -120,
+                    transform: `rotateY(${angle}deg) translateZ(${r}px) scale(${cardScale})`,
+                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                  }}
                 >
-                  <StoryCard story={s} index={i} />
+                  {/* counter-rotate so face stays toward camera */}
+                  <div className="size-full" style={{ transform: `rotateY(${-angle}deg)` }}>
+                    <StoryCard story={s} index={i} />
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        </motion.div>
+              )
+            })}
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-function StoryCard({ story, index }: { story: typeof stories[number]; index: number }) {
-  // Stable but varied pseudo-content for each card
+function StoryCard({ story, index }: { story: Story; index: number }) {
   const tilt = (index % 2 === 0 ? -1 : 1) * (1 + (index % 3))
   return (
     <motion.div
       animate={{ rotate: [tilt, -tilt, tilt] }}
       transition={{ duration: 6 + index, repeat: Infinity, ease: 'easeInOut' }}
-      className="relative size-full rounded-2xl border border-rom-green/40 bg-rom-card overflow-hidden shadow-[0_12px_40px_oklch(0.05_0.005_150_/_0.6),0_0_24px_oklch(0.85_0.22_145/0.12)]"
+      className="relative size-full rounded-2xl border border-rom-green/40 bg-rom-card overflow-hidden shadow-[0_12px_40px_oklch(0.05_0.005_150_/_0.6),0_0_24px_oklch(0.85_0.22_145/0.14)]"
     >
       {/* Animated gradient simulating video frame */}
       <div className="absolute inset-0">
         <div
           className="absolute inset-0"
           style={{
-            background: `radial-gradient(ellipse at ${(index * 13) % 100}% ${(index * 23) % 100}%, oklch(0.85 0.22 145 / 0.35), oklch(0.10 0.012 150) 70%)`,
+            background: `radial-gradient(ellipse at ${(index * 17) % 100}% ${(index * 31) % 100}%, oklch(0.85 0.22 145 / 0.40), oklch(0.10 0.012 150) 70%)`,
           }}
         />
         <div className="absolute inset-0 grid-floor opacity-25" />
@@ -231,7 +304,7 @@ function StoryCard({ story, index }: { story: typeof stories[number]; index: num
           className="absolute inset-x-0 h-1/2"
           style={{
             background:
-              'linear-gradient(180deg, transparent, oklch(0.85 0.22 145 / 0.18), transparent)',
+              'linear-gradient(180deg, transparent, oklch(0.85 0.22 145 / 0.20), transparent)',
           }}
         />
       </div>
@@ -256,7 +329,6 @@ function StoryCard({ story, index }: { story: typeof stories[number]; index: num
       <div className="absolute inset-x-0 bottom-0 px-2.5 py-2 bg-gradient-to-t from-rom-bg via-rom-bg/60 to-transparent">
         <div className="text-[10px] font-mono font-semibold text-rom-fg truncate">{story.title}</div>
         <code className="text-[8.5px] font-mono text-rom-green/80 truncate block">{story.type}</code>
-        {/* Fake play-head bar */}
         <div className="mt-1.5 h-0.5 w-full bg-rom-green/15 overflow-hidden rounded-full">
           <motion.div
             animate={{ width: ['0%', '100%'] }}
