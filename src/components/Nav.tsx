@@ -32,9 +32,9 @@ export function Nav() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-2 px-3 py-2 border border-rom-border-dim rounded-lg text-[11px] font-mono uppercase tracking-[0.18em] text-rom-fg-dim">
+          <div className="hidden lg:flex items-center gap-2.5 text-[11px] font-mono uppercase tracking-[0.18em] text-rom-fg-dim">
             <span>Built on</span>
-            <SolanaMark />
+            <SolanaLogo />
           </div>
           <a
             href="#"
@@ -49,12 +49,18 @@ export function Nav() {
   )
 }
 
-function SolanaMark() {
+function SolanaLogo() {
+  // Official 3-bar Solana mark + wordmark, tinted green to match the site palette.
   return (
-    <svg viewBox="0 0 96 16" className="h-3 w-auto" fill="currentColor" aria-label="Solana">
-      <text x="0" y="13" fontFamily="monospace" fontSize="13" fontWeight="700" letterSpacing="0.5" className="fill-rom-green">
-        SOLANA
-      </text>
-    </svg>
+    <span className="inline-flex items-center gap-1.5 text-rom-green icon-glow-sm">
+      {/* Logomark — 3 angled stripes */}
+      <svg viewBox="0 0 120 95" className="h-3.5 w-auto" fill="currentColor" aria-hidden>
+        <path d="M93.94 75.15H1.81c-1.65 0-2.49-2-1.32-3.18L18.93 53.4a2 2 0 0 1 1.41-.59h92.13c1.65 0 2.49 2 1.32 3.18L95.35 74.56a2 2 0 0 1-1.41.59zM18.93 1.34A2 2 0 0 1 20.34.75h92.13c1.65 0 2.49 2 1.32 3.18L95.35 22.51a2 2 0 0 1-1.41.59H1.81c-1.65 0-2.49-2-1.32-3.18L18.93 1.34zM95.35 37.39a2 2 0 0 0-1.41-.59H1.81c-1.65 0-2.49 2-1.32 3.18L18.93 58.55a2 2 0 0 0 1.41.59h92.13c1.65 0 2.49-2 1.32-3.18L95.35 37.39z" />
+      </svg>
+      {/* Wordmark */}
+      <span className="text-rom-green font-mono font-semibold tracking-[0.06em] normal-case text-[12px]">
+        Solana
+      </span>
+    </span>
   )
 }
