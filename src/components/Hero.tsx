@@ -4,6 +4,7 @@ import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
 import { GlowIcon } from './ui/GlowIcon'
 import { AssetImage } from './ui/AssetImage'
+import { TiltFloat } from './ui/TiltFloat'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -92,14 +93,16 @@ export function Hero() {
             </motion.div>
           </motion.div>
 
-          {/* CENTER — ROM Asset card */}
+          {/* CENTER — ROM Asset card with 3D tilt + floating */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.2, ease }}
             className="lg:col-span-5 xl:col-span-5"
           >
-            <MainAssetCard />
+            <TiltFloat>
+              <MainAssetCard />
+            </TiltFloat>
           </motion.div>
 
           {/* RIGHT — Lineage column */}

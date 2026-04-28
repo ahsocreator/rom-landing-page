@@ -1,4 +1,5 @@
 import { Backdrop } from './components/ui/Backdrop'
+import { MatrixBackdrop } from './components/ui/MatrixBackdrop'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { TickerBar } from './components/TickerBar'
@@ -15,6 +16,7 @@ import { Footer } from './components/Footer'
 function App() {
   return (
     <div className="relative min-h-screen text-rom-fg font-mono antialiased">
+      <MatrixBackdrop />
       <Backdrop />
       <Nav />
       <main className="relative">

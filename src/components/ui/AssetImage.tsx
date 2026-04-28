@@ -1,15 +1,18 @@
-// Anime character image, dark+cool tone via direct CSS filter on the img.
-// (filter is a CSS property on the image itself, not a separate overlay layer.)
-// Source: thiswaifudoesnotexist.net (free, stable, AI-generated). Higher seed
-// numbers (10k–80k) skew toward more varied / darker characters.
+// Anime character image — raw, no filters, no overlays.
+// Uses thisanimedoesnotexist.ai (3D-influenced anime characters via
+// StyleGAN trained on Crunchyroll-style art). Higher psi = more
+// stylized/cool, lower psi = more diverse/varied. Free direct URLs.
+//
+// Seed string deterministically maps to a stable image.
 
-function seedToNumber(seed: string): number {
+const PSIS = ['0.4', '0.5', '0.6', '0.7'] as const
+
+function seedToHash(seed: string): number {
   let hash = 0
   for (let i = 0; i < seed.length; i++) {
     hash = (hash * 131 + seed.charCodeAt(i)) | 0
   }
-  // Bias to higher index range — looks darker / less cute / more varied
-  return 10000 + (Math.abs(hash) % 70000)
+  return Math.abs(hash)
 }
 
 export function AssetImage({
@@ -22,8 +25,11 @@ export function AssetImage({
   className?: string
   intensity?: 'soft' | 'med' | 'hard' // ignored, kept for API compatibility
 }) {
-  const n = seedToNumber(seed)
-  const url = `https://www.thiswaifudoesnotexist.net/example-${n}.jpg`
+  const h = seedToHash(seed)
+  const psi = PSIS[h % PSIS.length]
+  const num = 1 + (h % 9999)
+  const padded = String(num).padStart(4, '0')
+  const url = `https://thisanimedoesnotexist.ai/results/psi-${psi}/seed${padded}.png`
   return (
     <div className={`relative overflow-hidden ${className}`}>
       <img
@@ -32,10 +38,6 @@ export function AssetImage({
         loading="lazy"
         draggable={false}
         className="absolute inset-0 size-full object-cover"
-        style={{
-          // Darker, cooler tone applied directly to the image
-          filter: 'brightness(0.62) contrast(1.20) saturate(0.75) hue-rotate(180deg)',
-        }}
       />
     </div>
   )
