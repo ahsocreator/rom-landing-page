@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, RotateCcw, ImageIcon, Sparkles } from 'lucide-react'
+import { ArrowRight, RotateCcw, Sparkles } from 'lucide-react'
 import { Button } from './ui/Button'
-import { GlowIcon } from './ui/GlowIcon'
 import { Section } from './ui/Section'
 import { SectionIndex } from './ui/SectionIndex'
+import { AssetImage } from './ui/AssetImage'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -73,21 +73,14 @@ function CharacterStrip() {
             key={ep.n}
             animate={{ y: [0, i % 2 === 0 ? -6 : 6, 0] }}
             transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
-            className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-dashed border-rom-green/40 bg-rom-card"
+            className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-rom-green/40 bg-rom-card"
           >
-            <div className="absolute inset-0 grid-floor opacity-30" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-3">
-              <GlowIcon icon={ImageIcon} size={22} intensity="md" />
-              <p className="mt-2 text-[9px] font-mono uppercase tracking-[0.22em] text-rom-green">
-                Character
-              </p>
-            </div>
-            {/* HUD — all green */}
-            <div className="absolute left-2 top-2 px-2 py-0.5 rounded-md border border-rom-green/50 bg-rom-green/[0.06] text-[8px] font-mono uppercase tracking-[0.22em] text-rom-green">
+            <AssetImage seed={`rom-char-${ep.n}`} className="absolute inset-0 size-full" intensity="hard" />
+            <div className="absolute left-2 top-2 z-10 px-2 py-0.5 rounded-md border border-rom-green/50 bg-rom-card/80 backdrop-blur text-[8px] font-mono uppercase tracking-[0.22em] text-rom-green">
               {ep.n}
             </div>
-            <div className="absolute right-2 top-2 size-2 rounded-full bg-rom-green pulse-dot" />
-            <div className="absolute inset-x-2 bottom-2 px-2 py-1 rounded-md bg-rom-bg/80 backdrop-blur text-[8px] font-mono uppercase tracking-[0.22em] text-rom-fg-dim text-center">
+            <div className="absolute right-2 top-2 z-10 size-2 rounded-full bg-rom-green pulse-dot" />
+            <div className="absolute inset-x-2 bottom-2 z-10 px-2 py-1 rounded-md bg-rom-bg/85 backdrop-blur text-[8px] font-mono uppercase tracking-[0.22em] text-rom-green text-center">
               {ep.tag}
             </div>
           </motion.div>

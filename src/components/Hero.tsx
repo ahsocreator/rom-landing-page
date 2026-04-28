@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Hexagon, ImageIcon } from 'lucide-react'
+import { ArrowRight, Hexagon } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
 import { GlowIcon } from './ui/GlowIcon'
+import { AssetImage } from './ui/AssetImage'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -157,7 +158,19 @@ function MainAssetCard() {
 
       <div className="px-5 md:px-6 pt-4 pb-3">
         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-rom-green/40 bg-rom-bg">
-          <CyberpunkScenePlaceholder />
+          <AssetImage seed="rom-last-signal-hero" alt="The Last Signal" intensity="hard" className="size-full" />
+          {/* Optional rotating ring overlay on top of the image */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ paddingTop: '6%' }}>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
+              className="size-28 md:size-32 rounded-full border-[3px] border-rom-green-bright"
+              style={{
+                boxShadow: '0 0 50px oklch(0.92 0.24 145 / 0.7)',
+                borderStyle: 'dashed',
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -187,83 +200,6 @@ function MainAssetCard() {
           </div>
         ))}
       </div>
-    </div>
-  )
-}
-
-function CyberpunkScenePlaceholder() {
-  return (
-    <>
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 60% 50% at 50% 35%, oklch(0.55 0.25 145 / 0.55) 0%, oklch(0.20 0.08 150) 55%, oklch(0.07 0.012 150) 100%)',
-        }}
-      />
-      <RainStreaks />
-      <div className="absolute inset-0 flex items-center justify-center" style={{ paddingTop: '8%' }}>
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 36, repeat: Infinity, ease: 'linear' }}
-          className="relative"
-        >
-          <div
-            className="size-32 md:size-36 rounded-full border-[3px] border-rom-green-bright"
-            style={{
-              boxShadow:
-                '0 0 60px oklch(0.92 0.24 145 / 0.85), inset 0 0 32px oklch(0.92 0.24 145 / 0.45)',
-              borderStyle: 'dashed',
-            }}
-          />
-          <div className="absolute inset-3 rounded-full border border-rom-green/50" />
-        </motion.div>
-      </div>
-      <div className="absolute inset-x-0 bottom-0 flex justify-center" style={{ paddingBottom: '6%' }}>
-        <div
-          className="w-10 md:w-12 h-24 md:h-28 rounded-t-[40%]"
-          style={{
-            background:
-              'linear-gradient(180deg, oklch(0.05 0.005 150) 0%, oklch(0.03 0.005 150) 70%, oklch(0.10 0.012 150) 100%)',
-            boxShadow: '0 -10px 30px oklch(0.92 0.24 145 / 0.3)',
-          }}
-        />
-      </div>
-      <div className="absolute right-3 bottom-3 flex items-center gap-1.5 px-2 py-1 rounded-md border border-rom-green/30 bg-rom-card text-[8.5px] font-mono uppercase tracking-[0.22em] text-rom-fg-muted">
-        <ImageIcon size={10} className="text-rom-green icon-glow-sm" strokeWidth={1.5} />
-        Swap with key art
-      </div>
-      <div className="absolute inset-0 scanlines opacity-30" />
-    </>
-  )
-}
-
-function RainStreaks() {
-  const streaks = Array.from({ length: 14 }, (_, i) => ({
-    x: (i / 14) * 100 + (Math.random() - 0.5) * 3,
-    h: 28 + Math.random() * 60,
-    delay: Math.random() * 6,
-    dur: 5 + Math.random() * 6,
-    opacity: 0.18 + Math.random() * 0.35,
-  }))
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {streaks.map((s, i) => (
-        <motion.div
-          key={i}
-          initial={{ y: '-30%', opacity: 0 }}
-          animate={{ y: '130%', opacity: [0, s.opacity, s.opacity, 0] }}
-          transition={{ duration: s.dur, delay: s.delay, repeat: Infinity, ease: 'linear' }}
-          className="absolute"
-          style={{
-            left: `${s.x}%`,
-            width: 1,
-            height: `${s.h}%`,
-            background:
-              'linear-gradient(180deg, transparent, oklch(0.92 0.24 145 / 0.85), transparent)',
-          }}
-        />
-      ))}
     </div>
   )
 }
@@ -308,30 +244,13 @@ function LineageColumn() {
   )
 }
 
-function LineageThumb({ tone, index }: { tone: 'green' | 'amber' | 'cyan'; index: number }) {
-  const tones: Record<string, string> = {
-    green: 'oklch(0.55 0.20 145 / 0.55)',
-    amber: 'oklch(0.65 0.20 60 / 0.55)',
-    cyan: 'oklch(0.55 0.18 220 / 0.55)',
-  }
+function LineageThumb({ index }: { tone: 'green' | 'amber' | 'cyan'; index: number }) {
+  const seeds = ['rom-lineage-1', 'rom-lineage-2', 'rom-lineage-3']
   return (
-    <div className="relative size-14 rounded-lg overflow-hidden border border-rom-green/35 flex-shrink-0">
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `radial-gradient(circle at 50% 40%, ${tones[tone]} 0%, oklch(0.10 0.012 150) 75%)`,
-        }}
-      />
-      <div className="absolute inset-0 grid-floor opacity-30" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div
-          className="size-5 rounded-full border border-rom-green-bright"
-          style={{ boxShadow: '0 0 10px oklch(0.92 0.24 145 / 0.7)' }}
-        />
-      </div>
-      <div className="absolute inset-x-0 bottom-0 flex justify-center pb-0.5">
-        <div className={`${index === 0 ? 'w-2 h-4' : index === 1 ? 'w-2.5 h-3.5' : 'w-1.5 h-5'} rounded-t-full bg-black/85`} />
-      </div>
-    </div>
+    <AssetImage
+      seed={seeds[index] || `rom-l-${index}`}
+      className="size-14 rounded-lg border border-rom-green/35 flex-shrink-0"
+      intensity="hard"
+    />
   )
 }
