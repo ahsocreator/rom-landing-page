@@ -1,19 +1,17 @@
-// Anime character image — raw, no filters, no overlays.
+// Anime / illustrated character image — raw, no filters, no overlays.
 //
-// SOURCE PROBLEM: there is no free, reliable, direct-URL service for
-// "darker / cool / 3D Japanese anime characters." `thisanimedoesnotexist`
-// requires fetching the slider page (no direct image URLs).
-// `thiswaifudoesnotexist` works directly but skews bright/cute.
+// Source: DiceBear `adventurer` collection (illustrated character art with
+// cool poses) + `lorelei` (anime-style portraits). Free, stable direct
+// SVG URLs. Each seed produces a unique deterministic character.
 //
-// SOLUTION: pass a real image URL via the `src` prop when you have art.
-// Otherwise we fall back to thiswaifudoesnotexist (so the page is never
-// broken). Drop a curated URL list into `CURATED` to override per-seed.
+// Override per-seed via CURATED map, or pass `src` to drop in real art.
 
-const FALLBACK_BASE = 'https://www.thiswaifudoesnotexist.net/example-'
-
-// Hand-picked stable URLs for specific seeds.
+// Hand-picked stable URLs for specific seeds (override the auto-generated one).
 // Add entries: 'rom-last-signal-hero': 'https://your-cdn.com/last-signal.jpg'
 const CURATED: Record<string, string> = {}
+
+// Available DiceBear styles — cycle by seed for visual variety
+const STYLES = ['adventurer', 'lorelei', 'notionists', 'personas'] as const
 
 function seedToHash(seed: string): number {
   let hash = 0
@@ -23,6 +21,15 @@ function seedToHash(seed: string): number {
   return Math.abs(hash)
 }
 
+function autoUrl(seed: string): string {
+  const h = seedToHash(seed)
+  const style = STYLES[h % STYLES.length]
+  // Encode the seed itself (DiceBear reseed) so the same seed string is stable
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(
+    seed
+  )}&size=512&backgroundColor=0a0a0a,0d2818,071810,001f12&radius=0`
+}
+
 export function AssetImage({
   seed,
   src,
@@ -30,15 +37,12 @@ export function AssetImage({
   className = '',
 }: {
   seed: string
-  src?: string // explicit override
+  src?: string
   alt?: string
   className?: string
   intensity?: 'soft' | 'med' | 'hard' // ignored
 }) {
-  const finalSrc =
-    src ??
-    CURATED[seed] ??
-    `${FALLBACK_BASE}${(seedToHash(seed) % 99999)}.jpg`
+  const finalSrc = src ?? CURATED[seed] ?? autoUrl(seed)
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
