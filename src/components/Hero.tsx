@@ -222,7 +222,7 @@ function LineageColumn() {
       </div>
 
       <a
-        href="#"
+        href="#anatomy"
         className="mt-4 flex items-center justify-between rounded-2xl border border-rom-green/45 bg-rom-card px-3.5 py-3 hover:bg-rom-green/[0.06] transition-colors group"
       >
         <span className="micro-label font-mono text-rom-green tracking-[0.22em] text-[10.5px]">View Full Tree</span>

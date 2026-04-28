@@ -7,6 +7,8 @@ import { ContentUniverse } from './components/ContentUniverse'
 import { IPShowcase } from './components/IPShowcase'
 import { SeriesProtocol } from './components/SeriesProtocol'
 import { MakeMoney } from './components/MakeMoney'
+import { AssetAnatomy } from './components/AssetAnatomy'
+import { MonetizationFlow } from './components/MonetizationFlow'
 import { DeveloperCTA } from './components/DeveloperCTA'
 import { Footer } from './components/Footer'
 
@@ -23,6 +25,8 @@ function App() {
         <IPShowcase />
         <SeriesProtocol />
         <MakeMoney />
+        <AssetAnatomy />
+        <MonetizationFlow />
         <DeveloperCTA />
       </main>
       <Footer />
