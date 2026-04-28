@@ -42,8 +42,8 @@ export function Hero() {
     >
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[35%] grid-floor opacity-40" />
 
-      {/* Single ring spinning right, continuous, slow + breathing radius
-          (z-30 above title z-20, so front cards naturally fly across the text) */}
+      {/* Single ring spinning right, continuous, slow + breathing radius.
+          z-2 (below title's z-20) so cards orbit AROUND title without obscuring it. */}
       <Ring
         stories={stories}
         yOffset={0}
@@ -55,7 +55,7 @@ export function Hero() {
         cardSize={{ w: 168, h: 240 }}
         ringScale={ringScale}
         opacity={ringOpacity}
-        zIndex={30}
+        zIndex={2}
       />
 
 
