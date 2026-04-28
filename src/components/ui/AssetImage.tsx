@@ -1,11 +1,19 @@
 // Anime character image — raw, no filters, no overlays.
-// Uses thisanimedoesnotexist.ai (3D-influenced anime characters via
-// StyleGAN trained on Crunchyroll-style art). Higher psi = more
-// stylized/cool, lower psi = more diverse/varied. Free direct URLs.
 //
-// Seed string deterministically maps to a stable image.
+// SOURCE PROBLEM: there is no free, reliable, direct-URL service for
+// "darker / cool / 3D Japanese anime characters." `thisanimedoesnotexist`
+// requires fetching the slider page (no direct image URLs).
+// `thiswaifudoesnotexist` works directly but skews bright/cute.
+//
+// SOLUTION: pass a real image URL via the `src` prop when you have art.
+// Otherwise we fall back to thiswaifudoesnotexist (so the page is never
+// broken). Drop a curated URL list into `CURATED` to override per-seed.
 
-const PSIS = ['0.4', '0.5', '0.6', '0.7'] as const
+const FALLBACK_BASE = 'https://www.thiswaifudoesnotexist.net/example-'
+
+// Hand-picked stable URLs for specific seeds.
+// Add entries: 'rom-last-signal-hero': 'https://your-cdn.com/last-signal.jpg'
+const CURATED: Record<string, string> = {}
 
 function seedToHash(seed: string): number {
   let hash = 0
@@ -17,23 +25,25 @@ function seedToHash(seed: string): number {
 
 export function AssetImage({
   seed,
+  src,
   alt = '',
   className = '',
 }: {
   seed: string
+  src?: string // explicit override
   alt?: string
   className?: string
-  intensity?: 'soft' | 'med' | 'hard' // ignored, kept for API compatibility
+  intensity?: 'soft' | 'med' | 'hard' // ignored
 }) {
-  const h = seedToHash(seed)
-  const psi = PSIS[h % PSIS.length]
-  const num = 1 + (h % 9999)
-  const padded = String(num).padStart(4, '0')
-  const url = `https://thisanimedoesnotexist.ai/results/psi-${psi}/seed${padded}.png`
+  const finalSrc =
+    src ??
+    CURATED[seed] ??
+    `${FALLBACK_BASE}${(seedToHash(seed) % 99999)}.jpg`
+
   return (
     <div className={`relative overflow-hidden ${className}`}>
       <img
-        src={url}
+        src={finalSrc}
         alt={alt}
         loading="lazy"
         draggable={false}
