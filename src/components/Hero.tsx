@@ -5,6 +5,7 @@ import { Button } from './ui/Button'
 import { GlowIcon } from './ui/GlowIcon'
 import { AssetImage } from './ui/AssetImage'
 import { TiltFloat } from './ui/TiltFloat'
+import { ScrambleText } from './ui/ScrambleText'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -36,7 +37,9 @@ export function Hero() {
             </motion.div>
 
             <h1 className="mt-7 text-[44px] md:text-[60px] xl:text-[72px] leading-[0.96] font-mono font-bold tracking-[-0.025em] text-rom-fg">
-              <RevealLine delay={0.18}>Your IP.</RevealLine>
+              <RevealLine delay={0.18}>
+                <ScrambleText text="Your IP." charset="binary" duration={950} startDelay={180} />
+              </RevealLine>
               <RevealLine
                 delay={0.32}
                 className="gradient-text-arcade glitch-hover"
@@ -44,7 +47,9 @@ export function Hero() {
               >
                 Your story.
               </RevealLine>
-              <RevealLine delay={0.46}>Your money.</RevealLine>
+              <RevealLine delay={0.46}>
+                <ScrambleText text="Your money." charset={['hex', 'signal']} duration={1100} startDelay={460} />
+              </RevealLine>
             </h1>
 
             <motion.p

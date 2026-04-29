@@ -1,0 +1,158 @@
+ROM LANDING PAGE — AWWWARDS LOOP INSTRUCTION
+============================================
+
+NORTH STAR
+----------
+Push the ROM landing page toward awwwards Site of the Year tier.
+Each iteration must be measurably MORE outworldly than the last —
+not just polished, not just "a bit more animated." The bar:
+people stop scrolling and screenshot it.
+
+This file is the prompt for a /loop run. Every iteration re-reads
+this file, then re-reads notes/iteration-log.md to know what has
+already been tried, then picks a new direction and ships it.
+
+
+PROJECT CONTEXT (DO NOT RE-DERIVE EACH RUN)
+-------------------------------------------
+- Stack: Vite 8 + React 19 + TS + Tailwind v4 + framer-motion 12 + lucide-react
+- Deployed: GitHub Pages, base path /rom-landing-page/ (vite.config.ts) — DO NOT BREAK
+- Theme: terminal green-on-black, OKLCH palette, JetBrains Mono display
+- Tokens & utilities live in src/index.css — reuse BEFORE inventing
+- Custom easings only: --ease-expo-out, --ease-quart-out, --ease-expo-inout, --ease-back-out
+  BANNED in CSS: ease, ease-in, ease-out, linear
+- Sections (top→bottom, in src/App.tsx):
+    Nav · Hero · TickerBar · HowItWorks · ContentUniverse · IPShowcase ·
+    SeriesProtocol · MakeMoney · AssetAnatomy · MonetizationFlow · DeveloperCTA · Footer
+- Existing UI primitives in src/components/ui/:
+    AssetImage · Backdrop · Badge · Brackets · Button · GlowIcon ·
+    MatrixBackdrop · Motion · Section · SectionIndex · TiltFloat
+- Narrative core: "Your IP. Your story. Your money." — DO NOT lose this voice.
+
+
+PER-ITERATION PROTOCOL (run every loop tick)
+--------------------------------------------
+
+STEP 1 — READ STATE
+  Open notes/iteration-log.md. Scan every prior iteration's:
+    - theme
+    - dimension pushed
+    - effects shipped
+    - effects rejected
+  Never repeat a theme. Never re-ship a rejected effect.
+  If the log doesn't exist yet, this is iteration 1 — create it at step 7.
+
+STEP 2 — THINK LIKE A GRAPHIC + MOTION DESIGNER FIRST
+  Before any tool call, write 3-5 lines in your reply describing:
+    - What the page currently FEELS like (mood, pace, depth)
+    - What it's MISSING to feel outworldly
+    - The single dimension you're pushing this iteration
+  No code yet. Design intent first.
+
+STEP 3 — PICK ONE DIMENSION (must be new vs. the log)
+  Menu — pick exactly one per iteration:
+    A. SPATIAL          — 3D parallax, scroll-driven camera, depth layering, perspective
+    B. KINETIC TYPE     — variable-weight morph, glyph fragmentation, scrambled decoders, marquee-as-art
+    C. MOTION CHOREO    — scroll-jacked sequences, FLIP transitions, magnetic cursor, staggered orchestration
+    D. MATERIAL/SHADER  — WebGL/CSS shaders, displacement, refraction, chromatic aberration, liquid metal
+    E. GENERATIVE       — noise fields, particle systems, flow fields, on-chain-feel data art
+    F. LAYOUT           — asymmetric / broken-grid editorial, full-bleed cinematic, modular case-study blocks
+    G. CURSOR           — custom trailing cursor, contextual states, magnetic targets, cursor-as-tool
+    H. TRANSITION       — section-to-section morphs, mask reveals, view-transition API, page-as-film
+    I. DATA-VIZ         — live-feel counters, animated lineage graph, on-chain ticker as hero element
+    J. TACTILE FEEL     — visual ASMR, micro-feedback, hover physics, "expensive" materials w/o sound
+
+STEP 4 — CONSULT SKILLS (use as many as fit, in parallel where possible)
+  Required this step:
+    a. Invoke skill: frontend-design — for the dimension picked, get patterns + references
+    b. Grep C:\Users\powin\.claude\skills\awesome-archive\INDEX.md for keywords tied to
+       the dimension (e.g. "webgl", "shader", "scroll", "cursor", "lenis", "gsap",
+       "kinetic-type", "three", "framer-motion", "particles", "view-transition").
+       Then look up local_path in INDEX.json and Read the SKILL.md inline.
+    c. If new shared primitives are likely, also invoke: composition-patterns
+    d. If the change is non-trivial, also invoke: react-best-practices
+
+STEP 5 — IMPLEMENT
+  Rules:
+    - Layout may change, but every section keeps its purpose. Don't silently
+      delete sections or strip the IP/story/money narrative.
+    - Reuse existing src/index.css utilities before inventing new ones.
+      New utilities go under @layer utilities, named with iteration prefix:
+      .iter-04-shader-veil, .iter-07-mag-cursor, etc.
+    - Honor prefers-reduced-motion on every new animation — downgrade,
+      don't disable identity.
+    - Performance budget: 60fps on a mid laptop. Use transform/opacity.
+      Lazy-mount heavy effects (IntersectionObserver) below the fold.
+    - No placeholder copy. Keep ROM's voice.
+    - If a change wants a new dep > ~100KB gzipped (three.js, gsap-pro,
+      lenis, ogl, etc.) — STOP, ask the user, propose first.
+
+STEP 6 — REVIEW WITH SKILLS (use all that apply)
+    - frontend-design-review on the changed sections
+    - web-design-guidelines for accessibility + craft pass
+    - simplify on any new component > ~80 lines
+  Fix everything they flag IN THIS iteration. Do not log "done" until clean.
+
+STEP 7 — VERIFY
+    - npm run build must pass (tsc -b + vite build), zero TS errors.
+    - If you can launch dev: spot-check the change actually renders and
+      reads as outworldly, not gimmicky. If gimmicky → revert, pick again.
+    - If you can't launch dev (sandbox), say so explicitly in the log.
+
+STEP 8 — LOG
+  Append to notes/iteration-log.md:
+
+    ## Iteration N — <one-line theme>
+    Date: <YYYY-MM-DD>
+    Dimension: <letter + name from menu>
+    Design intent: <2-3 lines from STEP 2>
+    Skills used: <list>
+    Awesome-archive consulted: <skill names + local paths>
+    Files touched:
+      - <path> — <what changed>
+    Effects shipped: <named list>
+    Effects rejected (and why): <feeds future iterations>
+    Verified: build ✅/❌ · dev-spot-check ✅/❌/skipped
+    Next-iter hint: <where the next push could go>
+
+STEP 9 — COMMIT
+  One commit per iteration:
+    git commit -m "iter N: <theme> — <one-line outcome>"
+  Do NOT push. The user controls deploys.
+
+
+ESCALATION RULE
+---------------
+Iteration N+1 must be more ambitious than iteration N. "Add subtle parallax"
+followed by "add subtler parallax" is a failed loop tick. Either:
+  - Move to a NEW dimension from the menu, OR
+  - Raise the SAME dimension to a higher tier
+    (parallax → scroll-driven WebGL displacement → fully-shaded depth field)
+
+INTEGRATION PASSES
+------------------
+Every 6 iterations, the 7th is an INTEGRATION pass, not a new effect:
+  - Audit the page as one composed film, not a stack of demos
+  - Tune timing, easing, and density so the eye has rest beats
+  - Remove or quiet anything that fights another effect
+  - Lock a single rhythm across the page
+The integration iteration logs as "Iteration 7 — INTEGRATION" and counts.
+
+
+HARD RULES (never violate)
+--------------------------
+- Never delete a section without explicit user approval.
+- Never change the GitHub Pages base path in vite.config.ts.
+- Never remove the reduced-motion fallback once added.
+- Never lift a competitor site verbatim — synthesize, don't copy.
+- Never use lorem-ipsum or generic copy.
+- Never use banned easings (ease, ease-in, ease-out, linear).
+- Never push or deploy. Commit only.
+
+
+START STATE
+-----------
+notes/iteration-log.md does not yet exist. Iteration 1 creates it.
+For iteration 1, bias the dimension toward the HERO — it's the first
+thing visitors see, and it's where "outworldly" has to land hardest.
+After iteration 1, treat the whole page as fair game.

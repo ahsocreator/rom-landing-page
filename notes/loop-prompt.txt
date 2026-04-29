@@ -1,0 +1,124 @@
+==============================================================================
+  COPY THE BLOCK BELOW INTO /loop  (omit interval → model self-paces ticks)
+==============================================================================
+
+You are running ONE iteration of the ROM landing page awwwards escalation
+loop. The project lives at:
+  C:\Users\powin\Documents\Code\Steven\Solona-Hackthon\Rom_landing page
+
+GROUND TRUTH FILES (read these every tick — they are the source of truth):
+  1. notes/awwwards-loop.txt  — the full per-iteration protocol
+  2. notes/iteration-log.md   — what every prior iteration did, shipped, and rejected
+                                (does not exist on iteration 1; you create it)
+
+MANDATE FOR THIS TICK
+---------------------
+Execute EXACTLY ONE iteration end-to-end. Do not chain two iterations in a
+single tick. Do not stop halfway. When the iteration is logged + committed,
+the tick is done.
+
+EXECUTION ORDER (from notes/awwwards-loop.txt — re-read it for full detail)
+---------------------------------------------------------------------------
+1. READ STATE
+     - Read notes/awwwards-loop.txt in full.
+     - Read notes/iteration-log.md if it exists. Determine current iteration N.
+     - Inventory every dimension/effect already shipped or rejected.
+
+2. THINK LIKE A GRAPHIC + MOTION DESIGNER (no tool calls yet)
+     Write 3-5 lines: current page mood/pace/depth → what's missing to feel
+     outworldly → the ONE dimension you're pushing this iteration.
+     The dimension MUST be new vs. the log, OR the same dimension at a
+     measurably higher tier.
+
+3. PICK ONE DIMENSION from the 10-item menu in awwwards-loop.txt
+   (Spatial / Kinetic Type / Motion Choreo / Material-Shader / Generative /
+    Layout / Cursor / Transition / Data-Viz / Tactile-Feel).
+
+4. CONSULT SKILLS (run in parallel where independent)
+     a. Skill: frontend-design — for the dimension picked
+     b. Grep C:\Users\powin\.claude\skills\awesome-archive\INDEX.md for
+        keywords matching the dimension. Pull local_path entries from
+        INDEX.json and Read those SKILL.md files inline.
+     c. If introducing shared primitives → Skill: composition-patterns
+     d. If the change is non-trivial → Skill: react-best-practices
+     Cite which skills + which awesome-archive entries you actually used.
+
+5. IMPLEMENT
+     - Reuse src/index.css utilities first; new ones go under @layer
+       utilities prefixed with the iteration number (e.g. .iter-04-...).
+     - Banned easings: ease, ease-in, ease-out, linear. Use the project's
+       custom easings (--ease-expo-out etc.).
+     - Every new animation must respect prefers-reduced-motion.
+     - Performance: 60fps on mid laptop. transform/opacity only. Lazy-mount
+       heavy effects with IntersectionObserver.
+     - Never delete a section, never break the /rom-landing-page/ base path
+       in vite.config.ts, never lose the "Your IP. Your story. Your money."
+       narrative voice.
+     - If a new dependency > ~100KB gzipped is genuinely needed (three.js,
+       gsap-pro, lenis, ogl, etc.) → STOP this tick, post the proposal to
+       the user with a one-line rationale, and DO NOT self-reschedule.
+
+6. REVIEW (run in parallel; fix everything flagged before logging)
+     - Skill: frontend-design-review on the changed sections
+     - Skill: web-design-guidelines for accessibility + craft
+     - Skill: simplify on any new component > ~80 lines
+
+7. VERIFY
+     - Run: npm run build  (must succeed, zero TS errors).
+     - If a dev server can be launched, spot-check the change renders
+       and reads as outworldly, not gimmicky. If gimmicky → revert and
+       pick a different dimension within this same tick.
+     - If dev cannot be launched in this environment, say so explicitly
+       in the log under "Verified".
+
+8. LOG — append a block to notes/iteration-log.md:
+
+     ## Iteration N — <one-line theme>
+     Date: <YYYY-MM-DD>           (use today's actual date)
+     Dimension: <letter + name from menu>
+     Design intent: <2-3 lines from step 2>
+     Skills used: <list>
+     Awesome-archive consulted: <skill names + local paths>
+     Files touched:
+       - <path> — <what changed>
+     Effects shipped: <named list>
+     Effects rejected (and why): <feeds future iterations>
+     Verified: build ✅/❌ · dev-spot-check ✅/❌/skipped
+     Next-iter hint: <where the next push could go>
+
+9. COMMIT (do NOT push)
+     git add only the files you actually touched (no -A / no .)
+     git commit -m "iter N: <theme> — <one-line outcome>"
+
+ESCALATION ENFORCEMENT
+----------------------
+Before committing, sanity-check: is this iteration measurably more ambitious
+than iteration N-1? If not, revert and re-pick. The loop fails the moment
+it produces a "subtler version" of the previous tick.
+
+Every 7th iteration is an INTEGRATION pass (per awwwards-loop.txt):
+audit the page as one composed film, tune timing, kill clashing effects,
+remove rather than add. It still counts as an iteration.
+
+STOP CONDITIONS (halt the loop, surface to user, do NOT self-reschedule)
+------------------------------------------------------------------------
+- Build fails and you can't fix it within this tick.
+- A new dep > ~100KB gzipped is genuinely needed.
+- The user has explicitly disallowed something that's now blocking progress.
+- 3 dimension picks in a row got reverted as gimmicky — pause, ask the user
+  for a direction.
+- Iteration count reaches 12 — pause and ask the user whether to continue.
+
+END-OF-TICK OUTPUT (visible to the user)
+----------------------------------------
+At the end of the tick, output a SHORT summary (≤ 6 lines):
+  - Iteration N · dimension · theme
+  - Files touched (count)
+  - Effects shipped (named list, terse)
+  - Build: ✅/❌
+  - Commit hash (short)
+  - Next-iter hint
+
+Then stop. The /loop runtime fires the next tick.
+
+==============================================================================
