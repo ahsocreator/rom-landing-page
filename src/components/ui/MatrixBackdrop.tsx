@@ -197,10 +197,19 @@ function MatrixRain() {
       g.fillRect(0, 0, w, h)
       g.font = `${fontSize}px "JetBrains Mono", monospace`
 
+      // iter-5: two-sine traveling flow field couples column speeds into a slow
+      // horizontal current. ±~38% speed modulation, two phase-decoupled waves
+      // → emergent organic banding without Perlin overhead.
+      const t = performance.now()
+      const flowA = t * 0.00045
+      const flowB = t * 0.00027
+
       for (let i = 0; i < columns; i++) {
-        const x = (i / columns) * w
+        const xn = i / columns
+        const wave = Math.sin(xn * 6 + flowA) * 0.25 + Math.sin(xn * 13 + flowB) * 0.13
+        const x = xn * w
         const drop = drops[i] ?? 0
-        const speed = speeds[i] ?? 0.5
+        const speed = (speeds[i] ?? 0.5) * (1 + wave)
         const y = drop * fontSize
         const ch = chars[Math.floor(Math.random() * chars.length)] ?? '0'
         const isHead = Math.random() < 0.035

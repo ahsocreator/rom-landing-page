@@ -147,3 +147,41 @@ Effects rejected (and why):
 Verified: build ✅ (CSS +0.14kB gz, JS unchanged) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; flux band is visible as a slow vertical wash, glyphs now fall coherently with rain)
 Next-iter hint:
   Next push: E. GENERATIVE — couple the matrix rain's column speed to a slow Perlin / sine-wave flow field so columns subtly group into faster/slower bands instead of independent random speeds. Reads as "the field has a current". OR: J. TACTILE FEEL — scroll-velocity briefly intensifies the flux band's opacity (rejected this iter; could land as its own coherent push). DO NOT add more visual layers — push DEPTH or MATERIAL of existing ones.
+
+## Iteration 5 — Flow-field current through the rain (organic banding)
+Date: 2026-04-29
+Dimension: E. GENERATIVE (two-sine traveling flow field)
+Web research:
+  - https://www.instructables.com/Wave-Pattern-Matrix-Rain-Animation-With-HTML-CSS-a/ — "wave-pattern matrix rain" is an established genre; modulate column speeds with a wave function for visible banding
+  - https://mrktcrn.dev/posts/2025073102-matrix-rain-effect/ — modern canvas matrix techniques (2025); subtle blur/opacity polish, OffscreenCanvas notes
+  - https://medium.com/@bit101/flow-fields-part-ii-f3c24c1b777d — flow-field theory: noise-driven force fields produce results that are random but related between neighboring locations (key principle: spatial coupling)
+  - https://ragingnexus.com/creative-code-lab/experiments/perlin-noise-flow-field/ — Perlin flow field reference (we deliberately chose 2-sine over Perlin: same emergent banding for ~5x less compute)
+Design intent:
+  Iter 4 made every pixel breathe vertically via the flux veil. The matrix rain's
+  column speeds were still independent random — which reads as noise, not current.
+  Iter 5 couples columns through a two-sine traveling flow field so visible bands
+  of faster / slower rain propagate slowly across the field. Subtle: ±~38% speed
+  modulation around each column's baseline. Vertical: only modulates fall speed,
+  no lateral motion. Everywhere: every column shares the wave. Adds intention
+  without adding a single layer.
+Skills used:
+  - frontend-design (carryover from iters 1-4)
+  - WebSearch (above sources)
+Awesome-archive consulted:
+  - Greppped INDEX.md for: flow-field | generative | noise | perlin | wave-anim | canvas-rain
+  - All hits were SaaS / generative AI / scientific (proteomics, vertex AI, generative-engine-optimization). Zero relevant visual-code skills. Continued with web research only.
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — modified MatrixRain.draw() only: precompute t = performance.now() once per frame; per-column compute wave = sin(xn*6 + flowA)*0.25 + sin(xn*13 + flowB)*0.13 where flowA/B are time-driven phases at decoupled rates (0.00045 vs 0.00027); apply effective speed = baseSpeed * (1 + wave). 2 sin calls × ~150 columns × 60fps ≈ 18k sin/sec (trivial)
+Effects shipped:
+  - Two interfering sine waves traveling slowly across X give visible bands of fast/slow rain that propagate over ~6-8s cycles
+  - Column speeds modulate ±38% from baseline; on aggregate the field reads as having a current rather than independent drops
+  - No new layer, no new CSS, no perf cost over baseline
+  - Reduced-motion: existing reduce gate at function entry already skips draw entirely; flow field has no separate handling needed
+Effects rejected (and why):
+  - Full Perlin / simplex noise flow field (cited refs) — same visual emergence as 2-sine for our use case but ~5x compute and 100+ lines of noise-table code. Two sines gives organic-feeling interference patterns at almost zero cost.
+  - Modulating wave AMPLITUDE itself with time (so the current strength pulses) — felt fussy; constant ±38% reads steadier.
+  - Coupling depth-glyph CSS animation durations to the same wave — would have required JS-driven CSS updates per glyph per frame; expensive and breaks the iter-3 CSS-anim simplicity. Kept depth glyphs independent (their per-element duration jitter is sufficient organic variance).
+  - Coupling the flux veil's sweep velocity to the same wave — would have made flux+rain pulse together, which actually destroys subtlety (over-coordination reads as "preset"). Decoupled rhythms are more organic.
+Verified: build ✅ (JS +0.05kB gz; CSS unchanged) · dev-spot-check ✅ (HMR reloaded canvas; rain now reads with visible slow-traveling banding rather than random noise)
+Next-iter hint:
+  Next push: J. TACTILE FEEL — scroll-velocity briefly accelerates the flow field's time multiplier and bumps flux-band opacity. Background "responds" to user motion without becoming reactive theater. OR: F. LAYOUT — per-section background tints / mood gradient that very subtly shifts hue as you scroll between sections (radial gradient with palette stop animated by IntersectionObserver). Both are subtle. Tactile is the more cohesive escalation — it gives the existing systems a single new dimension (time-coupling) without adding mass.
