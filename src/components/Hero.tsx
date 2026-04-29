@@ -33,7 +33,7 @@ export function Hero() {
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.55, ease }}
             >
-              <Badge>[ Make IP // Make Money // From Simple Code ]</Badge>
+              <Badge>[ Make IP // Make Money // In One Call ]</Badge>
             </motion.div>
 
             <h1 className="mt-7 text-[44px] md:text-[60px] xl:text-[72px] leading-[0.96] font-mono font-bold tracking-[-0.025em] text-rom-fg">
@@ -48,7 +48,7 @@ export function Hero() {
                 Make money.
               </RevealLine>
               <RevealLine delay={0.46}>
-                <ScrambleText text="From simple code." charset={['hex', 'signal']} duration={1100} startDelay={460} />
+                <ScrambleText text="In one call." charset={['hex', 'signal']} duration={1100} startDelay={460} />
               </RevealLine>
             </h1>
 
@@ -86,7 +86,7 @@ export function Hero() {
             >
               {[
                 ['1', 'call · live earning IP'],
-                ['100%', 'on-chain · auto revenue split'],
+                ['100%', 'on-chain · auto revenue'],
                 ['∞', 'characters · zero glue code'],
               ].map(([n, l]) => (
                 <div key={l}>
@@ -96,28 +96,6 @@ export function Hero() {
                   <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
                 </div>
               ))}
-            </motion.div>
-
-            {/* Footnote-style code snippet — the call is supporting detail, not the story */}
-            <motion.div
-              variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.7, delay: 1.15, ease }}
-              className="mt-8 max-w-[560px]"
-            >
-              <div className="micro-label font-mono text-[10px] tracking-[0.22em] text-rom-fg-muted mb-2">
-                ↓ that's all the code it takes
-              </div>
-              <pre className="font-mono text-[12px] md:text-[13px] leading-relaxed text-rom-fg-dim rounded-xl border border-rom-border-dim bg-rom-bg/40 px-4 py-3 overflow-x-auto">
-                <span className="text-rom-fg-dim">await </span>
-                <span className="text-rom-green-bright">rom</span>
-                <span className="text-rom-fg-dim">.</span>
-                <span className="text-rom-cyan">create</span>
-                <span className="text-rom-fg-dim">{"({ "}</span>
-                <span className="text-rom-amber">seed</span>
-                <span className="text-rom-fg-dim">: </span>
-                <span className="text-rom-magenta">"Vela"</span>
-                <span className="text-rom-fg-dim">{" })"}</span>
-              </pre>
             </motion.div>
           </motion.div>
 
