@@ -544,6 +544,8 @@
     --matrix-mx: 0;
     --matrix-my: 0;
     --matrix-sy: 0;
+    /* iter-6 — scroll-velocity energy [0..1], drives flux brightness + (via JS) rain speed */
+    --scroll-energy: 0;
   }
 
   .iter-3-matrix-layer {
@@ -656,6 +658,8 @@
     overflow: hidden;
     mix-blend-mode: screen;
     will-change: transform;
+    /* iter-6 — scroll-velocity coupling: brighter wash during fast scroll, baseline 1.0 */
+    filter: brightness(calc(1 + var(--scroll-energy, 0) * 0.55));
   }
   .iter-4-flux-band::before {
     content: '';

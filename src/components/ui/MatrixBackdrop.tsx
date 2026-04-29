@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react'
 
+// iter-6 — module-shared scroll-velocity energy (0..1, smoothed, decays to 0).
+// Updated by MatrixBackdrop's parallax tick; consumed by MatrixRain.draw and by
+// CSS via --scroll-energy on the wrap (drives flux-band brightness).
+const scrollState = { energy: 0 }
+
 // 3-layer parallax matrix backdrop. Far / Mid (canvas rain) / Near.
 // Mouse + scroll drive a shared transform per layer (different magnitudes).
 // Subtle by design — texture, not competition.
@@ -20,6 +25,10 @@ export function MatrixBackdrop() {
     let ty = 0
     let ts = 0
     let raf = 0
+    // iter-6 — scroll-velocity energy
+    let lastSy = window.scrollY
+    let lastT = performance.now()
+    let energy = 0
 
     const onMove = (e: PointerEvent) => {
       mx = (e.clientX - window.innerWidth / 2) / window.innerWidth
@@ -30,12 +39,23 @@ export function MatrixBackdrop() {
     }
 
     const tick = () => {
+      // iter-6 — derive scroll velocity → smoothed energy [0..1]
+      const now = performance.now()
+      const dt = Math.max(1, now - lastT)
+      const dV = Math.abs(sy - lastSy) / dt // px / ms
+      const target = Math.min(1, dV / 3) // cap at ~3 px/ms = 100% energy
+      energy = energy * 0.88 + target * 0.12
+      scrollState.energy = energy
+      lastSy = sy
+      lastT = now
+
       tx += (mx - tx) * 0.06
       ty += (my - ty) * 0.06
       ts += (sy - ts) * 0.10
       wrap.style.setProperty('--matrix-mx', tx.toFixed(4))
       wrap.style.setProperty('--matrix-my', ty.toFixed(4))
       wrap.style.setProperty('--matrix-sy', ts.toFixed(2))
+      wrap.style.setProperty('--scroll-energy', energy.toFixed(3))
       raf = requestAnimationFrame(tick)
     }
 
@@ -200,16 +220,19 @@ function MatrixRain() {
       // iter-5: two-sine traveling flow field couples column speeds into a slow
       // horizontal current. ±~38% speed modulation, two phase-decoupled waves
       // → emergent organic banding without Perlin overhead.
+      // iter-6: tactileBoost from scroll-velocity energy bumps every column's
+      // effective speed up to +45% during fast scroll, decays naturally to 0.
       const t = performance.now()
       const flowA = t * 0.00045
       const flowB = t * 0.00027
+      const tactileBoost = 1 + scrollState.energy * 0.45
 
       for (let i = 0; i < columns; i++) {
         const xn = i / columns
         const wave = Math.sin(xn * 6 + flowA) * 0.25 + Math.sin(xn * 13 + flowB) * 0.13
         const x = xn * w
         const drop = drops[i] ?? 0
-        const speed = (speeds[i] ?? 0.5) * (1 + wave)
+        const speed = (speeds[i] ?? 0.5) * (1 + wave) * tactileBoost
         const y = drop * fontSize
         const ch = chars[Math.floor(Math.random() * chars.length)] ?? '0'
         const isHead = Math.random() < 0.035

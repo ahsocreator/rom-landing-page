@@ -185,3 +185,43 @@ Effects rejected (and why):
 Verified: build ✅ (JS +0.05kB gz; CSS unchanged) · dev-spot-check ✅ (HMR reloaded canvas; rain now reads with visible slow-traveling banding rather than random noise)
 Next-iter hint:
   Next push: J. TACTILE FEEL — scroll-velocity briefly accelerates the flow field's time multiplier and bumps flux-band opacity. Background "responds" to user motion without becoming reactive theater. OR: F. LAYOUT — per-section background tints / mood gradient that very subtly shifts hue as you scroll between sections (radial gradient with palette stop animated by IntersectionObserver). Both are subtle. Tactile is the more cohesive escalation — it gives the existing systems a single new dimension (time-coupling) without adding mass.
+
+## Iteration 6 — Scroll-velocity tactile coupling (single energy bus)
+Date: 2026-04-29
+Dimension: J. TACTILE FEEL  (last additive iter before iter-7 INTEGRATION pass)
+Web research:
+  - https://www.smashingmagazine.com/2025/10/ambient-animations-web-design-practical-applications-part2/ — "Five subtle animations on separate layers can feel rich and alive, like a sound mix with variation in rhythm, tone, timing." Validates current 5-layer ambient state; cautions against any one element dominating
+  - https://www.smashingmagazine.com/2025/09/ambient-animations-web-design-principles-implementation/ — Ambient = passive movement you don't consciously notice; performance: blur/drop-shadow strain low-power devices (we're using neither at scale)
+  - https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations — Native CSS scroll-timeline animates by scroll POSITION; no built-in for scroll VELOCITY. Confirms JS path required for tactile (velocity) coupling
+  - https://tympanus.net/codrops/2024/01/17/a-practical-introduction-to-scroll-driven-animations-with-css-scroll-and-view/ — patterns for sync'd scroll animations; we adapted JS-driven velocity → CSS variable bridge (scroll-driven CSS for native, JS bridge for velocity)
+Design intent:
+  Page now has 5 ambient layers running on independent constant clocks. None
+  reflect user motion — the background feels great but disconnected. Iter 6 adds
+  ONE shared "tactile bus": scroll velocity → smoothed energy variable [0..1] →
+  modulates rain flow speed (+45% max) and flux-band brightness (+55% max). Lerp
+  smoothing (0.88/0.12) ensures no twitchy reaction; energy decays naturally to
+  0 within ~0.5s after scroll stops. Single coupling system, two consumers, no
+  new layers. Last additive push before iter-7 integration.
+Skills used:
+  - frontend-design (carryover from iters 1-5)
+  - WebSearch (sources above)
+Awesome-archive consulted:
+  - Skipped — last 3 grep rounds (cursor / flow-field / scroll-velocity) all returned only SaaS/AI hits. Index has no visual-code patterns relevant to this brief.
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — added module-level `const scrollState = { energy: 0 }`; in MatrixBackdrop's parallax tick(): added lastSy/lastT/energy state + per-frame scroll-velocity calc (|sy − lastSy| / dt, capped at 3 px/ms = full energy), smoothed energy = energy*0.88 + target*0.12, written to scrollState.energy AND to wrap.style as --scroll-energy CSS var; in MatrixRain.draw(): tactileBoost = 1 + scrollState.energy * 0.45, applied to per-column effective speed
+  - src/index.css — added --scroll-energy: 0 default to .iter-3-matrix-wrap; added filter: brightness(calc(1 + var(--scroll-energy, 0) * 0.55)) to .iter-4-flux-band
+Effects shipped:
+  - Scroll-velocity → smoothed energy variable (0..1) on a single shared "tactile bus"
+  - Matrix rain accelerates up to +45% during fast scroll, returns to baseline within ~0.5s after stop
+  - Flux band brightens up to +55% during fast scroll (filter: brightness)
+  - Both effects driven from the SAME energy variable — no decoupled twitches; tightly coordinated tactile response
+  - Reduced-motion: parallax effect short-circuits before tick → energy stays 0 forever → tactileBoost=1 + brightness(1) → zero coupling; existing reduced-motion ambient state preserved
+Effects rejected (and why):
+  - Coupling depth-glyphs CSS animationDuration to energy — would require JS-driven CSS rewrite per-glyph per-frame; expensive and the glyphs are layer-secondary anyway (rain is the primary). Skipped.
+  - Coupling flow-field time multiplier (flowA/flowB rates) to energy — would visibly change the WAVE PATTERN spacing during scroll, which reads as "bug" not "feature". Bumping baseline drop speed (which the wave still rides on top of) is cleaner.
+  - Adding shadowBlur boost during high-energy — measurable perf hit per Smashing's "blur/drop-shadow strain" warning. Skipped.
+  - Coupling vignette opacity — would destabilize the focus device. Vignette stays still by design (consistent with iter-4 rejection).
+  - Native CSS scroll-timeline — only handles position, not velocity. JS bridge required (current approach).
+Verified: build ✅ (CSS +0.02kB gz, JS +0.13kB gz) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; rain visibly accelerates and flux band brightens when scrolling fast, settles smoothly when stopped)
+Next-iter hint:
+  ITER 7 = INTEGRATION PASS per protocol. Audit the 5-layer composite (depth glyphs / canvas rain / circuit traces / flux veil / flow-field current / tactile coupling) as one composed film. Likely tunings: harmonize cycle periods so layer rhythms don't constructively interfere on bad days; verify no two layers hit peak intensity simultaneously; potentially DROP one element if it competes (Smashing: "doesn't dominate, doesn't interfere"). Do not add new effects. Remove or quiet only.
