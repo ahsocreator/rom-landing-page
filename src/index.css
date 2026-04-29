@@ -538,6 +538,112 @@
       transition: none;
     }
   }
+
+  /* iter-3 — 3D depth matrix backdrop (parallax layers, subtle) */
+  .iter-3-matrix-wrap {
+    --matrix-mx: 0;
+    --matrix-my: 0;
+    --matrix-sy: 0;
+  }
+
+  .iter-3-matrix-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* Far layer: small, dim, slightly blurred — recedes into space */
+  .iter-3-matrix-far {
+    opacity: 0.42;
+    filter: blur(0.5px);
+    transform: translate3d(
+      calc(var(--matrix-mx) * -8px),
+      calc(var(--matrix-my) * -8px - var(--matrix-sy) * 0.04px),
+      0
+    );
+  }
+
+  /* Mid layer: the canvas matrix rain — ride the parallax at moderate depth */
+  .iter-3-matrix-mid {
+    opacity: 0.34;
+    transform: translate3d(
+      calc(var(--matrix-mx) * -16px),
+      calc(var(--matrix-my) * -16px - var(--matrix-sy) * 0.08px),
+      0
+    );
+  }
+
+  /* Near layer: larger, brighter, more responsive parallax */
+  .iter-3-matrix-near {
+    opacity: 0.55;
+    transform: translate3d(
+      calc(var(--matrix-mx) * -28px),
+      calc(var(--matrix-my) * -28px - var(--matrix-sy) * 0.14px),
+      0
+    );
+  }
+
+  /* Circuit traces: barely-there parallax, sits between mid and near */
+  .iter-3-matrix-traces {
+    transform: translate3d(
+      calc(var(--matrix-mx) * -20px),
+      calc(var(--matrix-my) * -20px - var(--matrix-sy) * 0.10px),
+      0
+    );
+  }
+
+  .iter-3-glyph {
+    --drift-x: 0px;
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    color: oklch(0.85 0.22 145);
+    text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    user-select: none;
+    pointer-events: none;
+    transform-origin: center;
+    opacity: 0;
+  }
+
+  .iter-3-glyph-drift {
+    animation-name: iter-3-glyph-drift;
+    animation-iteration-count: infinite;
+    animation-timing-function: var(--ease-expo-inout);
+  }
+
+  @keyframes iter-3-glyph-drift {
+    0% {
+      transform: translate3d(0, 14px, 0);
+      opacity: 0;
+    }
+    25% {
+      opacity: 0.55;
+    }
+    50% {
+      transform: translate3d(var(--drift-x), -10px, 0);
+      opacity: 0.85;
+    }
+    75% {
+      opacity: 0.45;
+    }
+    100% {
+      transform: translate3d(0, 14px, 0);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .iter-3-matrix-far,
+    .iter-3-matrix-mid,
+    .iter-3-matrix-near,
+    .iter-3-matrix-traces {
+      transform: none;
+    }
+    .iter-3-glyph-drift {
+      animation: none;
+      opacity: 0.32;
+    }
+  }
 }
 
 html, body, #root {

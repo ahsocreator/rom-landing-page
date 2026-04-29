@@ -156,3 +156,44 @@ notes/iteration-log.md does not yet exist. Iteration 1 creates it.
 For iteration 1, bias the dimension toward the HERO — it's the first
 thing visitors see, and it's where "outworldly" has to land hardest.
 After iteration 1, treat the whole page as fair game.
+
+
+==============================================================================
+USER OVERRIDE — BACKGROUND FOCUS (added 2026-04-29)
+==============================================================================
+For iterations 3 onward (until the user lifts this), every iteration must
+push the page BACKGROUND. The brief from the user, verbatim:
+
+  "the background need to be 3D and has depth and matrix feeling but subtle"
+  "make the loop focus on background style"
+
+Operating rules:
+  - Each iteration must measurably improve at least one of:
+      * 3D feel / parallax depth between background layers
+      * Atmospheric depth (fog, perspective, scale gradients)
+      * Matrix-character of the layered glyph/circuit/grid system
+      * Mouse / scroll / time-coupled ambient response
+  - SUBTLE IS NON-NEGOTIABLE. Background is texture, not competition.
+    If a screenshot of the page makes the background read louder than
+    the content, the iteration has failed.
+  - Existing background components live in src/components/ui/MatrixBackdrop.tsx
+    and src/components/ui/Backdrop.tsx — extend them, don't replace.
+  - Dimension menu still applies, but bias toward dimensions that touch
+    the background:
+      A. SPATIAL          (parallax depth layers, scroll-coupled camera)
+      D. MATERIAL/SHADER  (subtle CSS/canvas shaders behind content)
+      E. GENERATIVE       (procedural noise / flow fields in deep layers)
+      C. MOTION CHOREO    (orchestrated drift between layers)
+      F. LAYOUT           (composition of per-section layered backdrops)
+      J. TACTILE FEEL     (mouse-coupled ambient response in backdrop)
+  - Foreground-only dimensions (B Kinetic Type, G Cursor, H Section Transition,
+    I Data-Viz) are out of scope for now unless the 7th-iteration INTEGRATION
+    pass calls for one to balance the page.
+  - Performance bar tightens: the background already runs continuously, so
+    every new layer must show measurable cost <2ms / frame on a mid laptop.
+    If RAF time blows past budget, lazy-mount or downsample.
+  - Reduced-motion still mandatory on every new background animation.
+
+The user can lift this override at any time by saying "background focus off"
+or by editing this section. Until then, the override is binding.
+==============================================================================

@@ -1,18 +1,93 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
-// Matrix-style backdrop: canvas rain + SVG circuit traces with glowing pulses.
-// Drop in once at the App root (replaces or layers under Backdrop).
+// 3-layer parallax matrix backdrop. Far / Mid (canvas rain) / Near.
+// Mouse + scroll drive a shared transform per layer (different magnitudes).
+// Subtle by design — texture, not competition.
 export function MatrixBackdrop() {
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return
+    }
+
+    let mx = 0
+    let my = 0
+    let sy = 0
+    let tx = 0
+    let ty = 0
+    let ts = 0
+    let raf = 0
+
+    const onMove = (e: PointerEvent) => {
+      mx = (e.clientX - window.innerWidth / 2) / window.innerWidth
+      my = (e.clientY - window.innerHeight / 2) / window.innerHeight
+    }
+    const onScroll = () => {
+      sy = window.scrollY
+    }
+
+    const tick = () => {
+      tx += (mx - tx) * 0.06
+      ty += (my - ty) * 0.06
+      ts += (sy - ts) * 0.10
+      wrap.style.setProperty('--matrix-mx', tx.toFixed(4))
+      wrap.style.setProperty('--matrix-my', ty.toFixed(4))
+      wrap.style.setProperty('--matrix-sy', ts.toFixed(2))
+      raf = requestAnimationFrame(tick)
+    }
+
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
   return (
-    <div aria-hidden className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div
+      ref={wrapRef}
+      aria-hidden
+      className="fixed inset-0 -z-10 overflow-hidden pointer-events-none iter-3-matrix-wrap"
+    >
       {/* Solid base */}
       <div className="absolute inset-0" style={{ background: 'oklch(0.05 0.005 150)' }} />
 
-      {/* Matrix rain */}
-      <MatrixRain />
+      {/* Far depth — small, dim, blurred glyphs that drift slowly */}
+      <DepthGlyphs
+        depth="far"
+        count={32}
+        sizeMin={9}
+        sizeMax={12}
+        durMin={16}
+        durMax={26}
+      />
+
+      {/* Mid depth — canvas matrix rain (the heart of the matrix feel) */}
+      <div className="iter-3-matrix-layer iter-3-matrix-mid">
+        <MatrixRain />
+      </div>
+
+      {/* Near depth — larger, brighter glyphs, more responsive parallax */}
+      <DepthGlyphs
+        depth="near"
+        count={11}
+        sizeMin={22}
+        sizeMax={30}
+        durMin={20}
+        durMax={32}
+      />
 
       {/* Circuit board SVG traces with pulsing glow */}
-      <CircuitTraces />
+      <div className="iter-3-matrix-layer iter-3-matrix-traces">
+        <CircuitTraces />
+      </div>
 
       {/* Subtle radial vignette to focus content */}
       <div
@@ -22,6 +97,54 @@ export function MatrixBackdrop() {
             'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, oklch(0.04 0.005 150 / 0.85) 100%)',
         }}
       />
+    </div>
+  )
+}
+
+interface DepthGlyphsProps {
+  depth: 'far' | 'near'
+  count: number
+  sizeMin: number
+  sizeMax: number
+  durMin: number
+  durMax: number
+}
+
+function DepthGlyphs({ depth, count, sizeMin, sizeMax, durMin, durMax }: DepthGlyphsProps) {
+  const items = useMemo(() => {
+    const farChars = '01ABCDEF◆◇·∞アカサタナハマヤラワン'.split('')
+    const nearChars = 'ROM◆▣◉⏃⌁∿01ｱｶｻｭ'.split('')
+    const chars = depth === 'far' ? farChars : nearChars
+    return Array.from({ length: count }, (_, i) => ({
+      ch: chars[Math.floor(Math.random() * chars.length)] ?? '0',
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: sizeMin + Math.random() * (sizeMax - sizeMin),
+      delay: -Math.random() * durMax,
+      dur: durMin + Math.random() * (durMax - durMin),
+      drift: (Math.random() - 0.5) * 18,
+      key: i,
+    }))
+  }, [depth, count, sizeMin, sizeMax, durMin, durMax])
+
+  return (
+    <div className={`iter-3-matrix-layer iter-3-matrix-${depth}`}>
+      {items.map((g) => (
+        <span
+          key={g.key}
+          className="iter-3-glyph iter-3-glyph-drift"
+          style={{
+            left: `${g.x}%`,
+            top: `${g.y}%`,
+            fontSize: `${g.size}px`,
+            animationDelay: `${g.delay}s`,
+            animationDuration: `${g.dur}s`,
+            ['--drift-x' as string]: `${g.drift}px`,
+          }}
+        >
+          {g.ch}
+        </span>
+      ))}
     </div>
   )
 }
@@ -36,6 +159,10 @@ function MatrixRain() {
     if (!ctx) return
     const c = canvas
     const g = ctx
+
+    const reduce =
+      typeof matchMedia !== 'undefined' &&
+      matchMedia('(prefers-reduced-motion: reduce)').matches
 
     let raf = 0
     let columns = 0
@@ -55,47 +182,50 @@ function MatrixRain() {
       c.style.height = `${h}px`
       g.scale(dpr, dpr)
 
-      columns = Math.floor(w / fontSize)
+      // Subtler: slightly fewer columns than width / fontSize
+      columns = Math.floor((w / fontSize) * 0.82)
       drops = Array.from({ length: columns }, () => Math.random() * -50)
-      speeds = Array.from({ length: columns }, () => 0.4 + Math.random() * 0.9)
+      speeds = Array.from({ length: columns }, () => 0.32 + Math.random() * 0.78)
     }
 
     function draw() {
       const w = c.width / (window.devicePixelRatio || 1)
       const h = c.height / (window.devicePixelRatio || 1)
-      g.fillStyle = 'oklch(0.05 0.005 150 / 0.08)'
+      g.fillStyle = 'oklch(0.05 0.005 150 / 0.10)'
       g.fillRect(0, 0, w, h)
       g.font = `${fontSize}px "JetBrains Mono", monospace`
 
       for (let i = 0; i < columns; i++) {
-        const x = i * fontSize
-        const y = drops[i] * fontSize
-        const ch = chars[Math.floor(Math.random() * chars.length)]
-        const isHead = Math.random() < 0.04
+        const x = (i / columns) * w
+        const drop = drops[i] ?? 0
+        const speed = speeds[i] ?? 0.5
+        const y = drop * fontSize
+        const ch = chars[Math.floor(Math.random() * chars.length)] ?? '0'
+        const isHead = Math.random() < 0.035
         if (isHead || y > 0) {
           g.fillStyle = isHead
-            ? 'oklch(0.95 0.24 145 / 0.95)'
-            : 'oklch(0.65 0.22 145 / 0.55)'
+            ? 'oklch(0.95 0.24 145 / 0.92)'
+            : 'oklch(0.65 0.22 145 / 0.50)'
           g.shadowColor = 'oklch(0.85 0.22 145)'
-          g.shadowBlur = isHead ? 12 : 4
+          g.shadowBlur = isHead ? 10 : 3
           g.fillText(ch, x, y)
         }
 
         if (y > h && Math.random() > 0.975) {
           drops[i] = 0
         }
-        drops[i] += speeds[i]
+        drops[i] = drop + speed
       }
 
       raf = requestAnimationFrame(draw)
     }
 
     setup()
-    draw()
+    if (!reduce) draw()
     const onResize = () => {
       cancelAnimationFrame(raf)
       setup()
-      raf = requestAnimationFrame(draw)
+      if (!reduce) raf = requestAnimationFrame(draw)
     }
     window.addEventListener('resize', onResize)
 
@@ -105,13 +235,7 @@ function MatrixRain() {
     }
   }, [])
 
-  return (
-    <canvas
-      ref={ref}
-      className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.45 }}
-    />
-  )
+  return <canvas ref={ref} className="absolute inset-0 pointer-events-none" />
 }
 
 function CircuitTraces() {
@@ -139,21 +263,18 @@ function CircuitTraces() {
       </defs>
 
       {/* Static faint trace lines (background grid feel) */}
-      <g stroke="oklch(0.65 0.22 145 / 0.18)" strokeWidth="1" fill="none">
-        {/* Horizontal rails */}
+      <g stroke="oklch(0.65 0.22 145 / 0.15)" strokeWidth="1" fill="none">
         <path d="M 0 120 L 480 120 L 540 180 L 1100 180 L 1160 120 L 1920 120" />
         <path d="M 0 280 L 320 280 L 380 220 L 760 220 L 820 280 L 1920 280" />
         <path d="M 0 540 L 200 540 L 260 600 L 1660 600 L 1720 540 L 1920 540" />
         <path d="M 0 800 L 660 800 L 720 860 L 1260 860 L 1320 800 L 1920 800" />
         <path d="M 0 960 L 380 960 L 440 1020 L 1480 1020 L 1540 960 L 1920 960" />
 
-        {/* Vertical rails */}
         <path d="M 240 0 L 240 220 L 300 280 L 300 720 L 240 780 L 240 1080" />
         <path d="M 720 0 L 720 380 L 780 440 L 780 700 L 720 760 L 720 1080" />
         <path d="M 1180 0 L 1180 320 L 1240 380 L 1240 880 L 1180 940 L 1180 1080" />
         <path d="M 1660 0 L 1660 460 L 1600 520 L 1600 920 L 1660 980 L 1660 1080" />
 
-        {/* Diagonal connectors */}
         <path d="M 0 0 L 240 240" />
         <path d="M 1920 0 L 1660 260" />
         <path d="M 1920 1080 L 1600 760" />
@@ -162,26 +283,11 @@ function CircuitTraces() {
       {/* Glowing junction nodes */}
       <g fill="oklch(0.92 0.24 145)" filter="url(#trace-glow)">
         {[
-          [240, 220],
-          [720, 380],
-          [1180, 320],
-          [1660, 460],
-          [300, 720],
-          [780, 700],
-          [1240, 880],
-          [1600, 920],
-          [380, 220],
-          [820, 280],
-          [820, 720],
-          [1320, 800],
+          [240, 220], [720, 380], [1180, 320], [1660, 460],
+          [300, 720], [780, 700], [1240, 880], [1600, 920],
+          [380, 220], [820, 280], [820, 720], [1320, 800],
         ].map(([x, y], i) => (
-          <circle
-            key={i}
-            cx={x}
-            cy={y}
-            r="3"
-            opacity="0.9"
-          >
+          <circle key={i} cx={x} cy={y} r="3" opacity="0.9">
             <animate
               attributeName="opacity"
               values="0.4;1;0.4"
@@ -195,65 +301,25 @@ function CircuitTraces() {
 
       {/* Animated pulsing energy along selected traces */}
       <g stroke="url(#trace-grad)" strokeWidth="2" fill="none" filter="url(#trace-glow)">
-        <path
-          d="M 0 280 L 320 280 L 380 220 L 760 220 L 820 280 L 1920 280"
-          strokeDasharray="80 1800"
-          strokeDashoffset="0"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            from="1880"
-            to="0"
-            dur="6s"
-            repeatCount="indefinite"
-          />
+        <path d="M 0 280 L 320 280 L 380 220 L 760 220 L 820 280 L 1920 280" strokeDasharray="80 1800" strokeDashoffset="0">
+          <animate attributeName="stroke-dashoffset" from="1880" to="0" dur="6s" repeatCount="indefinite" />
         </path>
-        <path
-          d="M 240 0 L 240 220 L 300 280 L 300 720 L 240 780 L 240 1080"
-          strokeDasharray="60 1200"
-          strokeDashoffset="0"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            from="0"
-            to="1260"
-            dur="8s"
-            repeatCount="indefinite"
-          />
+        <path d="M 240 0 L 240 220 L 300 280 L 300 720 L 240 780 L 240 1080" strokeDasharray="60 1200" strokeDashoffset="0">
+          <animate attributeName="stroke-dashoffset" from="0" to="1260" dur="8s" repeatCount="indefinite" />
         </path>
-        <path
-          d="M 0 800 L 660 800 L 720 860 L 1260 860 L 1320 800 L 1920 800"
-          strokeDasharray="100 1900"
-          strokeDashoffset="0"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            from="2000"
-            to="0"
-            dur="10s"
-            repeatCount="indefinite"
-          />
+        <path d="M 0 800 L 660 800 L 720 860 L 1260 860 L 1320 800 L 1920 800" strokeDasharray="100 1900" strokeDashoffset="0">
+          <animate attributeName="stroke-dashoffset" from="2000" to="0" dur="10s" repeatCount="indefinite" />
         </path>
-        <path
-          d="M 1180 0 L 1180 320 L 1240 380 L 1240 880 L 1180 940 L 1180 1080"
-          strokeDasharray="70 1100"
-          strokeDashoffset="0"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            from="1170"
-            to="0"
-            dur="7s"
-            repeatCount="indefinite"
-          />
+        <path d="M 1180 0 L 1180 320 L 1240 380 L 1240 880 L 1180 940 L 1180 1080" strokeDasharray="70 1100" strokeDashoffset="0">
+          <animate attributeName="stroke-dashoffset" from="1170" to="0" dur="7s" repeatCount="indefinite" />
         </path>
       </g>
 
-      {/* Floating hex/binary scatter */}
+      {/* Floating hex/binary scatter — subtler than before */}
       <g
         fontFamily='"JetBrains Mono", monospace'
         fontSize="11"
-        fill="oklch(0.65 0.22 145 / 0.55)"
+        fill="oklch(0.65 0.22 145 / 0.42)"
       >
         {[
           { x: 80, y: 220, text: '0xA1cF' },
@@ -267,11 +333,11 @@ function CircuitTraces() {
           { x: 1220, y: 200, text: 'BLOCK_304M' },
           { x: 380, y: 880, text: 'CHAR_VELA' },
         ].map((t, i) => (
-          <text key={i} x={t.x} y={t.y} opacity="0.6">
+          <text key={i} x={t.x} y={t.y} opacity="0.55">
             {t.text}
             <animate
               attributeName="opacity"
-              values="0.2;0.7;0.2"
+              values="0.15;0.55;0.15"
               dur={`${4 + (i % 5)}s`}
               repeatCount="indefinite"
               begin={`${(i % 6) * 0.5}s`}
