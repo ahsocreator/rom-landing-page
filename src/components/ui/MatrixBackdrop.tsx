@@ -316,8 +316,12 @@ function CircuitTraces() {
     >
       <defs>
         <linearGradient id="trace-grad" x1="0" y1="0" x2="1" y2="0">
+          {/* iter-11 — cyan-tipped peak so visible dash heads carry the
+              same head-pop signature as rain heads (iter-9) and depth glyphs (iter-10) */}
           <stop offset="0%" stopColor="oklch(0.85 0.22 145 / 0)" />
-          <stop offset="50%" stopColor="oklch(0.92 0.24 145 / 1)" />
+          <stop offset="40%" stopColor="oklch(0.88 0.22 145 / 0.85)" />
+          <stop offset="55%" stopColor="oklch(0.95 0.18 178 / 1)" />
+          <stop offset="70%" stopColor="oklch(0.88 0.22 145 / 0.85)" />
           <stop offset="100%" stopColor="oklch(0.85 0.22 145 / 0)" />
         </linearGradient>
         <filter id="trace-glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -357,6 +361,14 @@ function CircuitTraces() {
             <animate
               attributeName="opacity"
               values="0.4;1;0.4"
+              dur={`${2 + (i % 4)}s`}
+              repeatCount="indefinite"
+              begin={`${(i % 5) * 0.4}s`}
+            />
+            {/* iter-11 — fill cyan-shifts at pulse peak alongside opacity peak */}
+            <animate
+              attributeName="fill"
+              values="oklch(0.92 0.24 145);oklch(0.95 0.18 178);oklch(0.92 0.24 145)"
               dur={`${2 + (i % 4)}s`}
               repeatCount="indefinite"
               begin={`${(i % 5) * 0.4}s`}

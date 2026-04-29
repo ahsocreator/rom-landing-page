@@ -412,3 +412,57 @@ Next-iter hint:
   After iter 11, the 12th could be ANOTHER integration pass to lock the
   whole composite, or a tactile crescendo (click ripple in the field).
   User override BACKGROUND FOCUS still binding.
+
+## Iteration 11 — Trace plane cyan-tipped flows + node pulse fill (full cross-layer coherence)
+Date: 2026-04-29
+Dimension: D. MATERIAL/SHADER (third iter on D — completes the cross-layer chromatic project iters 9–10 started)
+Web research:
+  - https://designmodo.com/animate-svg-gradients/ — confirmed SMIL is the most direct way to animate gradient stops or color attributes (CSS animation can't reach SVG gradient stops natively); SMIL supported in Chrome/FF/Safari/mobile
+  - https://developer.mozilla.org/en-US/docs/Web/SVG/Guides/SVG_animation_with_SMIL — official spec; <animate attributeName="fill"> for color animation accepts CSS Color 4 syntax (oklch)
+  - https://css-tricks.com/guide-svg-animations-smil/ — SMIL declarative animation patterns (we use begin/dur/repeatCount with values list)
+Design intent:
+  Iter 9 (rain head cyan-pop) and iter 10 (depth-glyph cool/warm flash) established
+  a cross-layer chromatic signature: cyan-tipped peaks on the head-of-cycle.
+  Circuit traces were the LAST untouched ambient layer — their gradient peak was
+  pure green (no cyan-pop), and node pulses only animated opacity, not color.
+  Iter 11 closes the loop: trace-grad gets a cyan-shifted peak at 55% offset
+  (visible 80-unit dashes carry a cyan tip as they move), and the 6 pulsing
+  junction nodes get a parallel <animate attributeName="fill"> that cyan-shifts
+  at peak alongside their opacity pulse. Now ALL ambient layers — rain heads,
+  depth glyphs, trace flow heads, trace nodes — share one cyan-tip-on-peak
+  signature. The field reads as a unified material.
+Skills used:
+  - frontend-design (carryover)
+  - WebSearch (SMIL fill animation + gradient stop techniques)
+Awesome-archive consulted:
+  - Skipped — 8 prior grep rounds, no visual-code patterns
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — CircuitTraces():
+    * trace-grad linearGradient: replaced 3-stop green gradient (0/50/100) with 5-stop cyan-tipped peak (0/40/55/70/100) — peak at offset 55% is oklch(0.95 0.18 178) cyan-shifted, flanked by oklch(0.88 0.22 145) green at 40/70
+    * Junction nodes: added second <animate attributeName="fill"> alongside existing opacity animate — values "oklch(0.92 0.24 145);oklch(0.95 0.18 178);oklch(0.92 0.24 145)", same dur/begin so opacity peak and fill peak align perfectly
+Effects shipped:
+  - Trace flows now have a cyan-shifted bright peak at the visible-dash center (most visible on the 2 horizontal traces; vertical traces show benign uniform color shift)
+  - Junction nodes now cyan-pulse: at peak opacity, fill is also at peak cyan-tipped; at trough, fill returns to standard green
+  - Node opacity peak + fill peak share dur/begin → cohesive synchronized "flash"
+  - Cross-layer chromatic coherence locked across all 4 motion-bearing layers
+  - SMIL animations don't auto-respect prefers-reduced-motion (browser quirk); existing system has this as known tradeoff and didn't address it pre-iter-11; iter-12 integration could close that
+Effects rejected (and why):
+  - Adding stroke-width pulse to dashed flow paths — third synchronized animation per node would be too much motion density; the gradient peak already telegraphs the flow head
+  - Animating the static base trace lines (the gray-green strokes) — they're meant to be the "still circuit" structural layer; adding motion would muddy the figure-ground separation
+  - Per-trace gradient orientation (gradientTransform aligning to path direction) — complex per-path math; the bbox-X gradient is benign on vertical paths and effective on horizontal paths, which is enough
+  - Larger cyan amplitude (hue shift to 200) — pushed visible too hard; kept 178 (subtle 33° green-cyan family shift, same family as iter-10)
+  - Animating fill on the static base trace lines (gray g, not flow g) — would have been over-animation and breaks figure-ground
+Verified: build ✅ (CSS unchanged, JS +0.05kB gz) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; trace flows now show cyan-tip on horizontal paths, nodes pulse cyan synchronously with their opacity throb)
+Next-iter hint:
+  ITER 12 = STOP LIMIT per protocol. Strong candidates:
+  (1) FINAL INTEGRATION pass — final tune of the composite; potentially gate
+      SMIL animations under prefers-reduced-motion (currently unaddressed),
+      verify no two layers peak simultaneously on common scroll, possibly
+      crop one layer if redundancy emerged across iters 8-11
+  (2) Tactile crescendo — click/scroll-trigger ripple that pulses ALL the
+      head-pops simultaneously for one beat (cohesive cyan flash across
+      every layer), then settles — visualizes the cross-layer signature once
+  Pick (1) for protocol cleanliness; pick (2) for one final memorable beat.
+  After iter 12, the loop hits its count limit and STOPS automatically.
+  User can lift the limit by editing notes/awwwards-loop.txt or by manual
+  loop input.
