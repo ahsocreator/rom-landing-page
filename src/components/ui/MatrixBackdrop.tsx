@@ -89,6 +89,10 @@ export function MatrixBackdrop() {
         <CircuitTraces />
       </div>
 
+      {/* iter-4 — continuous vertical signal-flux band sweeping every pixel */}
+      <div className="iter-4-flux-band" aria-hidden />
+      <div className="iter-4-flux-band iter-4-flux-band-counter" aria-hidden />
+
       {/* Subtle radial vignette to focus content */}
       <div
         className="absolute inset-0"
@@ -122,7 +126,6 @@ function DepthGlyphs({ depth, count, sizeMin, sizeMax, durMin, durMax }: DepthGl
       size: sizeMin + Math.random() * (sizeMax - sizeMin),
       delay: -Math.random() * durMax,
       dur: durMin + Math.random() * (durMax - durMin),
-      drift: (Math.random() - 0.5) * 18,
       key: i,
     }))
   }, [depth, count, sizeMin, sizeMax, durMin, durMax])
@@ -139,7 +142,6 @@ function DepthGlyphs({ depth, count, sizeMin, sizeMax, durMin, durMax }: DepthGl
             fontSize: `${g.size}px`,
             animationDelay: `${g.delay}s`,
             animationDuration: `${g.dur}s`,
-            ['--drift-x' as string]: `${g.drift}px`,
           }}
         >
           {g.ch}

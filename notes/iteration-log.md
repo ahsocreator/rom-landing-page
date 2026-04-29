@@ -113,3 +113,37 @@ Effects rejected (and why):
 Verified: build ✅ (CSS +0.34kB gz, JS +0.52kB gz; cumulative across iters 1–3 still under 2kB JS gz growth) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; background now responds to mouse + scroll with parallax depth, layers visibly separated by size/opacity/blur, overall reads quieter than before)
 Next-iter hint:
   Background now has spatial depth. Next push (per BACKGROUND FOCUS override): D. MATERIAL/SHADER — a subtle CSS gradient-shader veil that warps based on scroll velocity (e.g. radial-gradient with animated stops), or E. GENERATIVE — a slow flow-field of glyph drift trajectories tied to a Perlin-noise field. Avoid ADDING more layers; either replace one existing layer with a richer treatment OR enhance an existing layer's material quality.
+
+## Iteration 4 — Vertical signal-flux veil (every pixel breathes)
+Date: 2026-04-29
+Dimension: D. MATERIAL/SHADER (CSS gradient veil) + tune of iter-3 vertical purity
+Web research:
+  - https://www.awwwards.com/inspiration/animated-background-verticite-architecture — confirms vertical animated backgrounds are an awwwards genre (visual ref; cert errors blocked direct fetch)
+  - https://tympanus.net/codrops/2026/03/09/building-a-scroll-reactive-3d-gallery-with-three-js-velocity-and-mood-based-backgrounds/ — distilled techniques: scroll-velocity drives "breath" effect, planes drift up on scroll then float lazily back, multi-layer with depth-keyed motion, palette-driven ambient
+  - https://frontendmasters.com/blog/virtual-scroll-driven-3d-scenes/ — "faux dimensional scrolling" pattern: layers + parallax + subtle motion = 3D feel without WebGL (validates canvas+CSS approach)
+  - General: "ambient background motion adds subtle gradients, particles, liquid flows to create depth without distraction" — applied as the flux-band veil
+Design intent:
+  Iter 3 layered the field but static parts (solid base, vignette, trace lines) sat dead while only the rain fell. User asked for "subtle, vertical, all background has that cool animation." Iter 4's flux band is a slow vertical wash that touches every pixel of the backdrop continuously — green primary band + cyan counter-band at 22s/34s offset cycles so the field never goes quiet. Plus, a tune of iter-3's glyph drift to enforce vertical purity (removed lateral --drift-x; flipped direction so glyphs fall WITH the rain instead of floating up).
+Skills used:
+  - frontend-design (carryover from iters 1-3; applied to "veil > new layer")
+  - WebSearch (queries on awwwards 3D animated backgrounds + scroll-driven techniques)
+Awesome-archive consulted:
+  - Skipped — prior iterations already grepped scramble/cursor/3d patterns; "shader/flux/veil" patterns aren't going to live in a community-skills index.
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — added two flux-band divs (forward + counter) between trace plane and vignette; removed the per-glyph --drift-x prop and the `drift` field from DepthGlyphs items (lateral motion was a leak from "subtle vertical")
+  - src/index.css — modified iter-3-glyph-drift @keyframe in place: lateral var(--drift-x) → 0, flipped Y direction (-14 → 12) so glyphs fall with the rain; added iter-4 utility block: .iter-4-flux-band base + ::before pseudo for the actual gradient strip + .iter-4-flux-band-counter cyan variant + iter-4-flux-sweep keyframe (translate Y 0 → 145vh) + reduced-motion override holding the band centered statically
+Effects shipped:
+  - Continuous green flux band: 45vh tall, soft vertical gradient (transparent → green → transparent), screen-blend, sweeps top→bottom over 22s on var(--ease-expo-inout)
+  - Counter cyan band at offset cycle: 30vh tall, 34s sweep, -11s phase delay, dimmer (max alpha 0.05) — keeps the field never-quiet between green-band passes
+  - Glyph drift now strictly vertical-downward (matches matrix rain direction)
+  - All sweeps use the project's custom expo-inout easing (banned eases avoided)
+  - Reduced-motion → flux band frozen at center, semi-visible, no animation
+Effects rejected (and why):
+  - Adding a third counter-rising glyph canvas — would have added ~2ms/frame and a 3rd full-viewport canvas without giving the user "subtle vertical everywhere"; the flux band achieves "everywhere" with zero canvas overhead.
+  - Mouse-coupled flux warp (band tilts slightly toward cursor) — would have made the band itself feel reactive but pulled focus toward it; opposite of subtle.
+  - Scroll-velocity → flux opacity bump — tested mentally: flickers when scrolling fast, distracts. Better as a future iter focused entirely on velocity coupling.
+  - Animating the vignette — would destabilize the focus device; vignette stays still by design.
+  - Adding linear easing for endless drift — banned per protocol; expo-inout at 22s reads near-linear with a barely-perceptible breath, which is actually superior.
+Verified: build ✅ (CSS +0.14kB gz, JS unchanged) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; flux band is visible as a slow vertical wash, glyphs now fall coherently with rain)
+Next-iter hint:
+  Next push: E. GENERATIVE — couple the matrix rain's column speed to a slow Perlin / sine-wave flow field so columns subtly group into faster/slower bands instead of independent random speeds. Reads as "the field has a current". OR: J. TACTILE FEEL — scroll-velocity briefly intensifies the flux band's opacity (rejected this iter; could land as its own coherent push). DO NOT add more visual layers — push DEPTH or MATERIAL of existing ones.

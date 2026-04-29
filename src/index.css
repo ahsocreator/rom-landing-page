@@ -611,23 +611,24 @@
     animation-timing-function: var(--ease-expo-inout);
   }
 
+  /* iter-4 tune: vertical-only fall, matching matrix rain direction (no lateral drift) */
   @keyframes iter-3-glyph-drift {
     0% {
-      transform: translate3d(0, 14px, 0);
+      transform: translate3d(0, -14px, 0);
       opacity: 0;
     }
     25% {
       opacity: 0.55;
     }
     50% {
-      transform: translate3d(var(--drift-x), -10px, 0);
+      transform: translate3d(0, 12px, 0);
       opacity: 0.85;
     }
     75% {
       opacity: 0.45;
     }
     100% {
-      transform: translate3d(0, 14px, 0);
+      transform: translate3d(0, -14px, 0);
       opacity: 0;
     }
   }
@@ -642,6 +643,64 @@
     .iter-3-glyph-drift {
       animation: none;
       opacity: 0.32;
+    }
+  }
+
+  /* iter-4 — vertical signal-flux band: continuous slow wash across the entire backdrop.
+     Two bands (forward + counter) at offset phase so the field never goes truly quiet —
+     gives every pixel a passive vertical pulse without competing with content. */
+  .iter-4-flux-band {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    mix-blend-mode: screen;
+    will-change: transform;
+  }
+  .iter-4-flux-band::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -45vh;
+    height: 45vh;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      oklch(0.85 0.22 145 / 0.035) 20%,
+      oklch(0.92 0.24 145 / 0.07) 50%,
+      oklch(0.85 0.22 145 / 0.035) 80%,
+      transparent 100%
+    );
+    animation: iter-4-flux-sweep 22s var(--ease-expo-inout) infinite;
+  }
+  .iter-4-flux-band-counter::before {
+    height: 30vh;
+    top: -30vh;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      oklch(0.92 0.20 200 / 0.025) 35%,
+      oklch(0.85 0.18 200 / 0.05) 50%,
+      oklch(0.92 0.20 200 / 0.025) 65%,
+      transparent 100%
+    );
+    animation: iter-4-flux-sweep 34s var(--ease-expo-inout) infinite;
+    animation-delay: -11s;
+  }
+  @keyframes iter-4-flux-sweep {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(0, 145vh, 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .iter-4-flux-band::before {
+      animation: none;
+      opacity: 0.5;
+      top: 35vh;
     }
   }
 }
