@@ -366,3 +366,49 @@ Next-iter hint:
   field's flow energy (glyphs rise vs fall). Option (2) is more ambitious
   but riskier; option (1) is coherent escalation. Pick by feel. User
   override still BACKGROUND FOCUS.
+
+## Iteration 10 — Depth-aware color temperature for depth glyphs
+Date: 2026-04-29
+Dimension: D. MATERIAL/SHADER (cross-layer coherence + atmospheric color depth)
+Web research:
+  - https://developer.mozilla.org/en-US/docs/Web/CSS/color-interpolation-method — confirms OKLCh polar interpolation in CSS keyframes; default shortest-hue path stable for our 30° step (145→175 cyan, 145→95 amber)
+  - https://www.joshwcomeau.com/animation/color-shifting/ — pattern guidance for hue-flash entries; warns about grey-washing when interpolating large hue gaps (we stay within 30° to avoid)
+  - https://www.smashingmagazine.com/2026/01/smashing-animations-part-8-css-relative-colour/ — relative CSS color in animations (referenced; we used static OKLCh stops, simpler than relative-color rebasing)
+Design intent:
+  Iter 9 gave matrix rain heads a cyan-pop on cycle reset. The 43 depth glyphs
+  (32 far + 11 near) had no chromatic moment — drifted in/out via opacity only,
+  reading as quietly atmospheric but disconnected from the rain's new structure.
+  Iter 10 adds depth-AWARE color temperature: far layer's birth flash leans
+  cool (oklch hue 178, cyan-tipped) for atmospheric distance; near layer's
+  birth flash leans warm (hue 95, amber-tipped) for proximity. Both settle to
+  baseline green by 50% of cycle. Canonical depth-painting move (cool retreats,
+  warm advances) applied at 18% of each glyph's cycle (entrance moment).
+Skills used:
+  - frontend-design (carryover)
+  - WebSearch (OKLCh keyframe interpolation; depth-painting principle)
+Awesome-archive consulted:
+  - Skipped — 7 prior grep rounds, no visual-code patterns
+Files touched:
+  - src/index.css — added two new @keyframes: iter-10-glyph-drift-far (cool/cyan birth flash, hue 178), iter-10-glyph-drift-near (warm/amber birth flash, hue 95). Both share the existing iter-3 transform/opacity timeline, only difference is color/text-shadow at 18% and 35% breakpoints. Added animation-name override on .iter-3-matrix-far .iter-3-glyph-drift and .iter-3-matrix-near .iter-3-glyph-drift via descendant-combinator specificity (no JS change to DepthGlyphs needed)
+Effects shipped:
+  - Far depth glyphs: 18% of cycle = cyan-tipped pop (oklch 0.92 0.18 178), 35% = transitioning back, 50%+ = baseline green
+  - Near depth glyphs: 18% of cycle = amber-tipped pop (oklch 0.90 0.20 95), 35% = transitioning back, 50%+ = baseline green
+  - Result: depth tier reads atmospherically — far cooler/cyan-tinged on entry, near warmer/amber on entry, both settling green at peak
+  - CSS-only — pure keyframe addition + 2 selector overrides, no JS, no new DOM
+  - Reduced-motion: existing `.iter-3-glyph-drift { animation: none }` override resets all animation properties; iter-10 keyframes inherit reduced-motion behavior automatically
+Effects rejected (and why):
+  - Modifying iter-3-glyph-drift in place (single keyframe with both treatments) — would have lost the per-layer color personality
+  - Coupling birth-flash duration to scroll-energy — would require JS-driven CSS variable updates per glyph (43 glyphs × 60fps = expensive); CSS-only approach is correct
+  - Larger hue gaps (45°+) — research warned about grey-washing through interpolation; kept to 30° for clean color path
+  - Continuous OKLCh hue rotation across entire cycle — felt fussy in mental sim; flash-then-settle (the canonical "head pop" pattern) is cleaner
+  - Including scroll-direction-aware flow inversion (option 2 from iter-9 hint) — high risk of reading as gimmicky / breaking vertical-only mandate; deferred (and likely permanent reject given our subtle bar)
+Verified: build ✅ (CSS +0.19kB gz, JS unchanged) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; far glyphs now flash cyan on appear, near glyphs flash amber, both quickly settle green)
+Next-iter hint:
+  Iter 11 — circuit traces are the only ambient layer that hasn't been touched
+  since pre-loop. They have static gray-green strokes + pulsing nodes + dashed
+  flows. Could give the dashed flows the same cyan-tipped head pattern (head
+  of each flow brighter cyan, tail green) for full cross-layer coherence.
+  CSS-only via stroke gradient update. Last iter before count limit (12).
+  After iter 11, the 12th could be ANOTHER integration pass to lock the
+  whole composite, or a tactile crescendo (click ripple in the field).
+  User override BACKGROUND FOCUS still binding.

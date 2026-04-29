@@ -711,6 +711,81 @@
     }
   }
 
+  /* iter-10 — depth-aware color temperature: far layer pops cyan (cool/distance),
+     near layer pops amber-warm (proximity), both settle to standard green.
+     Extends iter-9 rain head-pop pattern across the depth-glyph layers for
+     cross-layer chromatic coherence. */
+  .iter-3-matrix-far .iter-3-glyph-drift {
+    animation-name: iter-10-glyph-drift-far;
+  }
+  .iter-3-matrix-near .iter-3-glyph-drift {
+    animation-name: iter-10-glyph-drift-near;
+  }
+  @keyframes iter-10-glyph-drift-far {
+    0% {
+      transform: translate3d(0, -14px, 0);
+      opacity: 0;
+      color: oklch(0.85 0.22 145);
+      text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    }
+    18% {
+      opacity: 0.50;
+      color: oklch(0.92 0.18 178);
+      text-shadow: 0 0 9px oklch(0.92 0.18 178 / 0.55);
+    }
+    35% {
+      color: oklch(0.88 0.20 162);
+      text-shadow: 0 0 7px oklch(0.88 0.20 162 / 0.42);
+    }
+    50% {
+      transform: translate3d(0, 12px, 0);
+      opacity: 0.85;
+      color: oklch(0.85 0.22 145);
+      text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    }
+    75% {
+      opacity: 0.45;
+    }
+    100% {
+      transform: translate3d(0, -14px, 0);
+      opacity: 0;
+      color: oklch(0.85 0.22 145);
+      text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    }
+  }
+  @keyframes iter-10-glyph-drift-near {
+    0% {
+      transform: translate3d(0, -14px, 0);
+      opacity: 0;
+      color: oklch(0.85 0.22 145);
+      text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    }
+    18% {
+      opacity: 0.55;
+      color: oklch(0.90 0.20 95);
+      text-shadow: 0 0 10px oklch(0.90 0.20 95 / 0.50);
+    }
+    35% {
+      color: oklch(0.87 0.21 120);
+      text-shadow: 0 0 8px oklch(0.87 0.21 120 / 0.42);
+    }
+    50% {
+      transform: translate3d(0, 12px, 0);
+      opacity: 0.85;
+      color: oklch(0.85 0.22 145);
+      text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    }
+    75% {
+      opacity: 0.45;
+    }
+    100% {
+      transform: translate3d(0, -14px, 0);
+      opacity: 0;
+      color: oklch(0.85 0.22 145);
+      text-shadow: 0 0 6px oklch(0.85 0.22 145 / 0.35);
+    }
+  }
+
   /* iter-8 — scroll-progress mood overlays (page reads as a journey of mood, still mostly green) */
   .iter-8-mood {
     position: absolute;
