@@ -558,9 +558,10 @@
     will-change: transform;
   }
 
-  /* Far layer: small, dim, slightly blurred — recedes into space */
+  /* Far layer: small, dim, slightly blurred — recedes into space.
+     fix: bumped 0.42 → 0.65 (prior values calibrated when matrix was hidden). */
   .iter-3-matrix-far {
-    opacity: 0.42;
+    opacity: 0.65;
     filter: blur(0.5px);
     transform: translate3d(
       calc(var(--matrix-mx) * -8px),
@@ -569,9 +570,12 @@
     );
   }
 
-  /* Mid layer: the canvas matrix rain — ride the parallax at moderate depth */
+  /* Mid layer: the canvas matrix rain — primary motion.
+     fix: bumped 0.34 → 0.92. Old value was calibrated when this layer was
+     hidden by Backdrop's solid base; at 34% over a near-black base, matrix
+     was essentially invisible. */
   .iter-3-matrix-mid {
-    opacity: 0.34;
+    opacity: 0.92;
     transform: translate3d(
       calc(var(--matrix-mx) * -16px),
       calc(var(--matrix-my) * -16px - var(--matrix-sy) * 0.08px),
@@ -579,9 +583,10 @@
     );
   }
 
-  /* Near layer: larger, brighter, more responsive parallax */
+  /* Near layer: larger, brighter, more responsive parallax.
+     fix: bumped 0.55 → 0.78. */
   .iter-3-matrix-near {
-    opacity: 0.55;
+    opacity: 0.78;
     transform: translate3d(
       calc(var(--matrix-mx) * -28px),
       calc(var(--matrix-my) * -28px - var(--matrix-sy) * 0.14px),
