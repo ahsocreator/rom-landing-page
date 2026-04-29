@@ -314,12 +314,11 @@ function CircuitTraces() {
         <path d="M 1920 1080 L 1600 760" />
       </g>
 
-      {/* Glowing junction nodes */}
+      {/* Glowing junction nodes — iter-7: cut from 12 to 6 for less competing pulse focus */}
       <g fill="oklch(0.92 0.24 145)" filter="url(#trace-glow)">
         {[
-          [240, 220], [720, 380], [1180, 320], [1660, 460],
-          [300, 720], [780, 700], [1240, 880], [1600, 920],
-          [380, 220], [820, 280], [820, 720], [1320, 800],
+          [240, 220], [1180, 320], [1660, 460],
+          [300, 720], [820, 720], [1240, 880],
         ].map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r="3" opacity="0.9">
             <animate
@@ -349,11 +348,11 @@ function CircuitTraces() {
         </path>
       </g>
 
-      {/* Floating hex/binary scatter — subtler than before */}
+      {/* Floating hex/binary scatter — iter-7: peak opacity 0.55 → 0.32 for true subtlety */}
       <g
         fontFamily='"JetBrains Mono", monospace'
         fontSize="11"
-        fill="oklch(0.65 0.22 145 / 0.42)"
+        fill="oklch(0.65 0.22 145 / 0.32)"
       >
         {[
           { x: 80, y: 220, text: '0xA1cF' },
@@ -367,11 +366,11 @@ function CircuitTraces() {
           { x: 1220, y: 200, text: 'BLOCK_304M' },
           { x: 380, y: 880, text: 'CHAR_VELA' },
         ].map((t, i) => (
-          <text key={i} x={t.x} y={t.y} opacity="0.55">
+          <text key={i} x={t.x} y={t.y} opacity="0.32">
             {t.text}
             <animate
               attributeName="opacity"
-              values="0.15;0.55;0.15"
+              values="0.10;0.32;0.10"
               dur={`${4 + (i % 5)}s`}
               repeatCount="indefinite"
               begin={`${(i % 6) * 0.5}s`}

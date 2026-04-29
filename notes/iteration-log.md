@@ -225,3 +225,50 @@ Effects rejected (and why):
 Verified: build ✅ (CSS +0.02kB gz, JS +0.13kB gz) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; rain visibly accelerates and flux band brightens when scrolling fast, settles smoothly when stopped)
 Next-iter hint:
   ITER 7 = INTEGRATION PASS per protocol. Audit the 5-layer composite (depth glyphs / canvas rain / circuit traces / flux veil / flow-field current / tactile coupling) as one composed film. Likely tunings: harmonize cycle periods so layer rhythms don't constructively interfere on bad days; verify no two layers hit peak intensity simultaneously; potentially DROP one element if it competes (Smashing: "doesn't dominate, doesn't interfere"). Do not add new effects. Remove or quiet only.
+
+## Iteration 7 — INTEGRATION PASS (audit, strip pre-iter-3 motion, quiet trace density)
+Date: 2026-04-29
+Dimension: INTEGRATION (no menu pick — protocol-mandated 7th-iter audit)
+Web research:
+  - https://www.smashingmagazine.com/2025/10/ambient-animations-web-design-practical-applications-part2/ — "If someone's eyes are drawn to a raised eyebrow, it's probably too much. Dial back until it's something you'd only catch if you're really looking." — explicit subtractive principle that drove this pass
+  - https://www.smashingmagazine.com/2025/09/ambient-animations-web-design-principles-implementation/ — performance: "blur filters, drop shadows, complex CSS animations can tax lower-powered devices" — informed CircuitTraces node count cut
+Design intent:
+  Six iters of additive work left two backdrop components stacked: MatrixBackdrop
+  (iters 3-6, our composed motion system) and Backdrop.tsx (pre-iter-3, with
+  RestraintedGlows blob soup + ParticleField + signal-beam-sweep). The pre-iter-3
+  elements were the LARGEST competing visual elements and used banned easings
+  ('easeInOut' on framer-motion). Plus, CircuitTraces had 12 pulsing nodes — too
+  many simultaneous focal points. Iter 7 strips Backdrop to pure static composition
+  (no motion at all) and quiets CircuitTraces. MatrixBackdrop now owns 100% of
+  motion; Backdrop owns 100% of static atmosphere. Clean ownership.
+Skills used:
+  - frontend-design (carryover from iters 1-6)
+  - WebSearch (Smashing 2025 sources above)
+Awesome-archive consulted:
+  - Skipped — 4 prior grep rounds returned only SaaS/AI hits, never visual-code patterns
+Files touched:
+  - src/components/ui/Backdrop.tsx — full rewrite to pure static. Removed: <RestraintedGlows /> (two animated blob glows w/ banned easeInOut), <ParticleField /> (22 motion particles, redundant with iter-3 FarGlyphs), <div.signal-beam-sweep /> (superseded by iter-4 flux band), framer-motion + useMemo imports. Kept: solid base, hero glow, fine grid, scanlines, noise, vignette
+  - src/components/ui/MatrixBackdrop.tsx — CircuitTraces tunings: pulsing junction nodes 12 → 6 (kept best-distributed positions); scatter-text peak opacity 0.55 → 0.32 (animate values 0.15-0.55 → 0.10-0.32; static fallback 0.55 → 0.32)
+Effects shipped:
+  - Pre-iter-3 motion competition removed; MatrixBackdrop owns all motion
+  - Banned easings ('easeInOut') eliminated from project (verified)
+  - 6 fewer simultaneously-pulsing SVG nodes — less competing pulse focus
+  - Scatter text now drifts at 0.10-0.32 opacity range (was 0.15-0.55) — true ambient
+  - JS bundle: raw -1.43kB (391.17 → 389.74kB); gzip noise ±0.14kB
+  - CSS bundle: -0.24kB raw
+  - Cleaner ownership: Backdrop = static atmosphere · MatrixBackdrop = all motion
+Effects rejected (and why):
+  - Removing CircuitTraces dashed flow paths (4 animated dashes) — they're directional, sparse, and read as data-flow which is on-brand for ROM; quieting nodes was sufficient
+  - Harmonizing cycle periods (rain wave 6-8s, glyphs 14-32s, flux 22/34s, traces 4-10s) — periods are naturally prime-coprime so constructive interference rarely peaks; tuning would have been theatre
+  - Removing fine grid — provides structure without motion; safe to keep
+  - Dropping the iter-4 cyan counter flux band — narrowly considered, but it's the only chromatic variation in the field; without it the page reads as monochrome on bad days. Kept.
+  - Dropping near-depth glyphs (only 11 elements) — they're the brightest layer; provides depth pop. Kept.
+Verified: build ✅ (raw JS -1.43kB, gzip ±0.14kB noise) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; field reads quieter, no eye-drawing competition between blob-glows and matrix system)
+Next-iter hint:
+  Backdrop is now stripped and locked. Iter 8+ resumes additive work with the
+  composite pre-tuned. Consider re-opening: F. LAYOUT — per-section background
+  tint shifts (radial gradient palette stops driven by IntersectionObserver as
+  user scrolls between sections — still subtle, still vertical-flow, gives the
+  page mood progression rather than uniform wash). OR: deepen the rain itself
+  with character glow tiers (head glyph slightly larger than trail). The user
+  override is still BACKGROUND FOCUS — every iter must extend the backdrop.
