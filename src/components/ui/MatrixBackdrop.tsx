@@ -202,6 +202,8 @@ function MatrixRain() {
     let columns = 0
     let drops: number[] = []
     let speeds: number[] = []
+    // iter-9 — per-column lead intensity [0..1]; resets to 1 on cycle wrap, decays per-frame
+    let leadIntensities: number[] = []
     const fontSize = 14
     const chars =
       '01ABCDEF·∞◆◇▣▢▪▫アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン'.split('')
@@ -220,6 +222,8 @@ function MatrixRain() {
       columns = Math.floor((w / fontSize) * 0.82)
       drops = Array.from({ length: columns }, () => Math.random() * -50)
       speeds = Array.from({ length: columns }, () => 0.32 + Math.random() * 0.78)
+      // iter-9 — start columns at varied lead intensities so first paint isn't uniform
+      leadIntensities = Array.from({ length: columns }, () => Math.random() * 0.3)
     }
 
     function draw() {
@@ -247,20 +251,37 @@ function MatrixRain() {
         const speed = (speeds[i] ?? 0.5) * (1 + wave) * tactileBoost
         const y = drop * fontSize
         const ch = chars[Math.floor(Math.random() * chars.length)] ?? '0'
-        const isHead = Math.random() < 0.035
-        if (isHead || y > 0) {
-          g.fillStyle = isHead
-            ? 'oklch(0.95 0.24 145 / 0.92)'
-            : 'oklch(0.65 0.22 145 / 0.50)'
+
+        // iter-9 — lead intensity tier picks color + glow per column, gives each
+        // falling column a consistent head→tail chromatic cascade (cyan-green
+        // pop at top, bright green mid, dim green tail).
+        let lead = (leadIntensities[i] ?? 0) * 0.985 // decay each frame
+        let drawColor: string
+        let blur: number
+        if (lead > 0.7) {
+          drawColor = 'oklch(0.96 0.18 175 / 0.95)' // cyan-shifted bright head
+          blur = 11
+        } else if (lead > 0.3) {
+          drawColor = 'oklch(0.85 0.22 145 / 0.78)' // bright green mid
+          blur = 6
+        } else {
+          drawColor = 'oklch(0.65 0.22 145 / 0.50)' // dim green tail
+          blur = 3
+        }
+
+        if (y > 0 || lead > 0.3) {
+          g.fillStyle = drawColor
           g.shadowColor = 'oklch(0.85 0.22 145)'
-          g.shadowBlur = isHead ? 10 : 3
+          g.shadowBlur = blur
           g.fillText(ch, x, y)
         }
 
         if (y > h && Math.random() > 0.975) {
           drops[i] = 0
+          lead = 1 // freshly reset → full head intensity
         }
         drops[i] = drop + speed
+        leadIntensities[i] = lead
       }
 
       raf = requestAnimationFrame(draw)

@@ -317,3 +317,52 @@ Next-iter hint:
   green → mid green-cyan → tail green-dim) for depth-of-color along each
   column without breaking subtle. Avoid touching the mood layer — let it
   bake. User override BACKGROUND FOCUS still binding.
+
+## Iteration 9 — Per-column lead intensity (rain head→tail chromatic cascade)
+Date: 2026-04-29
+Dimension: D. MATERIAL/SHADER (chromatic depth of the rain itself)
+Web research:
+  - https://medium.com/the-tech-pulse/the-joy-of-writing-unnecessary-code-a-matrix-rain-animation-with-canvas-7b01933b6e09 — confirms canonical matrix rain trail technique (semi-transparent fillRect persistence + per-frame char draw)
+  - https://medium.com/@twineworks/fun-with-html-canvas-build-the-matrix-c87c4bb12487 — gradient color variations along trails are an established Matrix-rain pattern (validated direction)
+  - https://dev.to/javascriptacademy/matrix-raining-code-effect-using-javascript-4hep — confirms globalAlpha controls trail length; we use 0.10 fillStyle alpha (existing) for trail decay rate
+Design intent:
+  Rain previously twinkled randomly via Math.random() < 0.035 — head sparkle
+  was uncoupled from actual column behavior, reading as noise. Iter 9 introduces
+  per-column leadIntensity [0..1] that resets to 1 when the column wraps to top
+  and decays at 0.985/frame (~50 frames to drop below 0.3 = ~0.83s @ 60fps).
+  Three tiers — cyan-shifted head (>0.7) → bright green mid (>0.3) → dim green
+  tail — give every column a consistent depth-of-color cascade tied to physical
+  fall position. Replaces twinkle-noise with material structure.
+Skills used:
+  - frontend-design (carryover)
+  - WebSearch (canonical-rain-tutorial validation)
+Awesome-archive consulted:
+  - Skipped — 6 prior grep rounds, no visual-code patterns
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — MatrixRain():
+    * Added let leadIntensities: number[] = []
+    * setup(): init leadIntensities to Math.random() * 0.3 per column (varied first-paint state, no uniform burst)
+    * draw(): replaced isHead random brightening with leadIntensity tier system; per-frame decay 0.985; draw skip when y<0 AND lead<0.3 (no draws above viewport for cold columns); reset to lead=1 on column wrap
+Effects shipped:
+  - Cyan-tipped heads (oklch 175 hue, 0.95 alpha, 11px shadow blur) at top of each column reset
+  - Bright green mid-tier (oklch 145, 0.78 alpha, 6px blur) for ~50 frames after reset
+  - Dim green tail (oklch 145, 0.50 alpha, 3px blur) — current default — for the long settled phase
+  - Decay timing: ~0.83s from head→tail per column, matches typical column fall pacing so the bright zone tracks the physical falling head
+  - Removed Math.random() < 0.035 sparkle noise → cleaner column structure
+  - Reduced-motion: existing reduce gate on draw() — no draw, no lead computation; iter-9 inherits reduced-motion behavior cleanly
+Effects rejected (and why):
+  - Variable fontSize per tier (head +3px) — required font swap per tier per column per frame; chose color/glow tier alone (cleaner, no font ops)
+  - Z-translate / 3D perspective on head glyphs — canvas 2D doesn't support per-element z; would need DOM/SVG wrapping per glyph (adds 100s of nodes)
+  - Continuous OKLCH hue interpolation (instead of 3 discrete tiers) — string allocation per char per frame is wasteful; 3-tier with branch reads identically at the visual scale we operate
+  - Coupling lead intensity to scrollState.energy (faster lead decay during fast scroll) — would have made heads "snap shorter" on scroll; reads as bug. Lead and tactile boost stay independent.
+  - Adding head SIZE bump on top of color tier — discussed and skipped to keep iter contained; can revisit
+Verified: build ✅ (CSS unchanged, JS +0.06kB gz) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; rain visibly has cyan-pop heads cascading down to dim-green tails per column)
+Next-iter hint:
+  Iter 10 — at this point the matrix system has 9 layered effects all working
+  in concert. The next push should either: (1) deepen the depth-glyph layers
+  with the same lead-intensity treatment (their 14-32s drift cycles get a
+  brief glow phase at start) for cross-layer coherence, OR (2) introduce
+  scroll-wheel-direction sensing — when scrolling UP, briefly invert the
+  field's flow energy (glyphs rise vs fall). Option (2) is more ambitious
+  but riskier; option (1) is coherent escalation. Pick by feel. User
+  override still BACKGROUND FOCUS.
