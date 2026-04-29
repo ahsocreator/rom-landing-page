@@ -546,6 +546,9 @@
     --matrix-sy: 0;
     /* iter-6 — scroll-velocity energy [0..1], drives flux brightness + (via JS) rain speed */
     --scroll-energy: 0;
+    /* iter-8 — scroll-progress mood values [0..1], drive subtle hue overlays */
+    --mood-cyan: 0;
+    --mood-amber: 0;
   }
 
   .iter-3-matrix-layer {
@@ -705,6 +708,31 @@
       animation: none;
       opacity: 0.5;
       top: 35vh;
+    }
+  }
+
+  /* iter-8 — scroll-progress mood overlays (page reads as a journey of mood, still mostly green) */
+  .iter-8-mood {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    will-change: opacity;
+  }
+  .iter-8-mood-cyan {
+    opacity: calc(var(--mood-cyan, 0) * 0.5);
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 50%, oklch(0.85 0.18 200 / 0.12), transparent 70%);
+  }
+  .iter-8-mood-amber {
+    opacity: calc(var(--mood-amber, 0) * 0.45);
+    background:
+      radial-gradient(ellipse 95% 75% at 50% 60%, oklch(0.85 0.18 75 / 0.10), transparent 70%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .iter-8-mood-cyan,
+    .iter-8-mood-amber {
+      opacity: 0;
     }
   }
 }

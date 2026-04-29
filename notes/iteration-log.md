@@ -272,3 +272,48 @@ Next-iter hint:
   page mood progression rather than uniform wash). OR: deepen the rain itself
   with character glow tiers (head glyph slightly larger than trail). The user
   override is still BACKGROUND FOCUS — every iter must extend the backdrop.
+
+## Iteration 8 — Scroll-progress mood overlays (page-as-journey)
+Date: 2026-04-29
+Dimension: F. LAYOUT (mood progression as you scroll)
+Web research:
+  - https://tympanus.net/codrops/2026/03/09/building-a-scroll-reactive-3d-gallery-with-three-js-velocity-and-mood-based-backgrounds/ — "every image defines a palette that drives the background gradient" — direct inspiration for scroll-progress driven palette shifts
+  - https://prismic.io/blog/css-background-effects — confirmed CSS background-effect catalog (radial gradients with screen blend = subtle hue overlays)
+  - https://www.joshwcomeau.com/animation/color-shifting/ — color-interpolation patterns; we used opacity-on-static-overlays (cheaper than color-mix or @property hue interpolation, browser-portable)
+Design intent:
+  Iter 7 stripped the backdrop to one tuned composite. The composite was uniform
+  across all 12 sections — no narrative hue progression as the user scrolled
+  from "intro" through "anatomy" to "monetization." Iter 8 adds two scroll-
+  progress driven mood overlays: cyan tint peaks at ~40% scroll (around
+  ContentUniverse/IPShowcase — "vast / cosmic"), amber tint peaks at ~75%
+  scroll (around MakeMoney/MonetizationFlow — "value / warm"). Page is still
+  95% green; the shift is barely perceptible but gives the scroll a mood arc.
+  Continuous scroll-progress (not discrete sections) for smooth fade between.
+Skills used:
+  - frontend-design (carryover)
+  - WebSearch (Codrops scroll-reactive 3D gallery as direct conceptual reference)
+Awesome-archive consulted:
+  - Skipped — 5 prior grep rounds, no visual-code patterns
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — added moodCyan + moodAmber computation in parallax tick using window.scrollY / documentHeight progress; triangle-peak shape (1 - |progress - PEAK| * SLOPE clamped to 0); written as CSS vars --mood-cyan / --mood-amber on the wrap. Added two overlay divs (.iter-8-mood + cyan/amber variants) between flux band and vignette
+  - src/index.css — added --mood-cyan: 0 / --mood-amber: 0 defaults to .iter-3-matrix-wrap; added iter-8 utility block: .iter-8-mood base (mix-blend-mode screen, fixed inset, no events), .iter-8-mood-cyan (peak alpha ~0.06 via opacity * background-alpha), .iter-8-mood-amber (peak alpha ~0.045); reduced-motion override → opacity 0
+Effects shipped:
+  - Cyan radial overlay peaks at 40% scroll, max effective alpha ~0.06 (0.5 opacity × 0.12 bg alpha)
+  - Amber radial overlay peaks at 75% scroll, max effective alpha ~0.045
+  - Continuous fade — no discrete section transitions to fight against
+  - Scroll-progress driven, RAF-smoothed (rides on existing parallax tick — zero extra RAF cost)
+  - Reduced-motion fallback: parallax tick short-circuits, mood vars stay 0; explicit override sets opacity 0
+Effects rejected (and why):
+  - IntersectionObserver per-section approach — discrete state transitions read as "preset switching" (page animates jumpily between moods at section boundaries); continuous scroll-progress fades smoothly with no transition logic needed
+  - color-mix() / @property hue interpolation across actual OKLCH channel — browser support spotty, forces a color-mix for every render frame; opacity-blend over static-color overlays is faster and visually identical at these alphas
+  - Adding a third mood (violet for the developer-CTA) — three mood peaks crowd the scroll arc; two-mood arc reads cleaner
+  - Higher peak alphas (0.10+) — tipped over from "subtle journey" into "the background changes color when I scroll" which violates the subtle non-negotiable
+Verified: build ✅ (CSS +0.10kB gz, JS +0.09kB gz) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; page still reads green, but mid-page has a barely-perceptible cyan lift and lower-page warms slightly amber)
+Next-iter hint:
+  Iter 9 should sharpen the matrix rain itself — it's the strongest individual
+  layer but undifferentiated. Consider: head-glyph tiers (head char gets
+  slightly larger fontSize + slight forward perspective z-translate so heads
+  pop subtly toward the viewer). OR: rain-trail chromatic decay (head bright
+  green → mid green-cyan → tail green-dim) for depth-of-color along each
+  column without breaking subtle. Avoid touching the mood layer — let it
+  bake. User override BACKGROUND FOCUS still binding.

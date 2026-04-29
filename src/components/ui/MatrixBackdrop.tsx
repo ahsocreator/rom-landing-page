@@ -49,6 +49,12 @@ export function MatrixBackdrop() {
       lastSy = sy
       lastT = now
 
+      // iter-8 — scroll-progress mood: cyan peaks mid-page, amber peaks lower
+      const docH = document.documentElement.scrollHeight - window.innerHeight
+      const progress = Math.min(1, Math.max(0, sy / Math.max(1, docH)))
+      const moodCyan = Math.max(0, 1 - Math.abs(progress - 0.40) * 2.8)
+      const moodAmber = Math.max(0, 1 - Math.abs(progress - 0.75) * 3.0)
+
       tx += (mx - tx) * 0.06
       ty += (my - ty) * 0.06
       ts += (sy - ts) * 0.10
@@ -56,6 +62,8 @@ export function MatrixBackdrop() {
       wrap.style.setProperty('--matrix-my', ty.toFixed(4))
       wrap.style.setProperty('--matrix-sy', ts.toFixed(2))
       wrap.style.setProperty('--scroll-energy', energy.toFixed(3))
+      wrap.style.setProperty('--mood-cyan', moodCyan.toFixed(3))
+      wrap.style.setProperty('--mood-amber', moodAmber.toFixed(3))
       raf = requestAnimationFrame(tick)
     }
 
@@ -112,6 +120,10 @@ export function MatrixBackdrop() {
       {/* iter-4 — continuous vertical signal-flux band sweeping every pixel */}
       <div className="iter-4-flux-band" aria-hidden />
       <div className="iter-4-flux-band iter-4-flux-band-counter" aria-hidden />
+
+      {/* iter-8 — scroll-progress mood overlays (cyan mid, amber lower) */}
+      <div className="iter-8-mood iter-8-mood-cyan" aria-hidden />
+      <div className="iter-8-mood iter-8-mood-amber" aria-hidden />
 
       {/* Subtle radial vignette to focus content */}
       <div
