@@ -33,22 +33,22 @@ export function Hero() {
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.55, ease }}
             >
-              <Badge>[ One API // One Character // Real Money ]</Badge>
+              <Badge>[ Make IP // Make Money // From Simple Code ]</Badge>
             </motion.div>
 
             <h1 className="mt-7 text-[44px] md:text-[60px] xl:text-[72px] leading-[0.96] font-mono font-bold tracking-[-0.025em] text-rom-fg">
               <RevealLine delay={0.18}>
-                <ScrambleText text="One call." charset="binary" duration={950} startDelay={180} />
+                <ScrambleText text="Make IP." charset="binary" duration={950} startDelay={180} />
               </RevealLine>
               <RevealLine
                 delay={0.32}
                 className="gradient-text-arcade glitch-hover"
-                dataText="Your character."
+                dataText="Make money."
               >
-                Your character.
+                Make money.
               </RevealLine>
               <RevealLine delay={0.46}>
-                <ScrambleText text="Real money." charset={['hex', 'signal']} duration={1100} startDelay={460} />
+                <ScrambleText text="From simple code." charset={['hex', 'signal']} duration={1100} startDelay={460} />
               </RevealLine>
             </h1>
 
@@ -57,14 +57,14 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="mt-7 max-w-[520px] text-[14.5px] md:text-[16px] leading-[1.6] text-rom-fg-dim"
             >
-              ROM is the API for AI character creation and on-chain monetization on Solana. Hit one endpoint, get a tradable character with revenue routing baked in.
+              Original characters that own their lineage and earn from every render. Solana-native, on-chain from the first call. ROM turns simple code into IP that pays.
             </motion.p>
             <motion.p
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
               transition={{ duration: 0.7, delay: 0.72 }}
               className="mt-4 max-w-[520px] text-[13.5px] md:text-[14.5px] leading-[1.7] font-mono text-rom-fg"
             >
-              No stack to build. <span className="gradient-text-arcade font-semibold">One line of code makes it real.</span>
+              No stack. No contracts. <span className="gradient-text-arcade font-semibold">Code that earns.</span>
             </motion.p>
 
             <motion.div
@@ -73,29 +73,41 @@ export function Hero() {
               className="mt-9 flex flex-wrap items-center gap-4"
             >
               <Button variant="primary" className="magnetic">
-                Get an API key
+                Start earning
                 <ArrowRight size={16} strokeWidth={2.4} />
               </Button>
               <Button variant="ghost">Read the docs</Button>
             </motion.div>
 
-            {/* Code snippet — the "one line" */}
             <motion.div
-              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.7, delay: 0.95, ease }}
-              className="mt-7 max-w-[560px] rounded-2xl border border-rom-green/40 bg-rom-card p-3.5 border-glow-subtle"
+              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+              transition={{ duration: 0.7, delay: 1.0 }}
+              className="mt-10 flex flex-wrap gap-x-8 gap-y-4"
             >
-              <div className="flex items-center gap-2 px-1 pb-2.5">
-                <span className="size-2 rounded-full bg-rom-green pulse-dot" />
-                <span className="micro-label font-mono text-[10px] tracking-[0.22em] text-rom-green">
-                  ROM_SDK · ONE LINE
-                </span>
+              {[
+                ['1', 'call · live earning IP'],
+                ['100%', 'on-chain · auto revenue split'],
+                ['∞', 'characters · zero glue code'],
+              ].map(([n, l]) => (
+                <div key={l}>
+                  <div className="text-[22px] md:text-[26px] font-mono font-bold text-rom-green text-glow leading-none">
+                    {n}
+                  </div>
+                  <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Footnote-style code snippet — the call is supporting detail, not the story */}
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.7, delay: 1.15, ease }}
+              className="mt-8 max-w-[560px]"
+            >
+              <div className="micro-label font-mono text-[10px] tracking-[0.22em] text-rom-fg-muted mb-2">
+                ↓ that's all the code it takes
               </div>
-              <pre className="font-mono text-[12.5px] md:text-[13.5px] leading-relaxed text-rom-fg overflow-x-auto rounded-xl bg-rom-bg/60 px-4 py-3.5">
-                <span className="text-rom-fg-muted">{"// "}character on-chain in one call</span>{"\n"}
-                <span className="text-rom-fg-dim">const </span>
-                <span className="text-rom-green-bright">character </span>
-                <span className="text-rom-fg-dim">= </span>
+              <pre className="font-mono text-[12px] md:text-[13px] leading-relaxed text-rom-fg-dim rounded-xl border border-rom-border-dim bg-rom-bg/40 px-4 py-3 overflow-x-auto">
                 <span className="text-rom-fg-dim">await </span>
                 <span className="text-rom-green-bright">rom</span>
                 <span className="text-rom-fg-dim">.</span>
@@ -105,30 +117,7 @@ export function Hero() {
                 <span className="text-rom-fg-dim">: </span>
                 <span className="text-rom-magenta">"Vela"</span>
                 <span className="text-rom-fg-dim">{" })"}</span>
-                {"\n"}
-                <span className="text-rom-fg-muted">{"// → "}</span>
-                <span className="text-rom-green">character.id, .mint, .revenueRoute</span>
-                <span className="text-rom-fg-muted">{" — wallet earning in 4 minutes"}</span>
               </pre>
-            </motion.div>
-
-            <motion.div
-              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-              transition={{ duration: 0.7, delay: 1.1 }}
-              className="mt-9 flex flex-wrap gap-x-8 gap-y-4"
-            >
-              {[
-                ['1', 'line of code · live character'],
-                ['6', 'endpoints · full lifecycle'],
-                ['∞', 'characters · auto revenue split'],
-              ].map(([n, l]) => (
-                <div key={l}>
-                  <div className="text-[22px] md:text-[26px] font-mono font-bold text-rom-green text-glow leading-none">
-                    {n}
-                  </div>
-                  <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
-                </div>
-              ))}
             </motion.div>
           </motion.div>
 
