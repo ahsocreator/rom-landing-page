@@ -1,11 +1,11 @@
-import { Lock, Infinity as InfinityIcon, TrendingUp, Coins } from 'lucide-react'
+import { Code2, Infinity as InfinityIcon, Workflow, Coins } from 'lucide-react'
 import { GlowIcon } from './ui/GlowIcon'
 
 const items = [
-  { icon: Lock, label: 'Your IP · On-Chain' },
-  { icon: InfinityIcon, label: 'Same Face · Every Drop' },
-  { icon: TrendingUp, label: 'Franchise Compounds 24/7' },
-  { icon: Coins, label: 'Earn Per Drop · Per License' },
+  { icon: Code2, label: '1 Line · Live Character' },
+  { icon: InfinityIcon, label: '∞ Mints · One Endpoint' },
+  { icon: Workflow, label: 'Revenue Routing · Auto' },
+  { icon: Coins, label: '4 Minutes · Wallet Earning' },
 ]
 
 export function TickerBar() {
