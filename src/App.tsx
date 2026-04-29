@@ -17,8 +17,10 @@ import { Footer } from './components/Footer'
 function App() {
   return (
     <div className="relative min-h-screen text-rom-fg font-mono antialiased">
-      <MatrixBackdrop />
+      {/* Backdrop = static deep layer (solid base, hero glow, grid, scanlines, noise, vignette).
+          MatrixBackdrop = motion layer that renders on top so matrix is actually visible. */}
       <Backdrop />
+      <MatrixBackdrop />
       <Nav />
       <main className="relative">
         <Hero />

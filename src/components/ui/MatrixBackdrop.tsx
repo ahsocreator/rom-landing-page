@@ -85,8 +85,9 @@ export function MatrixBackdrop() {
       aria-hidden
       className="fixed inset-0 -z-10 overflow-hidden pointer-events-none iter-3-matrix-wrap"
     >
-      {/* Solid base */}
-      <div className="absolute inset-0" style={{ background: 'oklch(0.05 0.005 150)' }} />
+      {/* No solid base / vignette here — Backdrop owns those (renders below this).
+          This component is the motion layer only; Backdrop's atmosphere shows through
+          our translucent matrix content. */}
 
       {/* Far depth — small, dim, blurred glyphs that drift slowly */}
       <DepthGlyphs
@@ -126,14 +127,7 @@ export function MatrixBackdrop() {
       <div className="iter-8-mood iter-8-mood-cyan" aria-hidden />
       <div className="iter-8-mood iter-8-mood-amber" aria-hidden />
 
-      {/* Subtle radial vignette to focus content */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 50%, transparent 30%, oklch(0.04 0.005 150 / 0.85) 100%)',
-        }}
-      />
+      {/* Vignette is owned by Backdrop (deep layer) — no duplicate here */}
     </div>
   )
 }
