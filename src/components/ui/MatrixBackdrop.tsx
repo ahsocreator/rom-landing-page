@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { useReducedMotion } from 'framer-motion'
 
 // iter-6 — module-shared scroll-velocity energy (0..1, smoothed, decays to 0).
 // Updated by MatrixBackdrop's parallax tick; consumed by MatrixRain.draw and by
@@ -307,6 +308,10 @@ function MatrixRain() {
 
 function CircuitTraces() {
   // Static SVG circuit-board pattern with animated dash flow on key traces.
+  // iter-12 — gate SMIL animations under prefers-reduced-motion via conditional
+  // render. SMIL doesn't auto-respect the media query so we have to skip the
+  // <animate> children when reduce is true (per Josh Comeau / framer-motion docs).
+  const reduce = useReducedMotion()
   return (
     <svg
       className="absolute inset-0 size-full pointer-events-none"
@@ -357,39 +362,44 @@ function CircuitTraces() {
           [240, 220], [1180, 320], [1660, 460],
           [300, 720], [820, 720], [1240, 880],
         ].map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="3" opacity="0.9">
-            <animate
-              attributeName="opacity"
-              values="0.4;1;0.4"
-              dur={`${2 + (i % 4)}s`}
-              repeatCount="indefinite"
-              begin={`${(i % 5) * 0.4}s`}
-            />
+          <circle key={i} cx={x} cy={y} r="3" opacity={reduce ? 0.7 : 0.9}>
+            {!reduce && (
+              <animate
+                attributeName="opacity"
+                values="0.4;1;0.4"
+                dur={`${2 + (i % 4)}s`}
+                repeatCount="indefinite"
+                begin={`${(i % 5) * 0.4}s`}
+              />
+            )}
             {/* iter-11 — fill cyan-shifts at pulse peak alongside opacity peak */}
-            <animate
-              attributeName="fill"
-              values="oklch(0.92 0.24 145);oklch(0.95 0.18 178);oklch(0.92 0.24 145)"
-              dur={`${2 + (i % 4)}s`}
-              repeatCount="indefinite"
-              begin={`${(i % 5) * 0.4}s`}
-            />
+            {!reduce && (
+              <animate
+                attributeName="fill"
+                values="oklch(0.92 0.24 145);oklch(0.95 0.18 178);oklch(0.92 0.24 145)"
+                dur={`${2 + (i % 4)}s`}
+                repeatCount="indefinite"
+                begin={`${(i % 5) * 0.4}s`}
+              />
+            )}
           </circle>
         ))}
       </g>
 
-      {/* Animated pulsing energy along selected traces */}
-      <g stroke="url(#trace-grad)" strokeWidth="2" fill="none" filter="url(#trace-glow)">
+      {/* Animated pulsing energy along selected traces — iter-12: opacity-dimmed
+          when reduce, <animate> children skipped, dashes hold static at offset 0 */}
+      <g stroke="url(#trace-grad)" strokeWidth="2" fill="none" filter="url(#trace-glow)" opacity={reduce ? 0.4 : 1}>
         <path d="M 0 280 L 320 280 L 380 220 L 760 220 L 820 280 L 1920 280" strokeDasharray="80 1800" strokeDashoffset="0">
-          <animate attributeName="stroke-dashoffset" from="1880" to="0" dur="6s" repeatCount="indefinite" />
+          {!reduce && <animate attributeName="stroke-dashoffset" from="1880" to="0" dur="6s" repeatCount="indefinite" />}
         </path>
         <path d="M 240 0 L 240 220 L 300 280 L 300 720 L 240 780 L 240 1080" strokeDasharray="60 1200" strokeDashoffset="0">
-          <animate attributeName="stroke-dashoffset" from="0" to="1260" dur="8s" repeatCount="indefinite" />
+          {!reduce && <animate attributeName="stroke-dashoffset" from="0" to="1260" dur="8s" repeatCount="indefinite" />}
         </path>
         <path d="M 0 800 L 660 800 L 720 860 L 1260 860 L 1320 800 L 1920 800" strokeDasharray="100 1900" strokeDashoffset="0">
-          <animate attributeName="stroke-dashoffset" from="2000" to="0" dur="10s" repeatCount="indefinite" />
+          {!reduce && <animate attributeName="stroke-dashoffset" from="2000" to="0" dur="10s" repeatCount="indefinite" />}
         </path>
         <path d="M 1180 0 L 1180 320 L 1240 380 L 1240 880 L 1180 940 L 1180 1080" strokeDasharray="70 1100" strokeDashoffset="0">
-          <animate attributeName="stroke-dashoffset" from="1170" to="0" dur="7s" repeatCount="indefinite" />
+          {!reduce && <animate attributeName="stroke-dashoffset" from="1170" to="0" dur="7s" repeatCount="indefinite" />}
         </path>
       </g>
 
@@ -411,15 +421,17 @@ function CircuitTraces() {
           { x: 1220, y: 200, text: 'BLOCK_304M' },
           { x: 380, y: 880, text: 'CHAR_VELA' },
         ].map((t, i) => (
-          <text key={i} x={t.x} y={t.y} opacity="0.32">
+          <text key={i} x={t.x} y={t.y} opacity={reduce ? 0.18 : 0.32}>
             {t.text}
-            <animate
-              attributeName="opacity"
-              values="0.10;0.32;0.10"
-              dur={`${4 + (i % 5)}s`}
-              repeatCount="indefinite"
-              begin={`${(i % 6) * 0.5}s`}
-            />
+            {!reduce && (
+              <animate
+                attributeName="opacity"
+                values="0.10;0.32;0.10"
+                dur={`${4 + (i % 5)}s`}
+                repeatCount="indefinite"
+                begin={`${(i % 6) * 0.5}s`}
+              />
+            )}
           </text>
         ))}
       </g>

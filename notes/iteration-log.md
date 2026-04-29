@@ -466,3 +466,65 @@ Next-iter hint:
   After iter 12, the loop hits its count limit and STOPS automatically.
   User can lift the limit by editing notes/awwwards-loop.txt or by manual
   loop input.
+
+## Iteration 12 — FINAL INTEGRATION: SMIL prefers-reduced-motion gate (loop terminus)
+Date: 2026-04-29
+Dimension: INTEGRATION (final, protocol-mandated stop at count 12)
+Web research:
+  - https://www.joshwcomeau.com/react/prefers-reduced-motion/ — canonical pattern: useMatchMedia('(prefers-reduced-motion: reduce)') OR framer-motion's useReducedMotion(); conditionally render motion-bearing children
+  - https://elijahmanor.com/blog/prefers-reduced-motion — confirms SMIL doesn't auto-respect prefers-reduced-motion media query; React conditional render is the cleanest gate
+  - https://dev.to/link2twenty/comment/1cmdg — SVG ref + pauseAnimations() API as alternative; we picked conditional-render path (cleaner static state, no mid-pulse freeze)
+Design intent:
+  Iter 7's integration pass missed one quality gap: SMIL <animate> elements in
+  CircuitTraces don't auto-respect prefers-reduced-motion (browser quirk; SMIL
+  predates the media query). Iter 12 closes that gap as the protocol-mandated
+  final tick. useReducedMotion() gates conditional render of all <animate>
+  children. Reduce users now get a clean static circuit structure: nodes hold
+  at constant 0.7 opacity in baseline green, scatter text at 0.18 (mid value),
+  flow paths held at strokeDashoffset=0 with stroke-opacity reduced to 0.4.
+  System now fully accessible. Loop hits count 12 → cron self-terminates.
+Skills used:
+  - frontend-design (carryover, final iter)
+  - WebSearch (Josh Comeau / Elijah Manor canonical reduce-gate patterns)
+Awesome-archive consulted:
+  - Skipped — 9 prior grep rounds, no relevant patterns ever surfaced (index is
+    SaaS/AI-heavy; visual-code patterns aren't represented). Recommend the
+    project STOP grepping awesome-archive going forward — net-zero ROI.
+Files touched:
+  - src/components/ui/MatrixBackdrop.tsx — CircuitTraces():
+    * Added `import { useReducedMotion } from 'framer-motion'`
+    * Added `const reduce = useReducedMotion()` at component top
+    * Junction nodes: opacity static 0.7 vs 0.9 when reduce; <animate opacity> + <animate fill> wrapped in {!reduce && ...}
+    * Flow paths group: opacity 0.4 vs 1 when reduce; all 4 <animate stroke-dashoffset> wrapped in {!reduce && ...}; dashes hold static at offset 0 (still showing 80-unit visible segments at path starts — hint of activity without motion)
+    * Scatter text: opacity static 0.18 vs 0.32 when reduce; <animate opacity> wrapped in {!reduce && ...}
+Effects shipped:
+  - Full prefers-reduced-motion compliance across the matrix system (was: canvas + glyph CSS already gated; SMIL was the gap)
+  - Reduce path renders quietly: nodes static-bright, dash heads frozen at start, scatter text at low opacity, no motion in trace plane
+  - Full-motion path unchanged — all iter-9/10/11 chromatic-coherence work preserved
+  - Loop self-terminates at count 12 per protocol
+Effects rejected (and why):
+  - SVG.pauseAnimations() via ref — would freeze SMIL at whatever frame it's currently on (potentially mid-pulse looking weird); conditional render gives a clean predictable static state
+  - Adding a tactile crescendo (option 2 from iter-11 hint) — would have been a memorable closing beat but adds new functionality to a count-12 stop iteration; integration discipline takes precedence over flair
+  - Cropping any of the 11 cumulative effects — verified the composite reads coherent; no clear redundancy. Cyan-pop signature now spans all layers and IS the through-line. Don't break it.
+Verified: build ✅ (CSS unchanged, JS -0.27kB gz from minor refactor) · dev-spot-check ✅ (HMR clean — http://localhost:5173/rom-landing-page/ ; full-motion path identical to iter 11; reduce path renders static circuit cleanly)
+
+  ═══════════════════════════════════════════════════════════════════════════
+  ★ LOOP COMPLETE — count 12 reached, cron auto-stop per protocol.
+  ═══════════════════════════════════════════════════════════════════════════
+  Final composite (12 iter cumulative):
+    - Hero: scramble-text decoder (iter 1) + bespoke ROM cursor (iter 2)
+    - Background motion-bearing layers, all sharing cyan-tip-on-peak signature:
+      * Far depth glyphs (cool-cyan birth flash)         [iter 3, 10]
+      * Canvas matrix rain w/ flow-field current + lead-intensity head-tail
+        cascade + tactile-coupled speed bump            [iter 3, 5, 6, 9]
+      * Near depth glyphs (warm-amber birth flash)       [iter 3, 10]
+      * Circuit trace plane (cyan-tipped flow heads,
+        cyan-pulsing nodes, accessibility-gated)         [iter 7, 11, 12]
+      * Vertical signal-flux band x2 + counter band
+        (scroll-velocity coupled brightness)             [iter 4, 6]
+      * Scroll-progress mood overlays
+        (cyan mid, amber lower)                          [iter 8]
+    - Backdrop: pure static atmospheric foundation       [iter 7 strip]
+  All effects: vertical / subtle / page-wide / reduced-motion-compliant /
+  on a tuned tactile bus that responds to user scroll velocity.
+  ═══════════════════════════════════════════════════════════════════════════
