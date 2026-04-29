@@ -1,5 +1,6 @@
 import { Backdrop } from './components/ui/Backdrop'
 import { MatrixBackdrop } from './components/ui/MatrixBackdrop'
+import { RomCursor } from './components/ui/RomCursor'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { TickerBar } from './components/TickerBar'
@@ -32,6 +33,7 @@ function App() {
         <DeveloperCTA />
       </main>
       <Footer />
+      <RomCursor />
     </div>
   )
 }

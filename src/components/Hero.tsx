@@ -153,7 +153,7 @@ function RevealLine({
 
 function MainAssetCard() {
   return (
-    <div className="relative rounded-3xl border border-rom-green/55 bg-rom-card overflow-hidden border-glow">
+    <div data-cursor="scan" className="relative rounded-3xl border border-rom-green/55 bg-rom-card overflow-hidden border-glow">
       <div className="flex items-center justify-between px-5 md:px-6 py-3.5 border-b border-rom-green/20">
         <div className="flex items-center gap-2 text-rom-green">
           <span className="size-2 rounded-full bg-rom-green pulse-dot" />

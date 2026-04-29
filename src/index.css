@@ -433,6 +433,111 @@
   @media (prefers-reduced-motion: reduce) {
     .iter-1-landed { animation: none; }
   }
+
+  /* iter-2 — bespoke ROM cursor: sensor dot + lazy ring + scan reticle */
+  .iter-2-cursor-dot,
+  .iter-2-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: screen;
+    will-change: transform, width, height, border-radius;
+  }
+  .iter-2-cursor-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: oklch(0.92 0.24 145);
+    box-shadow:
+      0 0 12px oklch(0.85 0.22 145 / 0.7),
+      0 0 24px oklch(0.85 0.22 145 / 0.25);
+    transition:
+      width 220ms var(--ease-quart-out),
+      height 220ms var(--ease-quart-out),
+      opacity 220ms var(--ease-quart-out);
+  }
+  .iter-2-cursor-dot[data-mode="link"] {
+    width: 4px;
+    height: 4px;
+    opacity: 0.55;
+  }
+  .iter-2-cursor-dot[data-mode="scan"] {
+    opacity: 0;
+  }
+
+  .iter-2-cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid oklch(0.85 0.22 145 / 0.55);
+    border-radius: 9999px;
+    z-index: 9998;
+    transition:
+      width 320ms var(--ease-back-out),
+      height 320ms var(--ease-back-out),
+      border-radius 320ms var(--ease-back-out),
+      border-color 220ms var(--ease-quart-out),
+      background-color 220ms var(--ease-quart-out),
+      opacity 200ms var(--ease-quart-out);
+  }
+  .iter-2-cursor-ring[data-mode="link"] {
+    width: 56px;
+    height: 56px;
+    border-color: oklch(0.92 0.24 145 / 0.85);
+    background: oklch(0.85 0.22 145 / 0.06);
+  }
+  .iter-2-cursor-ring[data-mode="scan"] {
+    width: 124px;
+    height: 84px;
+    border-radius: 4px;
+    border-color: transparent;
+    background:
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 0 0 / 16px 1.5px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 0 0 / 1.5px 16px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 100% 0 / 16px 1.5px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 100% 0 / 1.5px 16px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 0 100% / 16px 1.5px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 0 100% / 1.5px 16px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 100% 100% / 16px 1.5px no-repeat,
+      linear-gradient(oklch(0.92 0.24 145) 0 0) 100% 100% / 1.5px 16px no-repeat;
+    box-shadow:
+      0 0 28px oklch(0.85 0.22 145 / 0.18),
+      inset 0 0 32px oklch(0.85 0.22 145 / 0.04);
+  }
+  .iter-2-cursor-ring[data-pressed="1"] {
+    transform-origin: center;
+    filter: brightness(1.25);
+  }
+
+  /* Hide native cursor only when fine pointer + JS cursor active */
+  body[data-rom-cursor="1"] {
+    cursor: none;
+  }
+  body[data-rom-cursor="1"] a,
+  body[data-rom-cursor="1"] button,
+  body[data-rom-cursor="1"] [role="button"] {
+    cursor: none;
+  }
+  body[data-rom-cursor="1"] input,
+  body[data-rom-cursor="1"] textarea,
+  body[data-rom-cursor="1"] [contenteditable="true"] {
+    cursor: text;
+  }
+
+  /* Hide custom cursor entirely on coarse / no-hover devices */
+  @media (pointer: coarse), (hover: none) {
+    .iter-2-cursor-dot,
+    .iter-2-cursor-ring {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .iter-2-cursor-dot,
+    .iter-2-cursor-ring {
+      transition: none;
+    }
+  }
 }
 
 html, body, #root {
