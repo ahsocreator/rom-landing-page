@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Hexagon } from 'lucide-react'
+import { ArrowRight, Hexagon, Zap } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
 import { GlowIcon } from './ui/GlowIcon'
@@ -36,6 +36,20 @@ export function Hero() {
               <Badge>[ Claude writes the code // ROM writes the show // You bank the money ]</Badge>
             </motion.div>
 
+            {/* Solana-native chip — built-on signal directly in hero */}
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.55, ease, delay: 0.05 }}
+              className="mt-3 inline-flex items-center gap-2.5 px-3 py-1.5 rounded-md border border-rom-cyan/45 bg-rom-cyan/[0.06] text-[10.5px] font-mono uppercase tracking-[0.22em] text-rom-cyan-bright"
+            >
+              <Zap size={11} className="icon-glow-sm" strokeWidth={2.4} />
+              <span>Native to Solana</span>
+              <span className="text-rom-fg-muted">·</span>
+              <span className="text-rom-fg-dim">Sub-second finality</span>
+              <span className="text-rom-fg-muted">·</span>
+              <span className="text-rom-fg-dim">$0 gas politics</span>
+            </motion.div>
+
             <h1 className="mt-7 text-[44px] md:text-[60px] xl:text-[72px] leading-[0.96] font-mono font-bold tracking-[-0.025em] text-rom-fg">
               <RevealLine delay={0.18}>
                 <ScrambleText text="Your IP." charset="binary" duration={950} startDelay={180} />
@@ -57,7 +71,7 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="mt-7 max-w-[520px] text-[14.5px] md:text-[16px] leading-[1.6] text-rom-fg-dim"
             >
-              Write a sentence. ROM ships the cinematic — characters, scenes, voices, on-chain. Solana ships the revenue. Same face every episode, every drop.
+              Write a sentence. ROM ships the cinematic — characters, scenes, voices, on-chain. <span className="text-rom-cyan-bright font-semibold">Solana</span> ships the revenue, instantly, to your wallet. Same face every episode, every drop.
             </motion.p>
             <motion.p
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
@@ -100,12 +114,17 @@ export function Hero() {
               className="mt-10 flex flex-wrap gap-x-8 gap-y-4"
             >
               {[
-                ['25', 'credits per drop · refund on fail'],
-                ['6', 'content types · 4 aspect ratios'],
-                ['10m', 'sentence in · MP4 out'],
-              ].map(([n, l]) => (
+                ['25', 'credits per drop · refund on fail', 'green'],
+                ['10m', 'sentence in · MP4 out', 'green'],
+                ['6', 'content types · 4 aspects', 'green'],
+                ['⚡', 'Solana-native · auto royalties', 'cyan'],
+              ].map(([n, l, tone]) => (
                 <div key={l}>
-                  <div className="text-[22px] md:text-[26px] font-mono font-bold text-rom-green text-glow leading-none">
+                  <div
+                    className={`text-[22px] md:text-[26px] font-mono font-bold text-glow leading-none ${
+                      tone === 'cyan' ? 'text-rom-cyan-bright' : 'text-rom-green'
+                    }`}
+                  >
                     {n}
                   </div>
                   <div className="mt-1.5 micro-label font-mono text-rom-fg-muted">{l}</div>
@@ -175,9 +194,15 @@ function MainAssetCard() {
           <span className="size-2 rounded-full bg-rom-green pulse-dot" />
           <span className="micro-label font-mono text-[11px] tracking-[0.18em]">ROM ASSET ℕ</span>
         </div>
-        <span className="micro-label font-mono text-rom-green text-[11px] tracking-[0.14em]">
-          ID: ROM_7x3f...9aE1
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-rom-cyan/40 bg-rom-cyan/[0.05] text-[9.5px] font-mono uppercase tracking-[0.22em] text-rom-cyan-bright">
+            <Zap size={9} strokeWidth={2.4} />
+            On Solana
+          </span>
+          <span className="micro-label font-mono text-rom-green text-[11px] tracking-[0.14em]">
+            ID: ROM_7x3f...9aE1
+          </span>
+        </div>
       </div>
 
       <div className="px-5 md:px-6 pt-4 pb-3">
