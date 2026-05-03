@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Lock, Sparkles, Coins, ArrowRight } from 'lucide-react'
+import { Wand2, Activity, Download, ArrowRight } from 'lucide-react'
 import { GlowIcon } from './ui/GlowIcon'
 import { Section } from './ui/Section'
 import { SectionIndex } from './ui/SectionIndex'
@@ -9,36 +9,36 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 const steps = [
   {
     n: '01',
-    icon: Lock,
-    title: 'Define your IP',
-    body: 'Drop a character. Lock the look. Lock the voice. ROM writes the canonical record on-chain. From this moment, your IP is yours forever.',
-    chip: 'The lock-in',
+    icon: Wand2,
+    title: 'Generate.',
+    body: '`POST /v1/stories` with a sentence. "A dragon teaches a young knight how to fly." ROM responds with a Job ID and a polling URL. Your IP is officially in production.',
+    chip: 'One sentence in',
   },
   {
     n: '02',
-    icon: Sparkles,
-    title: 'Spin out content',
-    body: 'One prompt becomes an episode. Then a music video. Then an ad. Same character, infinite drops. ROM handles every render so you handle every angle.',
-    chip: 'The factory',
+    icon: Activity,
+    title: 'Poll.',
+    body: 'Eight to fifteen minutes. ROM is writing the script, casting characters, voicing narration, rendering scenes. Poll every 30s — watch the progress bar walk from 0 to 100.',
+    chip: 'AI runs the show',
   },
   {
     n: '03',
-    icon: Coins,
-    title: 'Stack the upside',
-    body: 'Run a channel. Sell licenses. Cut deals with brands. Your IP earns ad revenue, royalties, sponsorships — every time a drop runs.',
-    chip: 'The flywheel',
+    icon: Download,
+    title: 'Download.',
+    body: 'A direct MP4 URL plus structured assets — characters with names + reference images, scenes, items, individual clips. Solana ownership is already wired. Ship it, embed it, license it.',
+    chip: 'IP shipped',
   },
 ]
 
 export function HowItWorks() {
   return (
     <Section id="how-it-works">
-      <SectionIndex index="01" label="How an IP gets built">
+      <SectionIndex index="01" label="One sentence → finished video">
         <h2 className="display-2 font-mono">
-          One character.
+          Three calls.
           <br />
-          <span className="gradient-text-arcade glitch-hover" data-text="Three steps to a franchise.">
-            Three steps to a franchise.
+          <span className="gradient-text-arcade glitch-hover" data-text="One finished story.">
+            One finished story.
           </span>
         </h2>
       </SectionIndex>

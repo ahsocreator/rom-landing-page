@@ -33,8 +33,11 @@ export function DeveloperCTA() {
         </h2>
 
         <p className="mt-10 max-w-2xl mx-auto text-[17px] md:text-[19px] leading-[1.55] text-rom-fg-dim">
-          One character becomes a franchise. One franchise becomes a business. One business compounds for years.
-          ROM is the layer. <span className="gradient-text-arcade font-semibold">You bring the IP.</span>
+          Write the sentence. ROM ships the cinematic. Solana ships the revenue. Every character, scene and clip — provably yours, on-chain, from the first call.
+        </p>
+
+        <p className="mt-5 max-w-2xl mx-auto text-[14px] md:text-[15.5px] leading-[1.6] font-mono text-rom-fg">
+          AI-native by design. <span className="gradient-text-arcade font-semibold">Drop the API docs into Claude or Codex — get a working pipeline in 10 minutes.</span> We tested.
         </p>
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
@@ -43,21 +46,21 @@ export function DeveloperCTA() {
             <ArrowRight size={18} strokeWidth={2.4} />
           </Button>
           <Button variant="secondary" className="text-[14px] px-7 py-4">
-            See it in action
+            Read the API docs
             <Sparkles size={16} strokeWidth={2} />
           </Button>
         </div>
 
         <p className="mt-7 text-[12px] font-mono uppercase tracking-[0.22em] text-rom-fg-muted">
-          No credit card · No subscription · Your IP, your wallet, your terms
+          No credit card · No subscription · sk_live_ keys · Solana-native revenue
         </p>
 
         <MotionStagger className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
           {[
-            ['1', 'character locks the IP'],
+            ['1', 'sentence in · video out'],
             ['25', 'credits per drop'],
-            ['6', 'revenue formats'],
-            ['∞', 'drops · forever yours'],
+            ['6', 'content types · 4 aspects'],
+            ['∞', 'series episodes · same face'],
           ].map(([n, l]) => (
             <MotionFade
               key={l}

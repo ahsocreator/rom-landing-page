@@ -27,19 +27,19 @@ export function SeriesProtocol() {
             Forever yours.
           </h2>
           <p className="mt-7 max-w-xl text-[16px] leading-[1.6] text-rom-fg-dim">
-            Your IP doesn't drift. Drop 1, drop 100, drop 10,000 — same character, same look, same value. ROM enforces canonical IP at the protocol level so platforms never own your franchise.
+            Pre-register your character with one Series ID and a reference image. Every story tagged to that ID inherits the same face, the same voice, the same identity. The model can't drift. Episodes 1, 12, 12,000 — visually consistent, mathematically the same character.
           </p>
           <p className="mt-5 max-w-xl text-[14px] leading-[1.7] text-rom-fg-muted">
-            Your character is a record on Solana. Idempotent. Verifiable. Yours. Whatever you ship from here on out is provably tied back to you. Licensing deals stop being lawsuits and start being invoices.
+            The Series ID is a record on Solana. Idempotent. Verifiable. Yours. Every clip the API returns is provably tied to that record — characters, scenes, items, clips, all enumerated. Licensing stops being lawsuits and starts being invoices.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <Button variant="primary">
-              Lock my IP
+              Mint a Series ID
               <ArrowRight size={16} strokeWidth={2.4} />
             </Button>
             <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-rom-green/40 bg-rom-green/[0.04] text-[11px] font-mono uppercase tracking-[0.22em] text-rom-green">
               <RotateCcw size={12} />
-              Idempotent · Drift = 0%
+              Series · Drift = 0%
             </span>
           </div>
         </motion.div>

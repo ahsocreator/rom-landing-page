@@ -57,14 +57,14 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="mt-7 max-w-[520px] text-[14.5px] md:text-[16px] leading-[1.6] text-rom-fg-dim"
             >
-              One character becomes a franchise. One franchise becomes a business. One business compounds for years.
+              Write a sentence. ROM ships the cast, the scenes, the video. Solana ships the revenue. Your characters recur — same face, same voice, every episode.
             </motion.p>
             <motion.p
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
               transition={{ duration: 0.7, delay: 0.72 }}
               className="mt-4 max-w-[520px] text-[13.5px] md:text-[14.5px] leading-[1.7] font-mono text-rom-fg"
             >
-              ROM is the layer. <span className="gradient-text-arcade font-semibold">You bring the IP.</span>
+              One REST endpoint. One Bearer key. <span className="gradient-text-arcade font-semibold">Drop the docs into Claude — ship a channel by sundown.</span>
             </motion.p>
 
             <motion.div
@@ -84,9 +84,9 @@ export function Hero() {
               className="mt-10 flex flex-wrap gap-x-8 gap-y-4"
             >
               {[
-                ['1', 'character locks the IP'],
                 ['25', 'credits per drop · refund on fail'],
-                ['6', 'revenue formats · ∞ drops'],
+                ['6', 'content types · 4 aspect ratios'],
+                ['10m', 'sentence in · MP4 out'],
               ].map(([n, l]) => (
                 <div key={l}>
                   <div className="text-[22px] md:text-[26px] font-mono font-bold text-rom-green text-glow leading-none">
