@@ -1,5 +1,5 @@
 import { Backdrop } from './components/ui/Backdrop'
-import { MatrixBackdrop } from './components/ui/MatrixBackdrop'
+// import { MatrixBackdrop } from './components/ui/MatrixBackdrop'  // temporarily disabled to debug grid
 import { RomCursor } from './components/ui/RomCursor'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
@@ -17,10 +17,10 @@ import { Footer } from './components/Footer'
 function App() {
   return (
     <div className="relative min-h-screen text-rom-fg font-mono antialiased">
-      {/* Backdrop = static deep layer (solid base, hero glow, grid, scanlines, noise, vignette).
-          MatrixBackdrop = motion layer that renders on top so matrix is actually visible. */}
+      {/* Backdrop = static deep layer (solid base, hero glow, grid, vignette).
+          MatrixBackdrop temporarily disabled while we verify grid visibility. */}
       <Backdrop />
-      <MatrixBackdrop />
+      {/* <MatrixBackdrop /> */}
       <Nav />
       <main className="relative">
         <Hero />

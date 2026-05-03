@@ -22,13 +22,13 @@ export function Backdrop() {
         }}
       />
 
-      {/* Page-wide schematic grid — DOMINANT texture now. Was being dimmed
-          by overlay-blend noise and scanlines; both removed. */}
+      {/* Page-wide schematic grid — LOUD now. Direct alpha on stop colors so
+          there's no container-opacity quirk; brighter green for legibility. */}
       <div
-        className="absolute inset-0 opacity-[0.22]"
+        className="absolute inset-0"
         style={{
           backgroundImage:
-            'linear-gradient(oklch(0.85 0.22 145) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145) 1px, transparent 1px)',
+            'linear-gradient(oklch(0.95 0.30 145 / 0.45) 1px, transparent 1px), linear-gradient(90deg, oklch(0.95 0.30 145 / 0.45) 1px, transparent 1px)',
           backgroundSize: '32px 32px',
         }}
       />
