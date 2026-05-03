@@ -5,7 +5,6 @@ import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { TickerBar } from './components/TickerBar'
 import { HowItWorks } from './components/HowItWorks'
-import { VibeCodeIt } from './components/VibeCodeIt'
 import { ContentUniverse } from './components/ContentUniverse'
 import { IPShowcase } from './components/IPShowcase'
 import { SeriesProtocol } from './components/SeriesProtocol'
@@ -27,7 +26,6 @@ function App() {
         <Hero />
         <TickerBar />
         <HowItWorks />
-        <VibeCodeIt />
         <ContentUniverse />
         <IPShowcase />
         <SeriesProtocol />
