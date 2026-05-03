@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Zap } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
-import { TiltFloat } from './ui/TiltFloat'
 import { ScrambleText } from './ui/ScrambleText'
 import { HeroFlow } from './ui/HeroFlow'
 
@@ -68,9 +67,7 @@ export function Hero() {
           transition={{ duration: 0.85, delay: 0.25, ease }}
           className="mt-8 md:mt-10"
         >
-          <TiltFloat>
-            <HeroFlow />
-          </TiltFloat>
+          <HeroFlow />
         </motion.div>
 
         {/* (3) BOTTOM CONTENT — editorial 2-col */}
