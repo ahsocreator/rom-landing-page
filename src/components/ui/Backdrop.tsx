@@ -22,10 +22,11 @@ export function Backdrop() {
         }}
       />
 
-      {/* Page-wide schematic grid — same 32px pattern as the HeroFlow card so
-          the card feels continuous with the page (one shared system canvas). */}
+      {/* Page-wide schematic grid — primary visual texture. 32px to match the
+          HeroFlow card; bumped to 14% opacity so it reads CLEARLY across the
+          whole page. */}
       <div
-        className="absolute inset-0 opacity-[0.07]"
+        className="absolute inset-0 opacity-[0.14]"
         style={{
           backgroundImage:
             'linear-gradient(oklch(0.85 0.22 145) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145) 1px, transparent 1px)',
@@ -33,18 +34,20 @@ export function Backdrop() {
         }}
       />
 
-      {/* Subtle scanlines */}
-      <div className="absolute inset-0 scanlines opacity-25" />
+      {/* Scanlines — quieted so they don't wash out the grid */}
+      <div className="absolute inset-0 scanlines opacity-[0.10]" />
 
-      {/* Noise grain */}
-      <div className="absolute inset-0 noise-bg" />
+      {/* Noise grain — quieted (was 0.4 default) so the grid reads as the
+          dominant texture, not the noise */}
+      <div className="absolute inset-0 noise-bg" style={{ opacity: 0.18 }} />
 
-      {/* Edge vignette — pulls focus inward */}
+      {/* Edge vignette — softer (start at 55% radius instead of 45%) so the
+          grid stays visible further out toward the edges */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 100% 80% at 50% 50%, transparent 45%, oklch(0.04 0.004 150 / 0.85) 100%)',
+            'radial-gradient(ellipse 100% 80% at 50% 50%, transparent 55%, oklch(0.04 0.004 150 / 0.7) 100%)',
         }}
       />
     </div>

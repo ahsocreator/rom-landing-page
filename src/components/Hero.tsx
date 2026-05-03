@@ -18,7 +18,7 @@ export function Hero() {
     <section id="top" className="relative overflow-hidden">
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-[40%] grid-floor opacity-40" />
 
-      <div className="relative mx-auto w-full max-w-[1500px] px-6 md:px-10 lg:px-16 pt-12 md:pt-16 pb-20 md:pb-24">
+      <div className="relative w-full px-6 md:px-10 lg:px-16 xl:px-20 pt-12 md:pt-16 pb-20 md:pb-24">
         {/* (1) TOP META STRIP */}
         <motion.div
           initial="hidden"
