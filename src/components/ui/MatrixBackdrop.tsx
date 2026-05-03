@@ -224,9 +224,10 @@ function MatrixRain() {
     function draw() {
       const w = c.width / (window.devicePixelRatio || 1)
       const h = c.height / (window.devicePixelRatio || 1)
-      // Higher fade alpha → trails decay faster → canvas stays mostly
-      // transparent so the page grid below shows through.
-      g.fillStyle = 'oklch(0.05 0.005 150 / 0.18)'
+      // High fade alpha → trails decay quickly → canvas pixel buffer stays
+      // mostly transparent. Critical: without this the canvas accumulates
+      // to nearly opaque dark and buries the page grid behind it.
+      g.fillStyle = 'oklch(0.05 0.005 150 / 0.28)'
       g.fillRect(0, 0, w, h)
       g.font = `${fontSize}px "JetBrains Mono", monospace`
 
