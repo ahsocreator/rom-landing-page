@@ -22,13 +22,14 @@ export function Backdrop() {
         }}
       />
 
-      {/* Fine global grid — provides structure without competing */}
+      {/* Page-wide schematic grid — same 32px pattern as the HeroFlow card so
+          the card feels continuous with the page (one shared system canvas). */}
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.07]"
         style={{
           backgroundImage:
             'linear-gradient(oklch(0.85 0.22 145) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145) 1px, transparent 1px)',
-          backgroundSize: '96px 96px',
+          backgroundSize: '32px 32px',
         }}
       />
 
