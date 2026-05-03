@@ -2,110 +2,83 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Lightbulb, Sparkles, Wand2, Zap, Coins } from 'lucide-react'
 
-// Animated system flow diagram for the hero center.
-// Five nodes (YOU → CLAUDE → ROM → SOLANA → WALLET) connected by curved SVG
-// paths with flowing particles. Per-node telemetry (typewriter, progress bar,
-// counter) makes the field feel like live system telemetry, not clipart.
-//
-// Constraints: framer-motion + SVG only, 60fps mid laptop, no new deps.
+// Horizontal animated system flow for the hero.
+// 5 nodes in a row: YOU → CLAUDE → ROM → SOLANA → WALLET.
+// SVG connectors with flowing particles between nodes; per-node live
+// telemetry (typewriter, progress bar, slot counter, $$ counter) running
+// on independent clocks. No outer border — frame-less, polished card.
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
-
-const TYPING_TEXT = 'build me a horror channel for tiktok'
-
-interface NodePos {
-  // top-left corner % of container, plus width %.
-  // Node height comes from intrinsic content.
-  x: number
-  y: number
-  w: number
-}
+const TYPING_TEXT = 'horror channel for tiktok'
 
 interface NodeDef {
   id: 'you' | 'claude' | 'rom' | 'solana' | 'wallet'
   icon: typeof Lightbulb
   label: string
-  sub?: string
   accent: 'green' | 'cyan'
   primary?: boolean
-  pos: NodePos
 }
 
 const NODES: NodeDef[] = [
-  { id: 'you',    icon: Lightbulb, label: 'YOU',     accent: 'green', pos: { x: 3,  y: 4,  w: 62 } },
-  { id: 'claude', icon: Sparkles,  label: 'CLAUDE',  sub: 'wires the integration',     accent: 'cyan',  pos: { x: 35, y: 24, w: 62 } },
-  { id: 'rom',    icon: Wand2,     label: 'ROM API', sub: 'generates the cinematic',   accent: 'green', primary: true, pos: { x: 3,  y: 46, w: 72 } },
-  { id: 'solana', icon: Zap,       label: 'SOLANA',  sub: 'mints + auto revenue',      accent: 'cyan',  pos: { x: 33, y: 70, w: 64 } },
-  { id: 'wallet', icon: Coins,     label: 'WALLET',  sub: 'earns per render',          accent: 'green', pos: { x: 5,  y: 88, w: 60 } },
+  { id: 'you',    icon: Lightbulb, label: 'YOU',     accent: 'green' },
+  { id: 'claude', icon: Sparkles,  label: 'CLAUDE',  accent: 'cyan' },
+  { id: 'rom',    icon: Wand2,     label: 'ROM API', accent: 'green', primary: true },
+  { id: 'solana', icon: Zap,       label: 'SOLANA',  accent: 'cyan' },
+  { id: 'wallet', icon: Coins,     label: 'WALLET',  accent: 'green' },
 ]
-
-// Each connection is from node[i] to node[i+1].
-// Start = bottom-center of node[i]; end = top-center of node[i+1].
-// Path is a single cubic Bezier with control points pushed vertically for an
-// S-curve feel since nodes alternate left/right.
-function buildPath(from: NodeDef, to: NodeDef, fromHeightPct: number): string {
-  const sx = from.pos.x + from.pos.w / 2
-  const sy = from.pos.y + fromHeightPct
-  const ex = to.pos.x + to.pos.w / 2
-  const ey = to.pos.y
-  const midY = (sy + ey) / 2
-  // S-curve via two control points
-  const c1x = sx
-  const c1y = midY
-  const c2x = ex
-  const c2y = midY
-  return `M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${ex} ${ey}`
-}
-
-const CONNECTIONS = NODES.slice(0, -1).map((from, i) => {
-  const to = NODES[i + 1]!
-  // Approximate node heights in % of container — primary node is taller.
-  const fromH = from.primary ? 18 : 14
-  return {
-    id: `${from.id}-${to.id}`,
-    d: buildPath(from, to, fromH),
-    accent: to.accent,
-    delay: 0.4 + i * 0.18,
-  }
-})
 
 export function HeroFlow() {
   return (
     <div
       data-cursor="scan"
-      className="relative rounded-3xl border border-rom-green/55 bg-rom-card overflow-hidden border-glow"
+      className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-rom-card via-rom-card-elevated to-rom-card"
+      style={{
+        boxShadow:
+          '0 0 0 1px oklch(0.85 0.22 145 / 0.10), 0 24px 80px oklch(0.05 0.005 150 / 0.6), 0 4px 16px oklch(0.85 0.22 145 / 0.04)',
+      }}
     >
       {/* Header */}
-      <div className="relative z-20 flex items-center justify-between px-5 md:px-6 py-3.5 border-b border-rom-green/20 bg-rom-bg/50 backdrop-blur">
-        <div className="flex items-center gap-2 text-rom-green">
+      <div className="relative z-20 flex items-center justify-between px-6 md:px-8 py-4 border-b border-rom-green/15">
+        <div className="flex items-center gap-2.5 text-rom-green">
           <span className="size-2 rounded-full bg-rom-green pulse-dot" />
-          <span className="micro-label font-mono text-[11px] tracking-[0.18em]">
+          <span className="micro-label font-mono text-[10.5px] tracking-[0.24em]">
             SYSTEM · LIVE
           </span>
+          <span className="text-rom-fg-muted">/</span>
+          <span className="micro-label font-mono text-[10.5px] tracking-[0.24em] text-rom-fg-muted">
+            prompt → revenue
+          </span>
         </div>
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-rom-cyan/45 bg-rom-cyan/[0.06] text-[10px] font-mono uppercase tracking-[0.22em] text-rom-cyan-bright">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-rom-cyan/40 bg-rom-cyan/[0.05] text-[10px] font-mono uppercase tracking-[0.24em] text-rom-cyan-bright">
           <Zap size={10} strokeWidth={2.4} />
           On Solana
         </span>
       </div>
 
       {/* Diagram canvas */}
-      <div className="relative aspect-[4/5] md:aspect-[5/6]">
+      <div className="relative px-4 md:px-8 py-10 md:py-14">
         {/* Schematic grid background */}
         <div
           aria-hidden
-          className="absolute inset-0 opacity-[0.06] pointer-events-none"
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
           style={{
             backgroundImage:
               'linear-gradient(oklch(0.85 0.22 145) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145) 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
+            backgroundSize: '32px 32px',
           }}
         />
 
-        {/* Corner ticks for "schematic blueprint" feel */}
-        <CornerTicks />
+        {/* Subtle radial glow behind the primary node (ROM API) */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 30% 40% at 50% 50%, oklch(0.85 0.22 145 / 0.07), transparent 70%)',
+          }}
+        />
 
-        {/* SVG connection layer */}
+        {/* SVG connector layer — full canvas, viewBox in % units */}
         <svg
           aria-hidden
           className="absolute inset-0 w-full h-full pointer-events-none"
@@ -113,58 +86,80 @@ export function HeroFlow() {
           preserveAspectRatio="none"
         >
           <defs>
-            <linearGradient id="flow-grad-green" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="oklch(0.85 0.22 145 / 0.8)" />
-              <stop offset="100%" stopColor="oklch(0.85 0.22 145 / 0.2)" />
+            <linearGradient id="hflow-grad-green" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="oklch(0.85 0.22 145 / 0.15)" />
+              <stop offset="50%" stopColor="oklch(0.92 0.24 145 / 0.7)" />
+              <stop offset="100%" stopColor="oklch(0.85 0.22 145 / 0.15)" />
             </linearGradient>
-            <linearGradient id="flow-grad-cyan" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="oklch(0.85 0.18 200 / 0.8)" />
-              <stop offset="100%" stopColor="oklch(0.85 0.18 200 / 0.25)" />
+            <linearGradient id="hflow-grad-cyan" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="oklch(0.85 0.18 200 / 0.15)" />
+              <stop offset="50%" stopColor="oklch(0.92 0.20 200 / 0.7)" />
+              <stop offset="100%" stopColor="oklch(0.85 0.18 200 / 0.15)" />
             </linearGradient>
-            <filter id="flow-glow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="0.4" />
-            </filter>
           </defs>
 
-          {CONNECTIONS.map((c) => (
-            <g key={c.id}>
-              {/* Static path — drawn on entrance via stroke-dasharray */}
-              <motion.path
-                d={c.d}
-                fill="none"
-                stroke={`url(#flow-grad-${c.accent})`}
-                strokeWidth="0.45"
-                strokeLinecap="round"
-                pathLength={1}
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 0.9, ease, delay: c.delay }}
-              />
-              {/* Flowing particle on the path */}
-              <FlowParticle d={c.d} accent={c.accent} delay={c.delay + 0.6} />
-              {/* Trailing particle (offset) */}
-              <FlowParticle d={c.d} accent={c.accent} delay={c.delay + 1.4} />
-            </g>
-          ))}
+          {/* 4 horizontal connectors at the vertical midpoint of nodes (50%) */}
+          {/* Node centers at x = 10, 30, 50, 70, 90 (in % of canvas) */}
+          {([
+            { from: 10, to: 30, accent: 'cyan',  delay: 0.5 },
+            { from: 30, to: 50, accent: 'green', delay: 0.7 },
+            { from: 50, to: 70, accent: 'cyan',  delay: 0.9 },
+            { from: 70, to: 90, accent: 'green', delay: 1.1 },
+          ] as const).map((c, i) => {
+            // Path: from (x = from + 6, y = 50) to (x = to - 6, y = 50)
+            // 6% padding so line doesn't touch node edges
+            const sx = c.from + 6
+            const ex = c.to - 6
+            const d = `M ${sx} 50 L ${ex} 50`
+            return (
+              <g key={i}>
+                <motion.path
+                  d={d}
+                  fill="none"
+                  stroke={`url(#hflow-grad-${c.accent})`}
+                  strokeWidth="0.5"
+                  strokeLinecap="round"
+                  pathLength={1}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 0.7, ease, delay: c.delay }}
+                />
+                {/* Static arrowhead at the end of each connector */}
+                <motion.polygon
+                  points={`${ex},48.4 ${ex + 1.4},50 ${ex},51.6`}
+                  fill={
+                    c.accent === 'cyan'
+                      ? 'oklch(0.92 0.20 200)'
+                      : 'oklch(0.92 0.24 145)'
+                  }
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.8 }}
+                  transition={{ duration: 0.4, ease, delay: c.delay + 0.5 }}
+                />
+                {/* Two phase-offset particles flowing along the path */}
+                <FlowParticle d={d} accent={c.accent} delay={c.delay + 0.6} />
+                <FlowParticle d={d} accent={c.accent} delay={c.delay + 1.4} />
+              </g>
+            )
+          })}
         </svg>
 
-        {/* Nodes */}
-        {NODES.map((n, i) => (
-          <NodeCard key={n.id} node={n} index={i} />
-        ))}
+        {/* 5-column node grid */}
+        <div className="relative grid grid-cols-5 gap-2 md:gap-3">
+          {NODES.map((n, i) => (
+            <NodeCard key={n.id} node={n} index={i} />
+          ))}
+        </div>
       </div>
 
-      {/* Footer telemetry strip */}
+      {/* Footer telemetry */}
       <FooterTelemetry />
     </div>
   )
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// SVG flow particle — runs an offset-distance animation along a hidden path
-// using <animateMotion>. Two particles per connection (delayed) give the
-// "stream of data" feel without compute cost.
-
+// Flow particle along an SVG path (SMIL animateMotion).
 function FlowParticle({
   d,
   accent,
@@ -177,87 +172,94 @@ function FlowParticle({
   const color =
     accent === 'cyan' ? 'oklch(0.92 0.20 200)' : 'oklch(0.92 0.24 145)'
   return (
-    <circle r="0.8" fill={color} opacity="0">
+    <circle r="0.7" fill={color} opacity="0">
       <animate
         attributeName="opacity"
         values="0; 1; 1; 0"
         keyTimes="0; 0.1; 0.85; 1"
-        dur="2.6s"
+        dur="2.2s"
         begin={`${delay}s`}
         repeatCount="indefinite"
       />
       <animateMotion
         path={d}
-        dur="2.6s"
+        dur="2.2s"
         begin={`${delay}s`}
         repeatCount="indefinite"
-        rotate="auto"
       />
     </circle>
   )
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Node card — absolutely positioned, size driven by % of container.
+// Node card — frame-less, vertical content layout.
 
 function NodeCard({ node, index }: { node: NodeDef; index: number }) {
   const Icon = node.icon
   const isCyan = node.accent === 'cyan'
-  const colorClasses = isCyan
-    ? 'border-rom-cyan/55 bg-rom-cyan/[0.04]'
-    : 'border-rom-green/55 bg-rom-green/[0.03]'
   const labelColor = isCyan ? 'text-rom-cyan-bright' : 'text-rom-green-bright'
   const iconBgClasses = isCyan
-    ? 'border-rom-cyan/45 bg-rom-cyan/[0.07] text-rom-cyan-bright'
-    : 'border-rom-green/45 bg-rom-green/[0.05] text-rom-green-bright'
+    ? 'bg-rom-cyan/[0.08] text-rom-cyan-bright'
+    : 'bg-rom-green/[0.06] text-rom-green-bright'
+  const ringColor = isCyan ? 'oklch(0.85 0.18 200)' : 'oklch(0.85 0.22 145)'
 
   return (
     <motion.div
-      initial={{
-        opacity: 0,
-        x: index % 2 === 0 ? -20 : 20,
-        scale: 0.94,
-      }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 16, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
-        duration: 0.65,
+        duration: 0.55,
         ease,
-        delay: 0.35 + index * 0.18,
+        delay: 0.35 + index * 0.12,
       }}
-      className="absolute"
-      style={{
-        left: `${node.pos.x}%`,
-        top: `${node.pos.y}%`,
-        width: `${node.pos.w}%`,
-      }}
+      className="relative"
     >
       <div
-        className={`relative rounded-xl border ${colorClasses} ${
-          node.primary ? 'border-glow-subtle' : ''
-        } px-3 py-2.5 md:px-3.5 md:py-3 backdrop-blur-sm`}
+        className={`relative flex flex-col items-center text-center rounded-xl px-2.5 py-4 md:px-3 md:py-5 ${
+          node.primary ? 'bg-rom-bg/60' : 'bg-rom-bg/40'
+        }`}
+        style={{
+          boxShadow: node.primary
+            ? `inset 0 0 0 1px ${ringColor}33, 0 0 28px ${ringColor}1a`
+            : `inset 0 0 0 1px ${ringColor}1f`,
+        }}
       >
-        <div className="flex items-center gap-3">
-          {/* Icon plate */}
-          <span
-            className={`grid place-items-center rounded-lg flex-shrink-0 border ${iconBgClasses} ${
-              node.primary ? 'size-11' : 'size-9'
-            }`}
-          >
-            <Icon size={node.primary ? 20 : 16} strokeWidth={2} className="icon-glow-sm" />
-          </span>
+        {/* Step index pill (top-right) */}
+        <span className="absolute right-2 top-2 text-[8.5px] font-mono uppercase tracking-[0.22em] text-rom-fg-muted">
+          {String(index + 1).padStart(2, '0')}
+        </span>
 
-          {/* Label + content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <span
-                className={`micro-label font-mono text-[10px] tracking-[0.22em] ${labelColor}`}
-              >
-                {String(index + 1).padStart(2, '0')} · {node.label}
-              </span>
-              <span className="size-1.5 rounded-full bg-rom-cyan-bright pulse-dot flex-shrink-0" />
-            </div>
-            <NodeContent node={node} />
-          </div>
+        {/* Icon plate */}
+        <span
+          className={`relative grid place-items-center rounded-lg ${iconBgClasses} ${
+            node.primary ? 'size-12' : 'size-10'
+          }`}
+        >
+          <Icon
+            size={node.primary ? 22 : 18}
+            strokeWidth={2}
+            className="icon-glow-sm"
+          />
+          {/* Pulse ring on primary */}
+          {node.primary && (
+            <span
+              aria-hidden
+              className="absolute inset-0 rounded-lg pointer-events-none"
+              style={{ boxShadow: `0 0 0 0 ${ringColor}66`, animation: 'pulse-rom 2.4s ease-in-out infinite' }}
+            />
+          )}
+        </span>
+
+        {/* Label */}
+        <div
+          className={`mt-3 micro-label font-mono text-[10px] md:text-[11px] tracking-[0.24em] ${labelColor}`}
+        >
+          {node.label}
+        </div>
+
+        {/* Telemetry */}
+        <div className="mt-2 w-full min-h-[28px] flex items-center justify-center">
+          <NodeContent node={node} />
         </div>
       </div>
     </motion.div>
@@ -265,47 +267,67 @@ function NodeCard({ node, index }: { node: NodeDef; index: number }) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Per-node body content. Switch on node.id for specialized telemetry.
+// Per-node telemetry — switch on node.id.
 
 function NodeContent({ node }: { node: NodeDef }) {
   if (node.id === 'you') return <Typewriter text={TYPING_TEXT} />
-  if (node.id === 'rom') return <RomProgress sub={node.sub ?? ''} />
-  if (node.id === 'solana') return <SolanaSlot sub={node.sub ?? ''} />
+  if (node.id === 'claude') return <ClaudeStatus />
+  if (node.id === 'rom') return <RomProgress />
+  if (node.id === 'solana') return <SolanaSlot />
   if (node.id === 'wallet') return <WalletCounter />
-  return (
-    <div className="mt-0.5 text-[11px] font-mono text-rom-fg-dim leading-tight truncate">
-      {node.sub}
-    </div>
-  )
+  return null
 }
 
-// Typewriter — varied per-char delay (commas pause, others fast).
 function Typewriter({ text }: { text: string }) {
   const [i, setI] = useState(0)
   useEffect(() => {
     if (i >= text.length) {
-      const t = setTimeout(() => setI(0), 2400)
+      const t = setTimeout(() => setI(0), 2200)
       return () => clearTimeout(t)
     }
     const ch = text[i] ?? ''
-    const isPause = ch === ' ' || ch === ','
-    const delay = isPause ? 110 + Math.random() * 80 : 38 + Math.random() * 36
+    const isPause = ch === ' '
+    const delay = isPause ? 110 + Math.random() * 70 : 38 + Math.random() * 30
     const t = setTimeout(() => setI((v) => v + 1), delay)
     return () => clearTimeout(t)
   }, [i, text])
 
   return (
-    <div className="mt-0.5 text-[11px] font-mono leading-tight">
+    <div className="text-[10.5px] md:text-[11px] font-mono text-rom-fg leading-tight px-1">
       <span className="text-rom-fg-muted">"</span>
-      <span className="text-rom-fg">{text.slice(0, i)}</span>
+      <span>{text.slice(0, i)}</span>
       <span className="inline-block w-[2px] h-[10px] bg-rom-green-bright align-middle ml-0.5 animate-pulse" />
       <span className="text-rom-fg-muted">"</span>
     </div>
   )
 }
 
-// ROM progress — looping render % bar.
-function RomProgress({ sub }: { sub: string }) {
+function ClaudeStatus() {
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="text-[10.5px] md:text-[11px] font-mono text-rom-fg-dim leading-tight">
+        wires the API
+      </div>
+      <div className="flex items-center gap-1">
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="size-1 rounded-full bg-rom-cyan-bright"
+            animate={{ opacity: [0.25, 1, 0.25] }}
+            transition={{
+              duration: 1.2,
+              repeat: Infinity,
+              delay: i * 0.18,
+              ease,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function RomProgress() {
   const [pct, setPct] = useState(0)
   useEffect(() => {
     const id = setInterval(() => {
@@ -314,18 +336,18 @@ function RomProgress({ sub }: { sub: string }) {
     return () => clearInterval(id)
   }, [])
   return (
-    <div className="mt-0.5">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="text-[10.5px] font-mono text-rom-fg-dim truncate">
-          {sub}
+    <div className="w-full px-1">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[10px] md:text-[10.5px] font-mono text-rom-fg-dim">
+          render
         </span>
         <span className="text-[10px] font-mono tabular-nums text-rom-green-bright">
           {pct}%
         </span>
       </div>
-      <div className="mt-1 h-[2px] w-full bg-rom-bg/70 overflow-hidden rounded">
+      <div className="mt-1 h-[2px] w-full bg-rom-bg/80 overflow-hidden rounded">
         <div
-          className="h-full bg-gradient-to-r from-rom-green to-rom-cyan-bright transition-[width] duration-75"
+          className="h-full bg-gradient-to-r from-rom-green to-rom-cyan-bright"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -333,27 +355,24 @@ function RomProgress({ sub }: { sub: string }) {
   )
 }
 
-// Solana slot — increments every 400ms (~real Solana block time).
-function SolanaSlot({ sub }: { sub: string }) {
+function SolanaSlot() {
   const [slot, setSlot] = useState(287_492_103)
   useEffect(() => {
     const id = setInterval(() => setSlot((s) => s + 1), 420)
     return () => clearInterval(id)
   }, [])
   return (
-    <div className="mt-0.5 flex items-baseline justify-between gap-2">
-      <span className="text-[10.5px] font-mono text-rom-fg-dim truncate">
-        {sub}
-      </span>
-      <span className="text-[10px] font-mono tabular-nums text-rom-cyan-bright">
-        slot {slot.toLocaleString()}
-      </span>
+    <div className="flex flex-col items-center gap-0.5">
+      <div className="text-[10px] md:text-[10.5px] font-mono text-rom-fg-dim leading-tight">
+        slot
+      </div>
+      <div className="text-[10.5px] md:text-[11px] font-mono tabular-nums text-rom-cyan-bright leading-tight">
+        {slot.toLocaleString()}
+      </div>
     </div>
   )
 }
 
-// Wallet counter — non-linear ticking. Most ticks small (renders), occasional
-// big jump (license sale).
 function WalletCounter() {
   const [cents, setCents] = useState(4821)
   useEffect(() => {
@@ -370,76 +389,45 @@ function WalletCounter() {
     return () => clearTimeout(timer)
   }, [])
   return (
-    <div className="mt-0.5 flex items-baseline justify-between gap-2">
-      <span className="text-[10.5px] font-mono text-rom-fg-dim">
-        earns per render
-      </span>
-      <span className="text-[15px] font-mono font-bold tabular-nums text-rom-green-bright text-glow leading-none">
+    <div className="flex flex-col items-center gap-0.5">
+      <div className="text-[10px] font-mono text-rom-fg-dim leading-tight">
+        today
+      </div>
+      <div className="text-[14px] md:text-[15px] font-mono font-bold tabular-nums text-rom-green-bright text-glow leading-none">
         ${(cents / 100).toFixed(2)}
-      </span>
+      </div>
     </div>
   )
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Schematic decorations — corner ticks + footer telemetry strip.
-
-function CornerTicks() {
-  return (
-    <>
-      {[
-        { top: 8, left: 8 },
-        { top: 8, right: 8 },
-        { bottom: 8, left: 8 },
-        { bottom: 8, right: 8 },
-      ].map((pos, i) => (
-        <span
-          key={i}
-          aria-hidden
-          className="absolute size-3 border-rom-green/35 pointer-events-none"
-          style={{
-            ...pos,
-            borderLeftWidth: 'left' in pos ? '1px' : 0,
-            borderRightWidth: 'right' in pos ? '1px' : 0,
-            borderTopWidth: 'top' in pos ? '1px' : 0,
-            borderBottomWidth: 'bottom' in pos ? '1px' : 0,
-          }}
-        />
-      ))}
-    </>
-  )
-}
-
 function FooterTelemetry() {
   const [tps, setTps] = useState(2847)
   useEffect(() => {
     const id = setInterval(() => {
-      setTps((v) => Math.max(2200, Math.min(3400, v + Math.floor(-40 + Math.random() * 80))))
+      setTps((v) =>
+        Math.max(2200, Math.min(3400, v + Math.floor(-40 + Math.random() * 80)))
+      )
     }, 700)
     return () => clearInterval(id)
   }, [])
   return (
-    <div className="grid grid-cols-3 border-t border-rom-green/30 bg-rom-bg/40">
+    <div className="flex flex-wrap items-center justify-between gap-3 px-6 md:px-8 py-4 border-t border-rom-green/15 bg-rom-bg/30">
       {[
         { l: 'Net latency', v: '0.4s' },
         { l: 'Solana TPS', v: tps.toLocaleString(), live: true },
         { l: 'Royalty', v: '100%' },
-      ].map((m, i) => (
-        <div
-          key={m.l}
-          className={`px-3 md:px-4 py-2.5 ${i < 2 ? 'border-r border-rom-green/20' : ''}`}
-        >
-          <div className="micro-label font-mono text-rom-fg-muted text-[9px]">
+      ].map((m) => (
+        <div key={m.l} className="flex items-baseline gap-2">
+          <span className="micro-label font-mono text-[9.5px] tracking-[0.22em] text-rom-fg-muted">
             {m.l}
-          </div>
-          <div className="mt-0.5 flex items-baseline gap-1">
-            <span className="text-[13px] md:text-[14px] font-mono font-semibold text-rom-fg tabular-nums">
-              {m.v}
-            </span>
-            {m.live && (
-              <span className="size-1 rounded-full bg-rom-cyan-bright pulse-dot" />
-            )}
-          </div>
+          </span>
+          <span className="text-[12px] md:text-[13px] font-mono font-semibold text-rom-fg tabular-nums">
+            {m.v}
+          </span>
+          {m.live && (
+            <span className="size-1 rounded-full bg-rom-cyan-bright pulse-dot" />
+          )}
         </div>
       ))}
     </div>
