@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useReducedMotion } from 'framer-motion'
 
-// iter-6 — module-shared scroll-velocity energy (0..1, smoothed, decays to 0).
-// Updated by MatrixBackdrop's parallax tick; consumed by MatrixRain.draw and by
-// CSS via --scroll-energy on the wrap (drives flux-band brightness).
-const scrollState = { energy: 0 }
-
-// 3-layer parallax matrix backdrop. Far / Mid (canvas rain) / Near.
-// Mouse + scroll drive a shared transform per layer (different magnitudes).
-// Subtle by design — texture, not competition.
+// Background = circuit-board animation only.
+// Pre-existing matrix rain / depth glyphs / flux veil / mood overlays were
+// removed per user direction — they wanted ONLY the circuit board on the
+// page background. The wrap still drives a parallax transform on the
+// circuit traces (consumed via --matrix-mx/--matrix-my CSS vars).
 export function MatrixBackdrop() {
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -21,61 +18,29 @@ export function MatrixBackdrop() {
 
     let mx = 0
     let my = 0
-    let sy = 0
     let tx = 0
     let ty = 0
-    let ts = 0
     let raf = 0
-    // iter-6 — scroll-velocity energy
-    let lastSy = window.scrollY
-    let lastT = performance.now()
-    let energy = 0
 
     const onMove = (e: PointerEvent) => {
       mx = (e.clientX - window.innerWidth / 2) / window.innerWidth
       my = (e.clientY - window.innerHeight / 2) / window.innerHeight
     }
-    const onScroll = () => {
-      sy = window.scrollY
-    }
 
     const tick = () => {
-      // iter-6 — derive scroll velocity → smoothed energy [0..1]
-      const now = performance.now()
-      const dt = Math.max(1, now - lastT)
-      const dV = Math.abs(sy - lastSy) / dt // px / ms
-      const target = Math.min(1, dV / 3) // cap at ~3 px/ms = 100% energy
-      energy = energy * 0.88 + target * 0.12
-      scrollState.energy = energy
-      lastSy = sy
-      lastT = now
-
-      // iter-8 — scroll-progress mood: cyan peaks mid-page, amber peaks lower
-      const docH = document.documentElement.scrollHeight - window.innerHeight
-      const progress = Math.min(1, Math.max(0, sy / Math.max(1, docH)))
-      const moodCyan = Math.max(0, 1 - Math.abs(progress - 0.40) * 2.8)
-      const moodAmber = Math.max(0, 1 - Math.abs(progress - 0.75) * 3.0)
-
       tx += (mx - tx) * 0.06
       ty += (my - ty) * 0.06
-      ts += (sy - ts) * 0.10
       wrap.style.setProperty('--matrix-mx', tx.toFixed(4))
       wrap.style.setProperty('--matrix-my', ty.toFixed(4))
-      wrap.style.setProperty('--matrix-sy', ts.toFixed(2))
-      wrap.style.setProperty('--scroll-energy', energy.toFixed(3))
-      wrap.style.setProperty('--mood-cyan', moodCyan.toFixed(3))
-      wrap.style.setProperty('--mood-amber', moodAmber.toFixed(3))
       raf = requestAnimationFrame(tick)
     }
 
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('scroll', onScroll, { passive: true })
     raf = requestAnimationFrame(tick)
 
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('scroll', onScroll)
     }
   }, [])
 
@@ -85,222 +50,12 @@ export function MatrixBackdrop() {
       aria-hidden
       className="fixed inset-0 -z-10 overflow-hidden pointer-events-none iter-3-matrix-wrap"
     >
-      {/* No solid base / vignette here — Backdrop owns those (renders below this).
-          This component is the motion layer only; Backdrop's atmosphere shows through
-          our translucent matrix content. */}
-
-      {/* Far depth — small, dim, blurred glyphs that drift slowly */}
-      <DepthGlyphs
-        depth="far"
-        count={32}
-        sizeMin={9}
-        sizeMax={12}
-        durMin={16}
-        durMax={26}
-      />
-
-      {/* Mid depth — canvas matrix rain (the heart of the matrix feel) */}
-      <div className="iter-3-matrix-layer iter-3-matrix-mid">
-        <MatrixRain />
-      </div>
-
-      {/* Near depth — larger, brighter glyphs, more responsive parallax */}
-      <DepthGlyphs
-        depth="near"
-        count={11}
-        sizeMin={22}
-        sizeMax={30}
-        durMin={20}
-        durMax={32}
-      />
-
-      {/* Circuit board SVG traces with pulsing glow */}
+      {/* Circuit board SVG — the only background animation now */}
       <div className="iter-3-matrix-layer iter-3-matrix-traces">
         <CircuitTraces />
       </div>
-
-      {/* iter-4 — continuous vertical signal-flux band sweeping every pixel */}
-      <div className="iter-4-flux-band" aria-hidden />
-      <div className="iter-4-flux-band iter-4-flux-band-counter" aria-hidden />
-
-      {/* iter-8 — scroll-progress mood overlays (cyan mid, amber lower) */}
-      <div className="iter-8-mood iter-8-mood-cyan" aria-hidden />
-      <div className="iter-8-mood iter-8-mood-amber" aria-hidden />
-
-      {/* Vignette is owned by Backdrop (deep layer) — no duplicate here */}
     </div>
   )
-}
-
-interface DepthGlyphsProps {
-  depth: 'far' | 'near'
-  count: number
-  sizeMin: number
-  sizeMax: number
-  durMin: number
-  durMax: number
-}
-
-function DepthGlyphs({ depth, count, sizeMin, sizeMax, durMin, durMax }: DepthGlyphsProps) {
-  const items = useMemo(() => {
-    const farChars = '01ABCDEF◆◇·∞アカサタナハマヤラワン'.split('')
-    const nearChars = 'ROM◆▣◉⏃⌁∿01ｱｶｻｭ'.split('')
-    const chars = depth === 'far' ? farChars : nearChars
-    return Array.from({ length: count }, (_, i) => ({
-      ch: chars[Math.floor(Math.random() * chars.length)] ?? '0',
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: sizeMin + Math.random() * (sizeMax - sizeMin),
-      delay: -Math.random() * durMax,
-      dur: durMin + Math.random() * (durMax - durMin),
-      key: i,
-    }))
-  }, [depth, count, sizeMin, sizeMax, durMin, durMax])
-
-  return (
-    <div className={`iter-3-matrix-layer iter-3-matrix-${depth}`}>
-      {items.map((g) => (
-        <span
-          key={g.key}
-          className="iter-3-glyph iter-3-glyph-drift"
-          style={{
-            left: `${g.x}%`,
-            top: `${g.y}%`,
-            fontSize: `${g.size}px`,
-            animationDelay: `${g.delay}s`,
-            animationDuration: `${g.dur}s`,
-          }}
-        >
-          {g.ch}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-function MatrixRain() {
-  const ref = useRef<HTMLCanvasElement | null>(null)
-
-  useEffect(() => {
-    const canvas = ref.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    const c = canvas
-    const g = ctx
-
-    const reduce =
-      typeof matchMedia !== 'undefined' &&
-      matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    let raf = 0
-    let columns = 0
-    let drops: number[] = []
-    let speeds: number[] = []
-    // iter-9 — per-column lead intensity [0..1]; resets to 1 on cycle wrap, decays per-frame
-    let leadIntensities: number[] = []
-    const fontSize = 14
-    const chars =
-      '01ABCDEF·∞◆◇▣▢▪▫アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン'.split('')
-
-    function setup() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const w = window.innerWidth
-      const h = window.innerHeight
-      c.width = w * dpr
-      c.height = h * dpr
-      c.style.width = `${w}px`
-      c.style.height = `${h}px`
-      g.scale(dpr, dpr)
-
-      // Subtler: slightly fewer columns than width / fontSize
-      columns = Math.floor((w / fontSize) * 0.82)
-      drops = Array.from({ length: columns }, () => Math.random() * -50)
-      speeds = Array.from({ length: columns }, () => 0.32 + Math.random() * 0.78)
-      // iter-9 — start columns at varied lead intensities so first paint isn't uniform
-      leadIntensities = Array.from({ length: columns }, () => Math.random() * 0.3)
-    }
-
-    function draw() {
-      const w = c.width / (window.devicePixelRatio || 1)
-      const h = c.height / (window.devicePixelRatio || 1)
-      // High fade alpha → trails decay quickly → canvas pixel buffer stays
-      // mostly transparent. Critical: without this the canvas accumulates
-      // to nearly opaque dark and buries the page grid behind it.
-      g.fillStyle = 'oklch(0.05 0.005 150 / 0.28)'
-      g.fillRect(0, 0, w, h)
-      g.font = `${fontSize}px "JetBrains Mono", monospace`
-
-      // iter-5: two-sine traveling flow field couples column speeds into a slow
-      // horizontal current. ±~38% speed modulation, two phase-decoupled waves
-      // → emergent organic banding without Perlin overhead.
-      // iter-6: tactileBoost from scroll-velocity energy bumps every column's
-      // effective speed up to +45% during fast scroll, decays naturally to 0.
-      const t = performance.now()
-      const flowA = t * 0.00045
-      const flowB = t * 0.00027
-      const tactileBoost = 1 + scrollState.energy * 0.45
-
-      for (let i = 0; i < columns; i++) {
-        const xn = i / columns
-        const wave = Math.sin(xn * 6 + flowA) * 0.25 + Math.sin(xn * 13 + flowB) * 0.13
-        const x = xn * w
-        const drop = drops[i] ?? 0
-        const speed = (speeds[i] ?? 0.5) * (1 + wave) * tactileBoost
-        const y = drop * fontSize
-        const ch = chars[Math.floor(Math.random() * chars.length)] ?? '0'
-
-        // iter-9 — lead intensity tier picks color + glow per column, gives each
-        // falling column a consistent head→tail chromatic cascade (cyan-green
-        // pop at top, bright green mid, dim green tail).
-        let lead = (leadIntensities[i] ?? 0) * 0.985 // decay each frame
-        let drawColor: string
-        let blur: number
-        if (lead > 0.7) {
-          drawColor = 'oklch(0.96 0.18 175 / 0.95)' // cyan-shifted bright head
-          blur = 11
-        } else if (lead > 0.3) {
-          drawColor = 'oklch(0.85 0.22 145 / 0.78)' // bright green mid
-          blur = 6
-        } else {
-          drawColor = 'oklch(0.65 0.22 145 / 0.50)' // dim green tail
-          blur = 3
-        }
-
-        if (y > 0 || lead > 0.3) {
-          g.fillStyle = drawColor
-          g.shadowColor = 'oklch(0.85 0.22 145)'
-          g.shadowBlur = blur
-          g.fillText(ch, x, y)
-        }
-
-        if (y > h && Math.random() > 0.975) {
-          drops[i] = 0
-          lead = 1 // freshly reset → full head intensity
-        }
-        drops[i] = drop + speed
-        leadIntensities[i] = lead
-      }
-
-      raf = requestAnimationFrame(draw)
-    }
-
-    setup()
-    if (!reduce) draw()
-    const onResize = () => {
-      cancelAnimationFrame(raf)
-      setup()
-      if (!reduce) raf = requestAnimationFrame(draw)
-    }
-    window.addEventListener('resize', onResize)
-
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('resize', onResize)
-    }
-  }, [])
-
-  return <canvas ref={ref} className="absolute inset-0 pointer-events-none" />
 }
 
 function CircuitTraces() {
