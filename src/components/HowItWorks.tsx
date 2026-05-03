@@ -3,6 +3,7 @@ import { Lightbulb, MessageCircle, Sparkles, Coins } from 'lucide-react'
 import { GlowIcon } from './ui/GlowIcon'
 import { Section } from './ui/Section'
 import { SectionIndex } from './ui/SectionIndex'
+import { AssetImage } from './ui/AssetImage'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
@@ -13,6 +14,7 @@ const steps = [
     title: 'You have an idea.',
     body: '"A horror short-film channel for TikTok with 5 recurring characters." "A cyberpunk soap opera." "A music-video factory for indie artists." That\'s the entire brief.',
     chip: 'The idea',
+    imageSeed: 'rom-step-01-idea',
   },
   {
     n: '02',
@@ -20,6 +22,7 @@ const steps = [
     title: 'You tell Claude.',
     body: 'Open Claude, Codex, Cursor, or Windsurf. Drop this page in the chat. Ask for the channel you want — plain English, no code, no setup, no installs.',
     chip: 'The chat',
+    imageSeed: 'rom-step-02-chat',
   },
   {
     n: '03',
@@ -27,6 +30,7 @@ const steps = [
     title: 'Claude wires it up.',
     body: 'Your AI writes everything between you and ROM in one conversation. No code for you to read. No technical decisions to make. The AI does the engineering.',
     chip: 'The build',
+    imageSeed: 'rom-step-03-build',
   },
   {
     n: '04',
@@ -34,6 +38,7 @@ const steps = [
     title: 'You earn from every render.',
     body: 'ROM ships the cinematics — same character every episode, frame one to frame infinity. Solana auto-routes the revenue to your wallet. Every render. Forever.',
     chip: 'The money',
+    imageSeed: 'rom-step-04-money',
   },
 ]
 
@@ -58,56 +63,85 @@ export function HowItWorks() {
         Four steps. One afternoon. No code to write, no contracts to sign, no team to hire. The AI did the engineering — you just have to know what you want.
       </p>
 
-      {/* The big workflow */}
+      {/* The big workflow — alternating image / text per step (editorial diagonal) */}
       <div className="relative mt-20 md:mt-28">
-        {/* Vertical connector spine — full-bleed glow */}
-        <span
-          aria-hidden
-          className="absolute left-[34px] md:left-[100px] top-12 bottom-12 w-px bg-gradient-to-b from-rom-green/0 via-rom-green/50 to-rom-green/0"
-        />
-
-        <div className="space-y-24 md:space-y-32">
-          {steps.map((s, i) => (
-            <motion.div
-              key={s.n}
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ duration: 0.85, ease }}
-              className="relative grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-start"
-            >
-              {/* Big number + icon node */}
-              <div className="md:col-span-4 flex items-start gap-4 md:gap-6">
-                <div className="relative grid size-16 md:size-[88px] place-items-center rounded-2xl border border-rom-green/50 bg-rom-card flex-shrink-0 z-10 border-glow">
-                  <GlowIcon icon={s.icon} size={36} intensity="lg" />
+        <div className="space-y-28 md:space-y-40">
+          {steps.map((s, i) => {
+            const imageOnRight = i % 2 === 0
+            return (
+              <motion.div
+                key={s.n}
+                initial={{ opacity: 0, y: 60 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.85, ease }}
+                className="relative grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center"
+              >
+                {/* IMAGE — alternating side */}
+                <div
+                  className={`md:col-span-5 ${imageOnRight ? 'md:order-2' : 'md:order-1'}`}
+                >
+                  <div className="relative rounded-2xl overflow-hidden border border-rom-green/45 bg-rom-card border-glow-subtle aspect-[4/5] md:aspect-[5/6]">
+                    <AssetImage
+                      seed={s.imageSeed}
+                      alt={s.title}
+                      className="absolute inset-0 size-full"
+                    />
+                    {/* Corner step badge */}
+                    <div className="absolute left-3 top-3 z-10 flex items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-md border border-rom-green/55 bg-rom-bg/85 backdrop-blur text-[10px] font-mono uppercase tracking-[0.22em] text-rom-green">
+                        {s.n} · {s.chip}
+                      </span>
+                    </div>
+                    {/* Bottom subtle gradient for legibility on overlaid badges */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+                      style={{
+                        background:
+                          'linear-gradient(180deg, transparent 0%, oklch(0.05 0.005 150 / 0.55) 100%)',
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0 pt-1">
-                  <div className="text-[80px] md:text-[140px] xl:text-[180px] font-mono font-bold leading-[0.85] text-rom-green/25 tracking-[-0.04em]">
+
+                {/* TEXT — alternating side */}
+                <div
+                  className={`md:col-span-7 ${imageOnRight ? 'md:order-1' : 'md:order-2'}`}
+                >
+                  {/* Huge step number */}
+                  <div className="text-[88px] md:text-[140px] xl:text-[180px] font-mono font-bold leading-[0.85] text-rom-green/25 tracking-[-0.04em]">
                     {s.n}
                   </div>
-                  <div className="mt-3 micro-label font-mono text-rom-green text-[10.5px] tracking-[0.28em]">
-                    {s.chip}
+                  {/* Icon node + chip row */}
+                  <div className="mt-4 flex items-center gap-4">
+                    <span className="grid size-12 md:size-14 place-items-center rounded-xl border border-rom-green/45 bg-rom-card flex-shrink-0">
+                      <GlowIcon icon={s.icon} size={26} intensity="lg" />
+                    </span>
+                    <div className="micro-label font-mono text-rom-green text-[10.5px] tracking-[0.28em]">
+                      {s.chip}
+                    </div>
                   </div>
+                  {/* Title */}
+                  <h3 className="mt-7 text-[36px] md:text-[52px] xl:text-[64px] font-mono font-bold leading-[1.05] tracking-[-0.025em] text-rom-fg">
+                    {s.title}
+                  </h3>
+                  {/* Body */}
+                  <p className="mt-6 max-w-[600px] text-[16px] md:text-[19px] leading-[1.55] text-rom-fg-dim">
+                    {s.body}
+                  </p>
+                  {i < steps.length - 1 && (
+                    <div className="mt-9 flex items-center gap-3 text-rom-green/60">
+                      <span className="micro-label font-mono text-[10px] tracking-[0.3em]">
+                        Then
+                      </span>
+                      <span className="h-px w-12 bg-rom-green/40" />
+                    </div>
+                  )}
                 </div>
-              </div>
-
-              {/* Big title + body */}
-              <div className="md:col-span-8">
-                <h3 className="text-[36px] md:text-[52px] xl:text-[64px] font-mono font-bold leading-[1.05] tracking-[-0.025em] text-rom-fg">
-                  {s.title}
-                </h3>
-                <p className="mt-6 max-w-[640px] text-[16px] md:text-[19px] leading-[1.55] text-rom-fg-dim">
-                  {s.body}
-                </p>
-                {i < steps.length - 1 && (
-                  <div className="mt-9 flex items-center gap-3 text-rom-green/60">
-                    <span className="micro-label font-mono text-[10px] tracking-[0.3em]">Then</span>
-                    <span className="h-px w-12 bg-rom-green/40" />
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
 
