@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Hexagon, Zap } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
@@ -9,10 +10,20 @@ import { ScrambleText } from './ui/ScrambleText'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
+// Lineage = on-chain episode chain. Each entry carries a Solana tx hash
+// and an episode number — no abstract "REMIX" tags.
 const lineage = [
-  { tag: 'ORIGINAL', title: 'The Last Signal', author: '0xA1cF...7e3B', tone: 'green' as const },
-  { tag: 'REMIX', title: 'Echoes of Tomorrow', author: '0xC91a...3d7C', tone: 'amber' as const },
-  { tag: 'REMIX', title: 'New Horizons', author: '0xD3f2...8b1E', tone: 'cyan' as const },
+  { tag: 'EP_001', title: 'The Last Signal', tx: '5xN9...e7Aq', tone: 'green' as const },
+  { tag: 'EP_002', title: 'Echoes of Tomorrow', tx: '8mP2...f3Cd', tone: 'amber' as const },
+  { tag: 'EP_003', title: 'New Horizons', tx: 'kQ4w...a1Bc', tone: 'cyan' as const },
+]
+
+// Live revenue feed for the asset card — rotates every 2.4s.
+const liveEvents = [
+  { id: 0, label: 'Render · TikTok 9:16', tx: '7xN9...e7Aq', amount: '+ ◎ 0.012', usd: '$0.04' },
+  { id: 1, label: 'Render · YouTube 16:9', tx: '8mP2...f3Cd', amount: '+ ◎ 0.025', usd: '$0.09' },
+  { id: 2, label: 'License · Brand spot', tx: 'kQ4w...a1Bc', amount: '+ ◎ 0.350', usd: '$1.20' },
+  { id: 3, label: 'Render · Reel 9:16', tx: 'pH8x...c2De', amount: '+ ◎ 0.018', usd: '$0.06' },
 ]
 
 export function Hero() {
@@ -187,37 +198,43 @@ function RevealLine({
 }
 
 function MainAssetCard() {
+  // Live revenue ticker — rotates through liveEvents every 2.4s
+  const [idx, setIdx] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setIdx((i) => (i + 1) % liveEvents.length), 2400)
+    return () => clearInterval(id)
+  }, [])
+  const event = liveEvents[idx] ?? liveEvents[0]!
+
   return (
     <div data-cursor="scan" className="relative rounded-3xl border border-rom-green/55 bg-rom-card overflow-hidden border-glow">
+      {/* Header — live status + Solana badge */}
       <div className="flex items-center justify-between px-5 md:px-6 py-3.5 border-b border-rom-green/20">
         <div className="flex items-center gap-2 text-rom-green">
           <span className="size-2 rounded-full bg-rom-green pulse-dot" />
-          <span className="micro-label font-mono text-[11px] tracking-[0.18em]">ROM ASSET ℕ</span>
+          <span className="micro-label font-mono text-[11px] tracking-[0.18em]">ROM ASSET · LIVE</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-rom-cyan/40 bg-rom-cyan/[0.05] text-[9.5px] font-mono uppercase tracking-[0.22em] text-rom-cyan-bright">
-            <Zap size={9} strokeWidth={2.4} />
-            On Solana
-          </span>
-          <span className="micro-label font-mono text-rom-green text-[11px] tracking-[0.14em]">
-            ID: ROM_7x3f...9aE1
-          </span>
-        </div>
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-rom-cyan/45 bg-rom-cyan/[0.06] text-[10px] font-mono uppercase tracking-[0.22em] text-rom-cyan-bright">
+          <Zap size={10} strokeWidth={2.4} />
+          On Solana
+        </span>
       </div>
 
+      {/* Image */}
       <div className="px-5 md:px-6 pt-4 pb-3">
         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-rom-green/40 bg-rom-bg">
-          <AssetImage seed="rom-last-signal-hero" alt="The Last Signal" className="size-full" />
+          <AssetImage seed="rom-last-signal-hero" alt="Vela · Episode 12" className="size-full" />
         </div>
       </div>
 
-      <div className="px-5 md:px-6 pt-2 pb-4 flex items-end justify-between gap-3">
+      {/* Title + Series ID + Episode */}
+      <div className="px-5 md:px-6 pt-2 pb-3 flex items-end justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-[24px] md:text-[28px] font-mono font-semibold text-rom-green-bright leading-tight truncate">
-            The Last Signal
+            Vela
           </h3>
           <p className="mt-1 text-[12px] font-mono text-rom-fg-muted">
-            By <span className="text-rom-fg-dim">0xA1cF...7e3B</span> · 3 days ago
+            Series · <span className="text-rom-fg-dim">SR_7x3f...9aE1</span> · Episode 12
           </p>
         </div>
         <div className="grid size-11 place-items-center rounded-xl border border-rom-green/40 bg-rom-card-elevated flex-shrink-0">
@@ -225,11 +242,69 @@ function MainAssetCard() {
         </div>
       </div>
 
+      {/* Solana mint stripe — concrete on-chain proof */}
+      <div className="flex items-center justify-between gap-3 px-5 md:px-6 py-2.5 border-t border-rom-cyan/25 bg-rom-cyan/[0.04]">
+        <div className="flex items-center gap-2 min-w-0">
+          <Zap size={11} strokeWidth={2.4} className="text-rom-cyan-bright icon-glow-sm flex-shrink-0" />
+          <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-rom-cyan-bright flex-shrink-0">
+            Minted ·
+          </span>
+          <span className="text-[11px] font-mono text-rom-fg truncate">5xN9k...e7Aq</span>
+        </div>
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-rom-fg-muted flex-shrink-0">
+          slot 287,492,103
+        </span>
+      </div>
+
+      {/* Live revenue ticker — rotating event stream */}
+      <div className="px-5 md:px-6 py-3.5 border-t border-rom-green/20 bg-rom-bg/40">
+        <div className="flex items-center justify-between mb-2">
+          <span className="inline-flex items-center gap-1.5 micro-label font-mono text-[10px] tracking-[0.22em] text-rom-green">
+            <span className="size-1.5 rounded-full bg-rom-green pulse-dot" />
+            Live revenue · 24h
+          </span>
+          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-rom-fg-muted">
+            $48.21 earned
+          </span>
+        </div>
+        <div className="relative h-[40px] overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.42, ease }}
+              className="absolute inset-0 flex items-center justify-between gap-3"
+            >
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <span className="size-1.5 rounded-full bg-rom-cyan-bright flex-shrink-0" />
+                <span className="text-[12.5px] font-mono text-rom-fg truncate">
+                  {event.label}
+                </span>
+                <span className="text-[10px] font-mono text-rom-fg-muted truncate hidden sm:inline">
+                  {event.tx}
+                </span>
+              </div>
+              <div className="flex items-baseline gap-1.5 flex-shrink-0">
+                <span className="text-[14px] font-mono font-semibold text-rom-green-bright">
+                  {event.amount}
+                </span>
+                <span className="text-[10px] font-mono text-rom-fg-muted">
+                  {event.usd}
+                </span>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* On-chain stats */}
       <div className="grid grid-cols-3 border-t border-rom-green/30">
         {[
-          { l: 'Scenes', v: '12' },
-          { l: 'Duration', v: '01:32' },
-          { l: 'Resolution', v: '1080p' },
+          { l: 'Renders', v: '1,247' },
+          { l: '24h Rev', v: '$48' },
+          { l: 'Royalty', v: '100%' },
         ].map((m, i) => (
           <div key={m.l} className={`px-5 md:px-6 py-3.5 ${i < 2 ? 'border-r border-rom-green/20' : ''}`}>
             <div className="micro-label font-mono text-rom-fg-muted text-[10px]">{m.l}</div>
@@ -263,7 +338,10 @@ function LineageColumn() {
                 <div className="mt-1 text-[13px] font-mono font-semibold text-rom-fg leading-tight truncate">
                   {it.title}
                 </div>
-                <div className="mt-0.5 text-[10.5px] font-mono text-rom-fg-muted truncate">By {it.author}</div>
+                <div className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-mono text-rom-fg-muted truncate">
+                  <Zap size={8} strokeWidth={2.4} className="text-rom-cyan-bright flex-shrink-0" />
+                  <span className="truncate">{it.tx}</span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -274,7 +352,7 @@ function LineageColumn() {
         href="#anatomy"
         className="mt-4 flex items-center justify-between rounded-2xl border border-rom-green/45 bg-rom-card px-3.5 py-3 hover:bg-rom-green/[0.06] transition-colors group"
       >
-        <span className="micro-label font-mono text-rom-green tracking-[0.22em] text-[10.5px]">View Full Tree</span>
+        <span className="micro-label font-mono text-rom-green tracking-[0.22em] text-[10.5px]">On-chain tree</span>
         <ArrowRight size={14} className="text-rom-green group-hover:translate-x-0.5 transition-transform" />
       </a>
     </div>
