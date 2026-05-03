@@ -22,12 +22,14 @@ export function Backdrop() {
         }}
       />
 
-      {/* Page-wide schematic grid — direct alpha on stop colors */}
+      {/* Page-wide schematic grid — dark/black by default. The bright
+          stuff is the CircuitTraces + light-sweep overlays in MatrixBackdrop;
+          they ride ON TOP of this grid and "light it up" as they pass. */}
       <div
         className="absolute inset-0"
         style={{
           backgroundImage:
-            'linear-gradient(oklch(0.85 0.22 145 / 0.18) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145 / 0.18) 1px, transparent 1px)',
+            'linear-gradient(oklch(0.85 0.22 145 / 0.06) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145 / 0.06) 1px, transparent 1px)',
           backgroundSize: '32px 32px',
         }}
       />

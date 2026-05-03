@@ -90,29 +90,34 @@ function CircuitTraces() {
         </filter>
       </defs>
 
-      {/* Static faint trace lines (background grid feel) */}
-      <g stroke="oklch(0.65 0.22 145 / 0.15)" strokeWidth="1" fill="none">
-        <path d="M 0 120 L 480 120 L 540 180 L 1100 180 L 1160 120 L 1920 120" />
-        <path d="M 0 280 L 320 280 L 380 220 L 760 220 L 820 280 L 1920 280" />
-        <path d="M 0 540 L 200 540 L 260 600 L 1660 600 L 1720 540 L 1920 540" />
-        <path d="M 0 800 L 660 800 L 720 860 L 1260 860 L 1320 800 L 1920 800" />
-        <path d="M 0 960 L 380 960 L 440 1020 L 1480 1020 L 1540 960 L 1920 960" />
+      {/* Static faint trace lines — all coordinates snapped to 32px grid so
+          they ride EXACTLY on grid lines / intersections. Light traces along
+          these literally light up the grid. */}
+      <g stroke="oklch(0.65 0.22 145 / 0.18)" strokeWidth="1" fill="none">
+        {/* Horizontals (y on 32-multiples) with grid-aligned diagonal corners */}
+        <path d="M 0 128 L 480 128 L 544 192 L 1088 192 L 1152 128 L 1920 128" />
+        <path d="M 0 288 L 320 288 L 384 224 L 768 224 L 832 288 L 1920 288" />
+        <path d="M 0 544 L 192 544 L 256 608 L 1664 608 L 1728 544 L 1920 544" />
+        <path d="M 0 800 L 640 800 L 704 864 L 1248 864 L 1312 800 L 1920 800" />
+        <path d="M 0 960 L 384 960 L 448 1024 L 1472 1024 L 1536 960 L 1920 960" />
 
-        <path d="M 240 0 L 240 220 L 300 280 L 300 720 L 240 780 L 240 1080" />
-        <path d="M 720 0 L 720 380 L 780 440 L 780 700 L 720 760 L 720 1080" />
-        <path d="M 1180 0 L 1180 320 L 1240 380 L 1240 880 L 1180 940 L 1180 1080" />
-        <path d="M 1660 0 L 1660 460 L 1600 520 L 1600 920 L 1660 980 L 1660 1080" />
+        {/* Verticals (x on 32-multiples) */}
+        <path d="M 256 0 L 256 224 L 320 288 L 320 736 L 256 800 L 256 1080" />
+        <path d="M 736 0 L 736 384 L 800 448 L 800 704 L 736 768 L 736 1080" />
+        <path d="M 1184 0 L 1184 320 L 1248 384 L 1248 896 L 1184 960 L 1184 1080" />
+        <path d="M 1664 0 L 1664 480 L 1600 544 L 1600 928 L 1664 992 L 1664 1080" />
 
-        <path d="M 0 0 L 240 240" />
-        <path d="M 1920 0 L 1660 260" />
-        <path d="M 1920 1080 L 1600 760" />
+        {/* Diagonal connectors at corners (32-multiple step) */}
+        <path d="M 0 0 L 256 256" />
+        <path d="M 1920 0 L 1664 256" />
+        <path d="M 1920 1080 L 1600 768" />
       </g>
 
-      {/* Glowing junction nodes — iter-7: cut from 12 to 6 for less competing pulse focus */}
+      {/* Glowing junction nodes — at grid intersections that the traces cross */}
       <g fill="oklch(0.92 0.24 145)" filter="url(#trace-glow)">
         {[
-          [240, 220], [1180, 320], [1660, 460],
-          [300, 720], [820, 720], [1240, 880],
+          [256, 224], [1184, 320], [1664, 480],
+          [320, 736], [832, 736], [1248, 896],
         ].map(([x, y], i) => (
           <circle key={i} cx={x} cy={y} r="3" opacity={reduce ? 0.7 : 0.9}>
             {!reduce && (
@@ -124,7 +129,6 @@ function CircuitTraces() {
                 begin={`${(i % 5) * 0.4}s`}
               />
             )}
-            {/* iter-11 — fill cyan-shifts at pulse peak alongside opacity peak */}
             {!reduce && (
               <animate
                 attributeName="fill"
@@ -138,20 +142,27 @@ function CircuitTraces() {
         ))}
       </g>
 
-      {/* Animated pulsing energy along selected traces — iter-12: opacity-dimmed
-          when reduce, <animate> children skipped, dashes hold static at offset 0 */}
-      <g stroke="url(#trace-grad)" strokeWidth="2" fill="none" filter="url(#trace-glow)" opacity={reduce ? 0.4 : 1}>
-        <path d="M 0 280 L 320 280 L 380 220 L 760 220 L 820 280 L 1920 280" strokeDasharray="80 1800" strokeDashoffset="0">
+      {/* Animated lightning energy traveling along grid-aligned traces.
+          Higher strokeWidth + brighter gradient peak → these LITERALLY light
+          up the grid lines they ride on. */}
+      <g stroke="url(#trace-grad)" strokeWidth="3" fill="none" filter="url(#trace-glow)" opacity={reduce ? 0.4 : 1}>
+        <path d="M 0 288 L 320 288 L 384 224 L 768 224 L 832 288 L 1920 288" strokeDasharray="80 1800" strokeDashoffset="0">
           {!reduce && <animate attributeName="stroke-dashoffset" from="1880" to="0" dur="6s" repeatCount="indefinite" />}
         </path>
-        <path d="M 240 0 L 240 220 L 300 280 L 300 720 L 240 780 L 240 1080" strokeDasharray="60 1200" strokeDashoffset="0">
+        <path d="M 256 0 L 256 224 L 320 288 L 320 736 L 256 800 L 256 1080" strokeDasharray="60 1200" strokeDashoffset="0">
           {!reduce && <animate attributeName="stroke-dashoffset" from="0" to="1260" dur="8s" repeatCount="indefinite" />}
         </path>
-        <path d="M 0 800 L 660 800 L 720 860 L 1260 860 L 1320 800 L 1920 800" strokeDasharray="100 1900" strokeDashoffset="0">
+        <path d="M 0 800 L 640 800 L 704 864 L 1248 864 L 1312 800 L 1920 800" strokeDasharray="100 1900" strokeDashoffset="0">
           {!reduce && <animate attributeName="stroke-dashoffset" from="2000" to="0" dur="10s" repeatCount="indefinite" />}
         </path>
-        <path d="M 1180 0 L 1180 320 L 1240 380 L 1240 880 L 1180 940 L 1180 1080" strokeDasharray="70 1100" strokeDashoffset="0">
+        <path d="M 1184 0 L 1184 320 L 1248 384 L 1248 896 L 1184 960 L 1184 1080" strokeDasharray="70 1100" strokeDashoffset="0">
           {!reduce && <animate attributeName="stroke-dashoffset" from="1170" to="0" dur="7s" repeatCount="indefinite" />}
+        </path>
+        <path d="M 0 544 L 192 544 L 256 608 L 1664 608 L 1728 544 L 1920 544" strokeDasharray="90 1700" strokeDashoffset="0">
+          {!reduce && <animate attributeName="stroke-dashoffset" from="1790" to="0" dur="9s" repeatCount="indefinite" />}
+        </path>
+        <path d="M 1664 0 L 1664 480 L 1600 544 L 1600 928 L 1664 992 L 1664 1080" strokeDasharray="55 1100" strokeDashoffset="0">
+          {!reduce && <animate attributeName="stroke-dashoffset" from="0" to="1155" dur="7.5s" repeatCount="indefinite" />}
         </path>
       </g>
 
