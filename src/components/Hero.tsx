@@ -16,7 +16,32 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 export function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
-      <div aria-hidden className="absolute inset-x-0 bottom-0 h-[40%] grid-floor opacity-40" />
+      {/* Hero-specific green grid layer — full-width, covers the whole hero,
+          fades to transparent toward the bottom so the section blends into
+          the rest of the page. Same 32px pitch as the page grid to align. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(oklch(0.85 0.22 145 / 0.32) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.22 145 / 0.32) 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
+          maskImage:
+            'linear-gradient(180deg, black 0%, black 45%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(180deg, black 0%, black 45%, transparent 100%)',
+        }}
+      />
+
+      {/* Subtle top glow to lift the hero further */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-[60%] pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 80% at 50% 0%, oklch(0.85 0.22 145 / 0.10), transparent 70%)',
+        }}
+      />
 
       <div className="relative w-full px-6 md:px-10 lg:px-16 xl:px-20 pt-12 md:pt-16 pb-20 md:pb-24">
         {/* (1) TOP META STRIP */}
