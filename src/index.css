@@ -812,14 +812,19 @@
   }
 }
 
-html, body, #root {
+/* Only html gets a background color — that paints at the canvas level
+   (behind everything). body and #root MUST stay transparent, otherwise
+   their bg paints in normal flow, which covers any z-index: -10
+   fixed-position backdrops. */
+html {
   min-height: 100vh;
-  /* deeper near-black base — the animated backdrop sits on top */
   background-color: oklch(0.08 0.008 150);
+  scroll-behavior: smooth;
 }
 
-html {
-  scroll-behavior: smooth;
+body, #root {
+  min-height: 100vh;
+  background: transparent;
 }
 
 section[id] {
@@ -827,7 +832,6 @@ section[id] {
 }
 
 body {
-  background-color: oklch(0.08 0.008 150);
   color: var(--color-rom-fg);
   font-family: var(--font-mono);
   margin: 0;
