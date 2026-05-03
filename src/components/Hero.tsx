@@ -33,7 +33,7 @@ export function Hero() {
               variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.55, ease }}
             >
-              <Badge>[ Build IP // Build Story // Build Money ]</Badge>
+              <Badge>[ Claude writes the code // ROM writes the show // You bank the money ]</Badge>
             </motion.div>
 
             <h1 className="mt-7 text-[44px] md:text-[60px] xl:text-[72px] leading-[0.96] font-mono font-bold tracking-[-0.025em] text-rom-fg">
@@ -57,14 +57,14 @@ export function Hero() {
               transition={{ duration: 0.7, delay: 0.6 }}
               className="mt-7 max-w-[520px] text-[14.5px] md:text-[16px] leading-[1.6] text-rom-fg-dim"
             >
-              Write a sentence. ROM ships the cast, the scenes, the video. Solana ships the revenue. Your characters recur — same face, same voice, every episode.
+              Write a sentence. ROM ships the cinematic — characters, scenes, voices, on-chain. Solana ships the revenue. Same face every episode, every drop.
             </motion.p>
             <motion.p
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
               transition={{ duration: 0.7, delay: 0.72 }}
-              className="mt-4 max-w-[520px] text-[13.5px] md:text-[14.5px] leading-[1.7] font-mono text-rom-fg"
+              className="mt-4 max-w-[540px] text-[14px] md:text-[15.5px] leading-[1.7] font-mono text-rom-fg"
             >
-              One REST endpoint. One Bearer key. <span className="gradient-text-arcade font-semibold">Drop the docs into Claude — ship a channel by sundown.</span>
+              No engineer? Paste the docs into <span className="text-rom-cyan font-semibold">Claude</span> or <span className="text-rom-cyan font-semibold">Codex</span> — <span className="gradient-text-arcade font-semibold">ship a money-making channel tonight.</span>
             </motion.p>
 
             <motion.div
@@ -73,9 +73,25 @@ export function Hero() {
               className="mt-9 flex flex-wrap items-center gap-4"
             >
               <Button variant="primary" className="magnetic">
-                Start your IP
+                Start earning
                 <ArrowRight size={16} strokeWidth={2.4} />
               </Button>
+              <Button variant="ghost">Read the API docs</Button>
+            </motion.div>
+
+            {/* AI assistants chip — proof above the fold */}
+            <motion.div
+              variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
+              transition={{ duration: 0.6, delay: 0.95 }}
+              className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-mono uppercase tracking-[0.22em] text-rom-fg-muted"
+            >
+              <span>↳ tested with</span>
+              {['Claude', 'Codex', 'Cursor', 'Windsurf'].map((tool, i, arr) => (
+                <span key={tool} className="flex items-center gap-3">
+                  <span className="text-rom-green">{tool}</span>
+                  {i < arr.length - 1 && <span className="text-rom-fg-muted/50">·</span>}
+                </span>
+              ))}
             </motion.div>
 
             <motion.div

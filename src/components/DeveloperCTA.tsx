@@ -33,11 +33,13 @@ export function DeveloperCTA() {
         </h2>
 
         <p className="mt-10 max-w-2xl mx-auto text-[17px] md:text-[19px] leading-[1.55] text-rom-fg-dim">
-          Write the sentence. ROM ships the cinematic. Solana ships the revenue. Every character, scene and clip — provably yours, on-chain, from the first call.
+          <span className="text-rom-cyan font-semibold">Claude</span> writes the integration.
+          ROM writes the show.
+          Solana writes the check.
         </p>
 
         <p className="mt-5 max-w-2xl mx-auto text-[14px] md:text-[15.5px] leading-[1.6] font-mono text-rom-fg">
-          AI-native by design. <span className="gradient-text-arcade font-semibold">Drop the API docs into Claude or Codex — get a working pipeline in 10 minutes.</span> We tested.
+          No engineer. No team. No stack. <span className="gradient-text-arcade font-semibold">Paste the API docs into Claude or Codex — ship a money-making channel tonight.</span>
         </p>
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
