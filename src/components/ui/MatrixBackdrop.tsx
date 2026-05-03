@@ -224,7 +224,9 @@ function MatrixRain() {
     function draw() {
       const w = c.width / (window.devicePixelRatio || 1)
       const h = c.height / (window.devicePixelRatio || 1)
-      g.fillStyle = 'oklch(0.05 0.005 150 / 0.10)'
+      // Higher fade alpha → trails decay faster → canvas stays mostly
+      // transparent so the page grid below shows through.
+      g.fillStyle = 'oklch(0.05 0.005 150 / 0.18)'
       g.fillRect(0, 0, w, h)
       g.font = `${fontSize}px "JetBrains Mono", monospace`
 
