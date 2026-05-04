@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { motion } from 'framer-motion'
-import { Lightbulb, Sparkles, Wand2, Zap, Coins } from 'lucide-react'
+import { Lightbulb, Sparkles, Wand2, Zap, Coins, ArrowDown } from 'lucide-react'
 
 // Horizontal animated system flow for the hero.
 // 5 nodes in a row: YOU → CLAUDE → ROM → SOLANA → WALLET.
@@ -78,10 +78,11 @@ export function HeroFlow() {
           }}
         />
 
-        {/* SVG connector layer — full canvas, viewBox in % units */}
+        {/* SVG horizontal connector layer — desktop only.
+            On mobile the nodes stack vertically with ↓ arrows between them. */}
         <svg
           aria-hidden
-          className="absolute inset-0 w-full h-full pointer-events-none"
+          className="hidden md:block absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
         >
@@ -144,10 +145,25 @@ export function HeroFlow() {
           })}
         </svg>
 
-        {/* 5-column node grid */}
-        <div className="relative grid grid-cols-5 gap-2 md:gap-3">
+        {/* Node layout: stacked vertical on mobile (with ↓ between nodes),
+            5-column horizontal on md+ */}
+        <div className="relative flex flex-col gap-2 md:grid md:grid-cols-5 md:gap-3">
           {NODES.map((n, i) => (
-            <NodeCard key={n.id} node={n} index={i} />
+            <Fragment key={n.id}>
+              <NodeCard node={n} index={i} />
+              {i < NODES.length - 1 && (
+                <div
+                  aria-hidden
+                  className="md:hidden flex justify-center py-0.5"
+                >
+                  <ArrowDown
+                    size={14}
+                    strokeWidth={2.4}
+                    className="text-rom-cyan-bright icon-glow-sm"
+                  />
+                </div>
+              )}
+            </Fragment>
           ))}
         </div>
       </div>
