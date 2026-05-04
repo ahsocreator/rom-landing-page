@@ -42,22 +42,10 @@ export function Hero() {
             <Zap size={11} className="icon-glow-sm" strokeWidth={2.4} />
             <span>Native to Solana</span>
             <span className="text-rom-fg-muted">·</span>
-            <span className="text-rom-fg-dim">sub-second finality</span>
+            <span className="text-rom-fg-dim">sub-second final</span>
           </motion.div>
 
-          <motion.div
-            variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
-            transition={{ duration: 0.5, ease }}
-            className="inline-flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.22em] text-rom-fg-muted"
-          >
-            <span>↳ tested with</span>
-            {['Claude', 'Codex', 'Cursor', 'Windsurf'].map((tool, i, arr) => (
-              <span key={tool} className="flex items-center gap-2">
-                <span className="text-rom-green">{tool}</span>
-                {i < arr.length - 1 && <span className="text-rom-fg-muted/50">·</span>}
-              </span>
-            ))}
-          </motion.div>
+
         </motion.div>
 
         {/* (2) HERO FLOW — the focus */}
@@ -143,28 +131,31 @@ export function Hero() {
           </div>
         </div>
 
-        {/* (4) STATS — 4 horizontal */}
+        {/* (4) FEATURE CARDS — 4 combined units */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 1.15, ease }}
-          className="mt-14 md:mt-16 pt-7 border-t border-rom-green/15 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6"
+          className="mt-14 md:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
         >
           {[
-            { n: '25', l: 'credits per drop · refund on fail', tone: 'green' },
-            { n: '10m', l: 'sentence in · MP4 out', tone: 'green' },
-            { n: '6', l: 'content types · 4 aspects', tone: 'green' },
-            { n: '⚡', l: 'Solana-native · auto royalties', tone: 'cyan' },
-          ].map(({ n, l, tone }) => (
-            <div key={l}>
+            { n: '10m', t: 'Prompt → Cinematic Video', l: 'one sentence in · MP4 out · 8–15 min', tone: 'green' },
+            { n: '∞', t: 'Series · Same Face Every Episode', l: 'one Series ID · every episode aligned', tone: 'green' },
+            { n: '⚡', t: 'Solana · Auto Revenue Routing', l: '100% on-chain · royalty per render', tone: 'cyan' },
+            { n: '1', t: 'Drop API Docs Into Claude', l: 'one chat · ship tonight · no code', tone: 'green' },
+          ].map(({ n, t, l, tone }) => (
+            <div key={t} className="group relative p-6 rounded-2xl border border-rom-green/15 bg-rom-card/40 hover:bg-rom-card/60 transition-all duration-300 border-glow-subtle hover:border-rom-green/40">
               <div
-                className={`text-[28px] md:text-[36px] font-mono font-bold text-glow leading-none ${
+                className={`text-[32px] md:text-[40px] font-mono font-bold text-glow leading-none ${
                   tone === 'cyan' ? 'text-rom-cyan-bright' : 'text-rom-green'
                 }`}
               >
                 {n}
               </div>
-              <div className="mt-2 micro-label font-mono text-rom-fg-muted text-[10px] leading-tight">
+              <div className="mt-4 font-mono font-bold text-[14px] md:text-[16px] text-rom-fg leading-tight uppercase tracking-wide">
+                {t}
+              </div>
+              <div className="mt-2.5 micro-label font-mono text-rom-fg-muted text-[10px] leading-relaxed normal-case tracking-normal">
                 {l}
               </div>
             </div>
