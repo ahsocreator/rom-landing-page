@@ -139,7 +139,7 @@ export function Hero() {
           className="mt-14 md:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
         >
           {[
-            { n: '10m', t: 'Prompt → Cinematic Video', l: 'one sentence in · MP4 out · 8–15 min', tone: 'green' },
+            { n: '~10 min', t: 'Prompt → Cinematic Video', l: 'one sentence in · finished MP4 out', tone: 'green' },
             { n: '∞', t: 'Series · Same Face Every Episode', l: 'one Series ID · every episode aligned', tone: 'green' },
             { n: '⚡', t: 'Solana · Auto Revenue Routing', l: '100% on-chain · royalty per render', tone: 'cyan' },
             { n: '1', t: 'Drop API Docs Into Claude', l: 'one chat · ship tonight · no code', tone: 'green' },
