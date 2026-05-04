@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Zap } from 'lucide-react'
+import { ArrowRight, Zap, Wand2, Repeat, Coins, Bot } from 'lucide-react'
 import { Badge } from './ui/Badge'
 import { Button } from './ui/Button'
+import { GlowIcon } from './ui/GlowIcon'
 import { ScrambleText } from './ui/ScrambleText'
 import { HeroFlow } from './ui/HeroFlow'
 
@@ -139,19 +140,26 @@ export function Hero() {
           className="mt-14 md:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
         >
           {[
-            { n: '~10 min', t: 'Prompt → Cinematic Video', l: 'one sentence in · finished MP4 out', tone: 'green' },
-            { n: '∞', t: 'Series · Same Face Every Episode', l: 'one Series ID · every episode aligned', tone: 'green' },
-            { n: '⚡', t: 'Solana · Auto Revenue Routing', l: '100% on-chain · royalty per render', tone: 'cyan' },
-            { n: '1', t: 'Drop API Docs Into Claude', l: 'one chat · ship tonight · no code', tone: 'green' },
-          ].map(({ n, t, l, tone }) => (
+            { icon: Wand2,  t: 'Prompt → Cinematic Video',          l: 'one sentence in · finished MP4 out',     tone: 'green' },
+            { icon: Repeat, t: 'Series · Same Face Every Episode',  l: 'one Series ID · every episode aligned',  tone: 'green' },
+            { icon: Coins,  t: 'Solana · Auto Revenue Routing',     l: '100% on-chain · royalty per render',     tone: 'cyan' },
+            { icon: Bot,    t: 'Drop API Docs Into Claude',         l: 'one chat · ship tonight · no code',      tone: 'green' },
+          ].map(({ icon, t, l, tone }) => (
             <div key={t} className="group relative p-6 rounded-2xl border border-rom-green/15 bg-rom-card/40 hover:bg-rom-card/60 transition-all duration-300 border-glow-subtle hover:border-rom-green/40">
-              <div
-                className={`text-[32px] md:text-[40px] font-mono font-bold text-glow leading-none ${
-                  tone === 'cyan' ? 'text-rom-cyan-bright' : 'text-rom-green'
+              <span
+                className={`grid size-14 place-items-center rounded-xl border ${
+                  tone === 'cyan'
+                    ? 'border-rom-cyan/45 bg-rom-cyan/[0.06]'
+                    : 'border-rom-green/45 bg-rom-green/[0.06]'
                 }`}
               >
-                {n}
-              </div>
+                <GlowIcon
+                  icon={icon}
+                  size={26}
+                  intensity="lg"
+                  className={tone === 'cyan' ? 'text-rom-cyan-bright' : ''}
+                />
+              </span>
               <div className="mt-4 font-mono font-bold text-[14px] md:text-[16px] text-rom-fg leading-tight uppercase tracking-wide">
                 {t}
               </div>
