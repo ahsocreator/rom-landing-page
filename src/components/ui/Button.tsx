@@ -9,7 +9,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export function Button({ variant = 'primary', children, className = '', ...rest }: Props) {
   const base =
-    'group relative inline-flex items-center gap-3 px-5 py-3 rounded-lg text-[12px] font-semibold uppercase tracking-[0.18em] font-mono transition-all duration-150 cursor-pointer'
+    'btn-glitch group relative inline-flex items-center gap-3 px-5 py-3 rounded-lg text-[12px] font-semibold uppercase tracking-[0.18em] font-mono transition-all duration-150 cursor-pointer overflow-hidden'
   const variants: Record<Variant, string> = {
     primary:
       'bg-rom-green text-rom-bg hover:bg-rom-green-bright shadow-[0_0_24px_oklch(0.85_0.22_145_/_0.35)]',

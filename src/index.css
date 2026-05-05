@@ -810,6 +810,120 @@
       opacity: 0;
     }
   }
+
+  /* ── Button glitch hover ─────────────────────────────────────────────
+     Layered effect on hover:
+       1. Chromatic text-shadow (cyan + magenta offset) — RGB-split feel
+       2. Stepped translate jitter — physical "data-corruption" shake
+       3. Diagonal scan-line sweep across the button (screen-blended)
+       4. Border flicker via a 1px outline that hops between cyan/magenta
+     Designed to layer on top of any Button variant (primary/secondary/ghost). */
+  .btn-glitch {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .btn-glitch:hover,
+  .btn-glitch:focus-visible {
+    animation: btn-glitch-jitter 0.45s steps(9, end);
+    text-shadow:
+      -1.5px 0 oklch(0.92 0.20 200),
+      1.5px 0 oklch(0.72 0.32 350),
+      0 0 14px oklch(0.95 0.30 145 / 0.45);
+  }
+
+  .btn-glitch::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    border: 1px solid transparent;
+    z-index: 0;
+  }
+
+  .btn-glitch:hover::before,
+  .btn-glitch:focus-visible::before {
+    animation: btn-glitch-border 0.45s steps(7, end);
+  }
+
+  .btn-glitch::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      105deg,
+      transparent 32%,
+      oklch(0.95 0.30 145 / 0.55) 50%,
+      transparent 68%
+    );
+    transform: translateX(-110%);
+    opacity: 0;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+
+  .btn-glitch:hover::after,
+  .btn-glitch:focus-visible::after {
+    animation: btn-glitch-sweep 0.6s var(--ease-quart-out);
+  }
+
+  @keyframes btn-glitch-jitter {
+    0%, 100% { transform: translate(0); }
+    10%      { transform: translate(-1px, 1px) skewX(-1deg); }
+    22%      { transform: translate(2px, -1px); }
+    34%      { transform: translate(-2px, 0); }
+    46%      { transform: translate(1px, 1px) skewX(1deg); }
+    58%      { transform: translate(0, -1px); }
+    70%      { transform: translate(-1px, 0); }
+    82%      { transform: translate(1px, 1px); }
+  }
+
+  @keyframes btn-glitch-border {
+    0%, 100% {
+      border-color: transparent;
+      transform: translate(0);
+    }
+    20% {
+      border-color: oklch(0.92 0.20 200 / 0.7);
+      transform: translate(-2px, 0);
+    }
+    40% {
+      border-color: oklch(0.72 0.32 350 / 0.7);
+      transform: translate(2px, 0);
+    }
+    60% {
+      border-color: oklch(0.92 0.20 200 / 0.5);
+      transform: translate(-1px, 1px);
+    }
+    80% {
+      border-color: oklch(0.72 0.32 350 / 0.4);
+      transform: translate(1px, 0);
+    }
+  }
+
+  @keyframes btn-glitch-sweep {
+    0%   { opacity: 0; transform: translateX(-110%); }
+    25%  { opacity: 1; }
+    100% { opacity: 0; transform: translateX(115%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-glitch:hover,
+    .btn-glitch:focus-visible {
+      animation: none;
+      text-shadow: none;
+    }
+    .btn-glitch:hover::before,
+    .btn-glitch:focus-visible::before,
+    .btn-glitch:hover::after,
+    .btn-glitch:focus-visible::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
 }
 
 /* Only html gets a background color — that paints at the canvas level
