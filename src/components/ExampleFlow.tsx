@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { AssetImage } from './ui/AssetImage'
+import pepeCool from '../assets/pepe_cool.png'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
-const PROMPT_TEXT = 'Cyberpunk Frog Trader'
 
 export function ExampleFlow() {
   return (
-    <section className="w-full py-12 px-4 md:px-8 lg:px-10 2xl:px-12">
+    <section id="example-flow" className="w-full py-12 px-4 md:px-8 lg:px-10 2xl:px-12">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -140,39 +140,163 @@ function FlowArrow({ index }: { index: number }) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Step 1 — typewriter on "Cyberpunk Frog Trader" with blinking cursor
+// Step 1 — Chat dialogue with the ROM AI agent (ChatGPT-style back-and-forth).
+// Replaces the old CLI-style terminal with a real conversation: user prompts a
+// detailed character + universe + episode plan, AI replies and starts building.
+// Messages enter sequentially with a "typing..." indicator between them and
+// the scroll auto-pins to the bottom so the latest exchange stays visible.
+
+interface ChatMsg {
+  role: 'user' | 'ai'
+  text: string
+}
+
+const CHAT_DIALOGUE: ChatMsg[] = [
+  {
+    role: 'user',
+    text: 'Build me a cyberpunk frog trader. Pepe is a rogue AI bond-trader in Neo-Swamp 2077, post-DEX-collapse. Half thriller, half satire. Unlikable but watchable.',
+  },
+  {
+    role: 'ai',
+    text: 'Got it. Pepe = sentient amphibian, neon-drenched anti-hero. Casting traits: greedy, visionary, morally grey. Building Neo-Swamp 2077…',
+  },
+  {
+    role: 'user',
+    text: '4-episode pilot. Each episode hits a different corner of the underground exchange. Royalties to my Solana wallet.',
+  },
+  {
+    role: 'ai',
+    text: 'On it. Series ID minted on Solana. Royalty split routed to your wallet. Episode 01 rendering — first frame in ~10 min.',
+  },
+]
+
+const TYPING_INDICATOR_MS = 850
+const MESSAGE_FADE_MS = 1100
+
 function PromptStep() {
-  const [i, setI] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, amount: 0.5 })
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [visibleCount, setVisibleCount] = useState(0)
+  const [showTyping, setShowTyping] = useState(false)
+
+  // Reveal messages sequentially with a "typing…" pause before each AI reply
   useEffect(() => {
-    if (i >= PROMPT_TEXT.length) {
-      const t = setTimeout(() => setI(0), 2500)
-      return () => clearTimeout(t)
-    }
-    const ch = PROMPT_TEXT[i] ?? ''
-    const isPause = ch === ' '
-    const delay = isPause ? 130 + Math.random() * 60 : 50 + Math.random() * 35
-    const t = setTimeout(() => setI((v) => v + 1), delay)
-    return () => clearTimeout(t)
-  }, [i])
+    if (!inView) return
+    const timeouts: ReturnType<typeof setTimeout>[] = []
+    let acc = 600 // initial delay before the first message
+    CHAT_DIALOGUE.forEach((msg, i) => {
+      // Show typing indicator before AI messages
+      if (msg.role === 'ai' && i > 0) {
+        timeouts.push(
+          setTimeout(() => setShowTyping(true), acc)
+        )
+        acc += TYPING_INDICATOR_MS
+      }
+      timeouts.push(
+        setTimeout(() => {
+          setShowTyping(false)
+          setVisibleCount(i + 1)
+        }, acc)
+      )
+      acc += MESSAGE_FADE_MS
+    })
+    return () => timeouts.forEach(clearTimeout)
+  }, [inView])
+
+  // Auto-scroll to keep the latest message + typing indicator visible
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [visibleCount, showTyping])
 
   return (
-    <div className="h-48 xl:h-[220px] 2xl:h-[280px] border border-rom-border/50 rounded-xl bg-[#040a06] p-4 flex items-center justify-start relative overflow-hidden">
-      {/* Faint scan grid */}
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(oklch(0.85 0.22 145) 1px, transparent 1px)',
-          backgroundSize: '100% 12px',
-        }}
-      />
-      <span className="text-rom-green text-sm xl:text-[11px] 2xl:text-sm font-mono leading-relaxed pl-2 relative">
-        {'> '}
-        <span>{PROMPT_TEXT.slice(0, i)}</span>
-        <span className="inline-block w-[7px] h-[1em] bg-rom-green-bright align-middle ml-0.5 animate-pulse" />
-      </span>
+    <div
+      ref={ref}
+      className="h-48 xl:h-[220px] 2xl:h-[280px] border border-rom-green/30 rounded-xl bg-[#020503] flex flex-col relative overflow-hidden box-shadow-glow hover:border-rom-green/50 transition-colors"
+    >
+      {/* Header — chat thread title */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-rom-green/20 shrink-0 bg-rom-bg/40">
+        <span className="size-1.5 rounded-full bg-rom-green pulse-dot" />
+        <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-[0.22em] text-rom-green">
+          ROM_AGENT · CHAT
+        </span>
+        <span className="ml-auto text-[8px] font-mono uppercase tracking-[0.18em] text-rom-fg-muted">
+          live
+        </span>
+      </div>
+
+      {/* Messages */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-2 scroll-smooth">
+        {CHAT_DIALOGUE.slice(0, visibleCount).map((msg, i) => (
+          <ChatBubble key={i} role={msg.role} text={msg.text} />
+        ))}
+        {showTyping && <TypingDots />}
+      </div>
     </div>
+  )
+}
+
+function ChatBubble({ role, text }: ChatMsg) {
+  const isUser = role === 'user'
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease }}
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+    >
+      <div
+        className={`max-w-[88%] rounded-lg px-2.5 py-1.5 text-[9.5px] md:text-[10.5px] leading-snug font-sans ${
+          isUser
+            ? 'bg-rom-green/15 border border-rom-green/35 text-rom-fg'
+            : 'bg-rom-card-elevated/80 border border-rom-green/20 text-rom-fg-dim'
+        }`}
+      >
+        <div
+          className={`text-[7.5px] md:text-[8px] mb-0.5 font-mono uppercase tracking-[0.18em] ${
+            isUser ? 'text-rom-green/70' : 'text-rom-green-bright/70'
+          }`}
+        >
+          {isUser ? 'You' : 'ROM AI'}
+        </div>
+        <div className="break-words">{text}</div>
+      </div>
+    </motion.div>
+  )
+}
+
+function TypingDots() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease }}
+      className="flex justify-start"
+    >
+      <div className="bg-rom-card-elevated/80 border border-rom-green/20 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
+        <span className="text-[7.5px] md:text-[8px] font-mono uppercase tracking-[0.18em] text-rom-green-bright/70">
+          ROM AI
+        </span>
+        <div className="flex gap-[3px] items-end h-2.5">
+          {[0, 1, 2].map((i) => (
+            <motion.span
+              key={i}
+              className="w-[3px] h-[3px] rounded-full bg-rom-green-bright"
+              animate={{ y: [0, -2, 0], opacity: [0.3, 1, 0.3] }}
+              transition={{
+                duration: 0.9,
+                repeat: Infinity,
+                delay: i * 0.14,
+                ease,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </motion.div>
   )
 }
 
@@ -195,7 +319,7 @@ function StructureStep() {
       className="h-48 xl:h-[220px] 2xl:h-[280px] border border-rom-border/50 rounded-xl bg-[#040a06] p-3 flex gap-3 2xl:gap-4 relative overflow-hidden"
     >
       <div className="h-full w-[45%] xl:w-[45%] rounded-lg overflow-hidden border border-rom-green/20 shrink-0 relative">
-        <AssetImage seed="frog-trader" alt="Frog" className="w-full h-full object-cover" />
+        <img src={pepeCool} alt="Frog" className="w-full h-full object-cover" />
         {/* Pulsing border glow on the character */}
         <motion.div
           aria-hidden
@@ -333,7 +457,7 @@ function MintStep() {
         transition={{ duration: 0.55, ease, delay: 0.1 }}
         className="w-[85%] aspect-square xl:aspect-[4/5] rounded-md mb-2 overflow-hidden border border-rom-green/30 relative"
       >
-        <AssetImage seed="frog-card" alt="Card" className="w-full h-full object-cover" />
+        <img src={pepeCool} alt="Card" className="w-full h-full object-cover" />
         {/* MINTED stamp — slides + rotates in once on view */}
         <motion.div
           initial={{ opacity: 0, scale: 1.4, rotate: -25 }}
@@ -407,43 +531,38 @@ function CommunityStep() {
   const nodes = [
     {
       id: 1, seed: 'f1', accent: 'green' as const,
-      pos: { top: '8%', left: '14%' }, size: 'size-8 2xl:size-10',
+      pos: { top: '15%', left: '20%' }, size: 'size-8 2xl:size-10',
       bobY: 6, bobDur: 3.6, bobDelay: 0, glow: 14, ringDelay: 0,
     },
     {
       id: 2, seed: 'f2', accent: 'cyan' as const,
-      pos: { top: '34%', right: '6%' }, size: 'size-10 2xl:size-12',
+      pos: { top: '35%', left: '85%' }, size: 'size-10 2xl:size-12',
       bobY: 8, bobDur: 4.2, bobDelay: 0.6, glow: 22, ringDelay: 0.4,
     },
     {
       id: 3, seed: 'f3', accent: 'green' as const,
-      pos: { bottom: '12%', left: '22%' }, size: 'size-9 2xl:size-11',
+      pos: { top: '80%', left: '30%' }, size: 'size-9 2xl:size-11',
       bobY: 7, bobDur: 3.9, bobDelay: 1.1, glow: 18, ringDelay: 0.8,
     },
     {
       id: 4, seed: 'f4', accent: 'cyan' as const,
-      pos: { bottom: '6%', right: '36%' }, size: 'size-6 2xl:size-7',
+      pos: { top: '85%', left: '70%' }, size: 'size-6 2xl:size-7',
       bobY: 5, bobDur: 4.7, bobDelay: 1.6, glow: 12, ringDelay: 1.2,
     },
     {
       id: 5, seed: 'f5', accent: 'green' as const,
-      pos: { top: '52%', left: '4%' }, size: 'size-5 2xl:size-7',
+      pos: { top: '55%', left: '10%' }, size: 'size-5 2xl:size-7',
       bobY: 5, bobDur: 5.0, bobDelay: 2.1, glow: 10, ringDelay: 1.6,
     },
   ]
 
-  // Lines connect node anchor positions (% of container). Floats are small
-  // so the lines stay visually attached to the nodes throughout the bob.
+  // Lines connect node anchor positions (% of container).
+  // Now using direct center alignment so endpoints perfectly hit the center of nodes.
   const center = (n: (typeof nodes)[number]) => {
-    const x =
-      'left' in n.pos
-        ? parseFloat(n.pos.left as string)
-        : 100 - parseFloat(n.pos.right as string)
-    const y =
-      'top' in n.pos
-        ? parseFloat(n.pos.top as string)
-        : 100 - parseFloat(n.pos.bottom as string)
-    return { x, y }
+    return { 
+      x: parseFloat(n.pos.left), 
+      y: parseFloat(n.pos.top) 
+    }
   }
 
   const lines = [
@@ -575,7 +694,7 @@ function CommunityStep() {
           const border =
             n.accent === 'cyan' ? 'border-rom-cyan-bright/70' : 'border-rom-green/70'
           return (
-            <div key={n.id} className="absolute" style={n.pos}>
+            <div key={n.id} className="absolute -translate-x-1/2 -translate-y-1/2" style={n.pos}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={
@@ -677,7 +796,7 @@ function AmbientParticles({ inView }: { inView: boolean }) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Step 6 — count-up SOL value + animated chart line draw
+// Step 6 — count-up SOL value + animated chart line draw + infinite random tick
 function EarnStep() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.4 })
@@ -687,17 +806,34 @@ function EarnStep() {
   useEffect(() => {
     if (!inView) return
     const start = performance.now()
-    const dur = 1600
+    const dur = 1200
     let raf = 0
+    let intervalId: ReturnType<typeof setInterval>
+
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / dur)
       // ease-out cubic
       const eased = 1 - Math.pow(1 - p, 3)
       setVal(target * eased)
-      if (p < 1) raf = requestAnimationFrame(tick)
+      
+      if (p < 1) {
+        raf = requestAnimationFrame(tick)
+      } else {
+        // Once initial count finishes, start infinite random ticking
+        const increments = [0.06, 0.02, 0.08]
+        intervalId = setInterval(() => {
+          const inc = increments[Math.floor(Math.random() * increments.length)]
+          setVal((prev) => prev + inc)
+        }, 1000)
+      }
     }
+    
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    
+    return () => {
+      cancelAnimationFrame(raf)
+      if (intervalId) clearInterval(intervalId)
+    }
   }, [inView])
 
   return (
