@@ -140,7 +140,7 @@ function FlowArrow({ index }: { index: number }) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Step 1 — Chat dialogue with the ROM AI agent (ChatGPT-style back-and-forth).
+// Step 1 — Chat dialogue with the AI agent (ChatGPT-style back-and-forth).
 // Replaces the old CLI-style terminal with a real conversation: user prompts a
 // detailed character + universe + episode plan, AI replies and starts building.
 // Messages enter sequentially with a "typing..." indicator between them and
@@ -172,6 +172,7 @@ const CHAT_DIALOGUE: ChatMsg[] = [
 
 const TYPING_INDICATOR_MS = 850
 const MESSAGE_FADE_MS = 1100
+const LOOP_PAUSE_MS = 2800 // pause after the last message before restarting
 
 function PromptStep() {
   const ref = useRef<HTMLDivElement>(null)
@@ -179,28 +180,46 @@ function PromptStep() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [visibleCount, setVisibleCount] = useState(0)
   const [showTyping, setShowTyping] = useState(false)
+  // `round` bumps each loop iteration — used as React key to force a clean
+  // remount of the bubble list so entrance animations replay each round.
+  const [round, setRound] = useState(0)
 
-  // Reveal messages sequentially with a "typing…" pause before each AI reply
+  // Reveal messages sequentially with a "typing…" pause before each AI reply.
+  // After the final message, wait LOOP_PAUSE_MS, then reset and restart so
+  // the chat plays continuously while the section is visible.
   useEffect(() => {
     if (!inView) return
     const timeouts: ReturnType<typeof setTimeout>[] = []
-    let acc = 600 // initial delay before the first message
-    CHAT_DIALOGUE.forEach((msg, i) => {
-      // Show typing indicator before AI messages
-      if (msg.role === 'ai' && i > 0) {
+
+    const runRound = () => {
+      setVisibleCount(0)
+      setShowTyping(false)
+
+      let acc = 600
+      CHAT_DIALOGUE.forEach((msg, i) => {
+        if (msg.role === 'ai' && i > 0) {
+          timeouts.push(setTimeout(() => setShowTyping(true), acc))
+          acc += TYPING_INDICATOR_MS
+        }
         timeouts.push(
-          setTimeout(() => setShowTyping(true), acc)
+          setTimeout(() => {
+            setShowTyping(false)
+            setVisibleCount(i + 1)
+          }, acc)
         )
-        acc += TYPING_INDICATOR_MS
-      }
+        acc += MESSAGE_FADE_MS
+      })
+
+      // Schedule the next round
       timeouts.push(
         setTimeout(() => {
-          setShowTyping(false)
-          setVisibleCount(i + 1)
-        }, acc)
+          setRound((r) => r + 1)
+          runRound()
+        }, acc + LOOP_PAUSE_MS)
       )
-      acc += MESSAGE_FADE_MS
-    })
+    }
+
+    runRound()
     return () => timeouts.forEach(clearTimeout)
   }, [inView])
 
@@ -220,19 +239,22 @@ function PromptStep() {
       <div className="flex items-center gap-2 px-3 py-2 border-b border-rom-green/20 shrink-0 bg-rom-bg/40">
         <span className="size-1.5 rounded-full bg-rom-green pulse-dot" />
         <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-[0.22em] text-rom-green">
-          ROM_AGENT · CHAT
+          AI · CHAT
         </span>
         <span className="ml-auto text-[8px] font-mono uppercase tracking-[0.18em] text-rom-fg-muted">
           live
         </span>
       </div>
 
-      {/* Messages */}
+      {/* Messages — keyed on `round` so a fresh round remounts the list and
+          replays entrance animations cleanly. */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-2.5 py-2.5 space-y-2 scroll-smooth">
-        {CHAT_DIALOGUE.slice(0, visibleCount).map((msg, i) => (
-          <ChatBubble key={i} role={msg.role} text={msg.text} />
-        ))}
-        {showTyping && <TypingDots />}
+        <div key={round} className="space-y-2">
+          {CHAT_DIALOGUE.slice(0, visibleCount).map((msg, i) => (
+            <ChatBubble key={i} role={msg.role} text={msg.text} />
+          ))}
+          {showTyping && <TypingDots />}
+        </div>
       </div>
     </div>
   )
@@ -259,7 +281,7 @@ function ChatBubble({ role, text }: ChatMsg) {
             isUser ? 'text-rom-green/70' : 'text-rom-green-bright/70'
           }`}
         >
-          {isUser ? 'You' : 'ROM AI'}
+          {isUser ? 'You' : 'AI'}
         </div>
         <div className="break-words">{text}</div>
       </div>
@@ -278,7 +300,7 @@ function TypingDots() {
     >
       <div className="bg-rom-card-elevated/80 border border-rom-green/20 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
         <span className="text-[7.5px] md:text-[8px] font-mono uppercase tracking-[0.18em] text-rom-green-bright/70">
-          ROM AI
+          AI
         </span>
         <div className="flex gap-[3px] items-end h-2.5">
           {[0, 1, 2].map((i) => (
