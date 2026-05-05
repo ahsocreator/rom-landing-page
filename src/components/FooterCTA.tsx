@@ -79,7 +79,7 @@ export function FooterCTA() {
               <br />
               won't be centralized.
               <br />
-              <span className="text-[#EC4899] drop-shadow-[0_0_24px_rgba(236,72,153,0.55)]">
+              <span className="text-[#A855F7] drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]">
                 It will be memetic.
               </span>
             </h2>
