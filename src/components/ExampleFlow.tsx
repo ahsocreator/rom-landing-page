@@ -388,12 +388,21 @@ function MintStep() {
 // ───────────────────────────────────────────────────────────────────────────
 // Step 5 — Community Evolves: floating nodes, glowing halos, ambient
 // particles, drawn-in connection web. Mix of green + cyan accents for vivid
-// depth. Nodes bob in place independently so the field feels alive.
+// depth. Nodes bob in place independently AND the connection lines track
+// each node's current position so the web stays connected mid-float.
+//
+// Approach: a single RAF loop computes each node's current y-offset (in px)
+// from the same time origin and applies it to (a) the node DOM via
+// transform: translateY, and (b) the SVG line's y1/y2 (converted to viewBox
+// units). Both move in lockstep — no React re-render per frame.
 const COMMUNITY_BOB_EASE = [0.45, 0.05, 0.55, 0.95] as [number, number, number, number]
 
 function CommunityStep() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.4 })
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
+  const lineRefs = useRef<(SVGLineElement | null)[]>([])
+  const svgRef = useRef<SVGSVGElement | null>(null)
 
   const nodes = [
     {
@@ -447,6 +456,57 @@ function CommunityStep() {
     { from: 5, to: 3, delay: 1.5 },
   ]
 
+  // Continuous RAF: drives each node's bob AND each line's endpoint y-offset
+  // in lockstep. Each node's offset = -bobY * (1 - cos(2π * phase)) / 2,
+  // i.e., a smooth 0 → -bobY → 0 cycle. Lines re-attach to each node's
+  // current position by adding the same offset (converted to viewBox units).
+  useEffect(() => {
+    if (!inView) return
+    const start = performance.now()
+    let raf = 0
+
+    const loop = (t: number) => {
+      const elapsed = (t - start) / 1000
+
+      const offsetsPx = nodes.map((n) => {
+        const localT = elapsed - 0.6 - n.bobDelay
+        if (localT < 0) return 0
+        const phase = (localT / n.bobDur) % 1
+        return (-n.bobY * (1 - Math.cos(2 * Math.PI * phase))) / 2
+      })
+
+      // Apply to nodes via direct transform — no React reconciliation per frame
+      offsetsPx.forEach((y, i) => {
+        const el = nodeRefs.current[i]
+        if (el) el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`
+      })
+
+      // Update line endpoint y in viewBox units (px → vbu via container height)
+      const svg = svgRef.current
+      if (svg) {
+        const rect = svg.getBoundingClientRect()
+        const vbuPerPx = rect.height > 0 ? 100 / rect.height : 0
+        lines.forEach((l, i) => {
+          const el = lineRefs.current[i]
+          if (!el) return
+          const fromIdx = nodes.findIndex((n) => n.id === l.from)
+          const toIdx = nodes.findIndex((n) => n.id === l.to)
+          if (fromIdx < 0 || toIdx < 0) return
+          const ca = center(nodes[fromIdx]!)
+          const cb = center(nodes[toIdx]!)
+          const fy = ca.y + (offsetsPx[fromIdx] ?? 0) * vbuPerPx
+          const ty = cb.y + (offsetsPx[toIdx] ?? 0) * vbuPerPx
+          el.setAttribute('y1', fy.toFixed(2))
+          el.setAttribute('y2', ty.toFixed(2))
+        })
+      }
+
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [inView])
+
   return (
     <div
       ref={ref}
@@ -456,8 +516,10 @@ function CommunityStep() {
       <AmbientParticles inView={inView} />
 
       <div className="relative w-full h-full">
-        {/* Connection web — lines draw in via stroke-dashoffset */}
+        {/* Connection web — lines draw in via pathLength, then RAF tracks
+            each endpoint to follow the floating node it connects to. */}
         <svg
+          ref={svgRef}
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
@@ -476,6 +538,9 @@ function CommunityStep() {
             return (
               <motion.line
                 key={i}
+                ref={(el) => {
+                  lineRefs.current[i] = el as SVGLineElement | null
+                }}
                 x1={ca.x}
                 y1={ca.y}
                 x2={cb.x}
@@ -495,8 +560,10 @@ function CommunityStep() {
           })}
         </svg>
 
-        {/* Floating nodes */}
-        {nodes.map((n) => {
+        {/* Floating nodes — outer motion.div handles entrance (scale+opacity).
+            Inner ref'd div gets the imperative bob transform driven by RAF.
+            Two-layer transform composes cleanly: scale on outer, translate on inner. */}
+        {nodes.map((n, i) => {
           const halo =
             n.accent === 'cyan'
               ? 'oklch(0.85 0.18 200 / 0.55)'
@@ -510,39 +577,37 @@ function CommunityStep() {
           return (
             <div key={n.id} className="absolute" style={n.pos}>
               <motion.div
-                className={`relative ${n.size} rounded-full border-[1.5px] ${border} bg-black z-10 overflow-hidden`}
-                style={{ boxShadow: `0 0 ${n.glow}px ${halo}` }}
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={
                   inView
-                    ? { opacity: 1, scale: 1, y: [0, -n.bobY, 0] }
-                    : { opacity: 0, scale: 0.5, y: 0 }
+                    ? { opacity: 1, scale: 1 }
+                    : { opacity: 0, scale: 0.5 }
                 }
-                transition={{
-                  opacity: { duration: 0.55, delay: 0.15 + n.id * 0.08, ease },
-                  scale: { duration: 0.55, delay: 0.15 + n.id * 0.08, ease },
-                  y: {
-                    duration: n.bobDur,
-                    delay: 0.6 + n.bobDelay,
-                    repeat: Infinity,
-                    ease: COMMUNITY_BOB_EASE,
-                  },
-                }}
+                transition={{ duration: 0.55, delay: 0.15 + n.id * 0.08, ease }}
+                className="relative"
               >
-                <AssetImage seed={n.seed} alt="" className="w-full h-full object-cover" />
-                {/* Concentric ping ring */}
-                <motion.span
-                  aria-hidden
-                  className="absolute inset-0 rounded-full pointer-events-none border-[1.5px]"
-                  style={{ borderColor: ring }}
-                  animate={{ scale: [1, 1.7, 1.7], opacity: [0.7, 0, 0] }}
-                  transition={{
-                    duration: 2.4,
-                    repeat: Infinity,
-                    ease,
-                    delay: n.ringDelay,
+                <div
+                  ref={(el) => {
+                    nodeRefs.current[i] = el
                   }}
-                />
+                  className={`relative ${n.size} rounded-full border-[1.5px] ${border} bg-black z-10 overflow-hidden will-change-transform`}
+                  style={{ boxShadow: `0 0 ${n.glow}px ${halo}` }}
+                >
+                  <AssetImage seed={n.seed} alt="" className="w-full h-full object-cover" />
+                  {/* Concentric ping ring */}
+                  <motion.span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full pointer-events-none border-[1.5px]"
+                    style={{ borderColor: ring }}
+                    animate={{ scale: [1, 1.7, 1.7], opacity: [0.7, 0, 0] }}
+                    transition={{
+                      duration: 2.4,
+                      repeat: Infinity,
+                      ease,
+                      delay: n.ringDelay,
+                    }}
+                  />
+                </div>
               </motion.div>
             </div>
           )
