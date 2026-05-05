@@ -11,17 +11,22 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 export function FooterCTA() {
   return (
     <section className="w-full py-12 md:py-20 px-6 md:px-10 lg:px-16 mt-4 md:mt-8">
-      <div className="relative rounded-2xl overflow-hidden p-10 md:p-16">
+      <div className="relative rounded-2xl overflow-hidden p-10 md:p-16 backdrop-blur-2xl">
 
         {/* ── Layer 1: full-card animated linear gradient ─────────────
-            Wide background-size + slow loop → smooth aurora drift */}
+            Periodic gradient (period = 50% in stop space, == one container
+            width when bg-size is 200%). Animating bgPosition 0% → 100%
+            slides by exactly one period, so the visible state at the end
+            of every cycle is IDENTICAL to the start → seamless loop.
+            Opacity 0.72 → page background bleeds through. */}
         <motion.div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'linear-gradient(120deg, #9945FF 0%, #7B5BFF 22%, #4D87E8 42%, #14F195 65%, #5BF5C5 80%, #9945FF 100%)',
-            backgroundSize: '280% 100%',
+              'linear-gradient(120deg, #9945FF 0%, #5C7CFF 12.5%, #14F195 25%, #5C7CFF 37.5%, #9945FF 50%, #5C7CFF 62.5%, #14F195 75%, #5C7CFF 87.5%, #9945FF 100%)',
+            backgroundSize: '200% 100%',
+            opacity: 0.72,
           }}
           animate={{ backgroundPosition: ['0% 50%', '100% 50%'] }}
           transition={{ duration: 22, ease: 'linear', repeat: Infinity }}
@@ -33,11 +38,11 @@ export function FooterCTA() {
           className="absolute inset-0 pointer-events-none mix-blend-screen"
           style={{
             background:
-              'radial-gradient(ellipse 55% 75% at 25% 35%, rgba(20,241,149,0.55) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 75% 65%, rgba(153,69,255,0.55) 0%, transparent 60%)',
+              'radial-gradient(ellipse 55% 75% at 25% 35%, rgba(20,241,149,0.45) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 75% 65%, rgba(153,69,255,0.45) 0%, transparent 60%)',
           }}
           animate={{
             scale: [1, 1.08, 1],
-            opacity: [0.55, 0.85, 0.55],
+            opacity: [0.45, 0.7, 0.45],
           }}
           transition={{
             duration: 14,
@@ -46,11 +51,12 @@ export function FooterCTA() {
           }}
         />
 
-        {/* ── Layer 3: dark glass veil — "darker, glassier" feel.
-              Translucent black layer mutes the colors evenly. */}
+        {/* ── Layer 3: dark glass veil — translucent black mutes saturation
+              and adds the "glassy" framing. Bumped down from 0.55 → 0.35
+              so the gradient retains color while the page still shows. */}
         <div
           aria-hidden
-          className="absolute inset-0 pointer-events-none bg-black/55"
+          className="absolute inset-0 pointer-events-none bg-black/35"
         />
 
         {/* ── Layer 4: scanline texture for film-grain feel ──────────── */}
@@ -90,13 +96,15 @@ export function FooterCTA() {
               <motion.span
                 className="inline-block bg-clip-text text-transparent"
                 style={{
+                  // Periodic gradient (same color at 0/50/100%) so the
+                  // bgPosition slide loops perfectly with no boundary jump.
                   backgroundImage:
-                    'linear-gradient(90deg, #C9A4FF 0%, #FFFFFF 50%, #5BF5C5 100%)',
+                    'linear-gradient(90deg, #C9A4FF 0%, #FFFFFF 25%, #5BF5C5 50%, #FFFFFF 75%, #C9A4FF 100%)',
                   backgroundSize: '200% 100%',
                   filter: 'drop-shadow(0 0 28px rgba(168,85,247,0.45))',
                 }}
-                animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-                transition={{ duration: 8, ease: 'linear', repeat: Infinity }}
+                animate={{ backgroundPosition: ['0% 50%', '100% 50%'] }}
+                transition={{ duration: 9, ease: 'linear', repeat: Infinity }}
               >
                 It will be memetic.
               </motion.span>
