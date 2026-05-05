@@ -19,15 +19,15 @@ const steps = [
   {
     n: '02',
     icon: MessageCircle,
-    title: 'You tell Claude.',
-    body: 'Open Claude, Codex, Cursor, or Windsurf. Drop this page in the chat. Ask for the channel you want — plain English, no code, no setup, no installs.',
+    title: 'You tell AI.',
+    body: 'Open Claude, Codex, or Antigravity. Drop this page in the chat. Ask for the channel you want — plain English, no code, no setup, no installs.',
     chip: 'The chat',
     imageSeed: 'rom-step-02-chat',
   },
   {
     n: '03',
     icon: Sparkles,
-    title: 'Claude wires it up.',
+    title: 'AI wires it up.',
     body: 'Your AI writes everything between you and ROM in one conversation. No code for you to read. No technical decisions to make. The AI does the engineering.',
     chip: 'The build',
     imageSeed: 'rom-step-03-build',
@@ -42,17 +42,17 @@ const steps = [
   },
 ]
 
-const tools = ['Claude', 'Codex', 'Cursor', 'Windsurf', 'Copilot']
+const tools = ['Claude', 'Codex', 'Antigravity']
 
 export function HowItWorks() {
   return (
     <Section id="how-it-works">
-      <SectionIndex index="01" label="How it actually works in 2026">
+      <SectionIndex index="" label="How it actually works in 2026">
         <h2 className="display-2 font-mono">
           You chat.
           <br />
-          <span className="gradient-text-arcade glitch-hover" data-text="Claude builds.">
-            Claude builds.
+          <span className="gradient-text-arcade glitch-hover" data-text="AI builds.">
+            AI builds.
           </span>
           <br />
           ROM ships. You earn.
@@ -157,7 +157,7 @@ export function HowItWorks() {
           <div className="flex items-center gap-2">
             <span className="size-2 rounded-full bg-rom-green pulse-dot" />
             <span className="micro-label font-mono text-[10px] tracking-[0.22em] text-rom-green">
-              CLAUDE · LIVE SESSION
+              AI · LIVE SESSION
             </span>
           </div>
           <span className="micro-label font-mono text-[10px] tracking-[0.18em] text-rom-fg-muted">
@@ -175,7 +175,7 @@ export function HowItWorks() {
           </div>
           <div className="border-t border-rom-green/15 pt-5">
             <div className="micro-label text-[10px] tracking-[0.22em] text-rom-green mb-2">
-              CLAUDE
+              AI
             </div>
             <div className="text-rom-fg">
               On it. Wiring four functions —{' '}

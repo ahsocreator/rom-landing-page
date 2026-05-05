@@ -22,7 +22,7 @@ export function SectionIndex({
       transition={{ duration: 0.85, ease }}
       className="relative flex items-end gap-6 md:gap-10 mb-10 md:mb-14"
     >
-      <span className="section-index font-mono">{index}</span>
+      {index && <span className="section-index font-mono">{index}</span>}
       <div className="flex-1 pb-3 md:pb-6">
         <div className="flex items-center gap-3 mb-3">
           <span className="h-px flex-1 bg-rom-green/30 max-w-[200px]" />

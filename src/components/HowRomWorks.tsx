@@ -1,20 +1,8 @@
 import { MessageSquare, Sparkles, Users } from 'lucide-react'
+import solanaLogo from '../assets/solana-sol-logo.png'
 
 function SolIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 120 95" className={className} aria-hidden>
-      <defs>
-        <linearGradient id="sol-grad-how" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#14F195" />
-          <stop offset="100%" stopColor="#9945FF" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M93.94 75.15H1.81c-1.65 0-2.49-2-1.32-3.18L18.93 53.4a2 2 0 0 1 1.41-.59h92.13c1.65 0 2.49 2 1.32 3.18L95.35 74.56a2 2 0 0 1-1.41.59zM18.93 1.34A2 2 0 0 1 20.34.75h92.13c1.65 0 2.49 2 1.32 3.18L95.35 22.51a2 2 0 0 1-1.41.59H1.81c-1.65 0-2.49-2-1.32-3.18L18.93 1.34zM95.35 37.39a2 2 0 0 0-1.41-.59H1.81c-1.65 0-2.49 2-1.32 3.18L18.93 58.55a2 2 0 0 0 1.41.59h92.13c1.65 0 2.49-2 1.32 3.18L95.35 37.39z"
-        fill="url(#sol-grad-how)"
-      />
-    </svg>
-  )
+  return <img src={solanaLogo} alt="Solana" className={className} />
 }
 
 const steps = [

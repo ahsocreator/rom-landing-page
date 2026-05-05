@@ -3,12 +3,14 @@ import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { AssetImage } from './ui/AssetImage'
 import pepeCool from '../assets/pepe_cool.png'
+import pepeSpace from '../assets/pepe_space.mp4'
+import solanaLogo from '../assets/solana-sol-logo.png'
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export function ExampleFlow() {
   return (
-    <section id="example-flow" className="w-full py-12 px-4 md:px-8 lg:px-10 2xl:px-12">
+    <section id="example-flow" className="w-full py-6 md:py-10 px-4 md:px-8 lg:px-10 2xl:px-12">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -33,7 +35,7 @@ export function ExampleFlow() {
         {/* Header — title + live indicator */}
         <div className="flex items-center justify-between mb-10 flex-wrap gap-3">
           <h3 className="text-rom-green font-mono text-lg md:text-xl tracking-[0.1em] uppercase font-semibold">
-            Example: Cyberpunk Frog Trader
+            HOW IT WORKS
           </h3>
           <div className="flex items-center gap-2 text-rom-green">
             <span className="size-1.5 rounded-full bg-rom-green pulse-dot" />
@@ -154,7 +156,7 @@ interface ChatMsg {
 const CHAT_DIALOGUE: ChatMsg[] = [
   {
     role: 'user',
-    text: 'Build me a cyberpunk frog trader. Pepe is a rogue AI bond-trader in Neo-Swamp 2077, post-DEX-collapse. Half thriller, half satire. Unlikable but watchable.',
+    text: 'Build me a cyberpunk Pepe. Pepe is a rogue AI bond-trader in Neo-Swamp 2077, post-DEX-collapse. Half thriller, half satire. Unlikable but watchable.',
   },
   {
     role: 'ai',
@@ -329,7 +331,7 @@ function StructureStep() {
   const inView = useInView(ref, { once: true, amount: 0.4 })
 
   const traits = [
-    { l: 'Character', v: 'Frog Trader' },
+    { l: 'Character', v: 'Pepe' },
     { l: 'World', v: 'Cyberpunk City' },
     { l: 'Traits', v: 'Bold, Greedy, Visionary' },
     { l: 'Episodes', v: '4' },
@@ -393,42 +395,9 @@ function GenerateStep() {
       className="h-48 xl:h-[220px] 2xl:h-[280px] border border-rom-border/50 rounded-xl bg-[#040a06] p-3 flex flex-col justify-between relative overflow-hidden"
     >
       <div className="flex gap-2 h-[75%] w-full">
-        <motion.div
-          className="flex-1 rounded overflow-hidden"
-          animate={{ opacity: [0.4, 0.65, 0.4] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease, delay: 0 }}
-        >
-          <AssetImage seed="frog-1" alt="g1" className="w-full h-full object-cover" />
-        </motion.div>
-        <motion.div
-          className="flex-1 rounded overflow-hidden border border-rom-green/40 relative"
-          animate={{
-            boxShadow: [
-              '0 0 0 0 oklch(0.85 0.22 145 / 0)',
-              '0 0 22px 2px oklch(0.85 0.22 145 / 0.5)',
-              '0 0 0 0 oklch(0.85 0.22 145 / 0)',
-            ],
-          }}
-          transition={{ duration: 2.4, repeat: Infinity, ease }}
-        >
-          <AssetImage seed="frog-2" alt="g2" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.div
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease }}
-              className="size-8 2xl:size-10 rounded-full bg-black/60 border border-white/20 flex items-center justify-center"
-            >
-              <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-[2px]"></div>
-            </motion.div>
-          </div>
-        </motion.div>
-        <motion.div
-          className="flex-1 rounded overflow-hidden"
-          animate={{ opacity: [0.65, 0.4, 0.65] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease, delay: 1.3 }}
-        >
-          <AssetImage seed="frog-3" alt="g3" className="w-full h-full object-cover" />
-        </motion.div>
+        <div className="w-full h-full rounded-lg overflow-hidden border border-rom-green/40 relative box-shadow-glow">
+          <video src={pepeSpace} autoPlay loop muted playsInline className="w-full h-full object-cover opacity-90 mix-blend-screen" />
+        </div>
       </div>
       {/* Animated waveform — heights drift with `tick` for an "audio playing" feel */}
       <div className="flex items-end justify-between px-1 h-[20%] opacity-90 overflow-hidden">
@@ -458,7 +427,7 @@ function MintStep() {
   return (
     <div
       ref={ref}
-      className="h-48 xl:h-[220px] 2xl:h-[280px] border border-rom-green/40 rounded-xl bg-[#040a06] p-3 flex flex-col justify-center items-center relative box-shadow-glow overflow-hidden"
+      className="h-auto xl:h-[220px] 2xl:h-[280px] border border-rom-green/40 rounded-xl bg-[#040a06] p-4 xl:p-3 flex flex-row xl:flex-col items-center justify-between xl:justify-center relative box-shadow-glow overflow-hidden gap-4 xl:gap-0"
     >
       {/* Shimmer sweep across the card */}
       <motion.div
@@ -473,14 +442,15 @@ function MintStep() {
         transition={{ duration: 1.4, ease, delay: 0.3 }}
       />
 
+      {/* LEFT/TOP: Image container */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.55, ease, delay: 0.1 }}
-        className="w-[85%] aspect-square xl:aspect-[4/5] rounded-md mb-2 overflow-hidden border border-rom-green/30 relative"
+        className="w-[40%] sm:w-[30%] xl:w-[85%] aspect-square xl:aspect-[4/5] rounded-md xl:mb-2 overflow-hidden border border-rom-green/30 relative shrink-0"
       >
         <img src={pepeCool} alt="Card" className="w-full h-full object-cover" />
-        {/* MINTED stamp — slides + rotates in once on view */}
+        {/* MINTED stamp */}
         <motion.div
           initial={{ opacity: 0, scale: 1.4, rotate: -25 }}
           animate={
@@ -489,44 +459,38 @@ function MintStep() {
               : { opacity: 0, scale: 1.4, rotate: -25 }
           }
           transition={{ duration: 0.45, ease, delay: 0.85, type: 'spring', stiffness: 220 }}
-          className="absolute right-1 top-1 px-1.5 py-0.5 rounded border border-rom-green/80 bg-rom-bg/70 backdrop-blur text-[7.5px] 2xl:text-[8.5px] font-mono uppercase tracking-[0.18em] text-rom-green-bright"
+          className="absolute right-1 top-1 px-1.5 py-0.5 rounded border border-rom-green/80 bg-rom-bg/70 backdrop-blur text-[7px] 2xl:text-[8.5px] font-mono uppercase tracking-[0.18em] text-rom-green-bright"
         >
           MINTED
         </motion.div>
       </motion.div>
 
-      <p className="text-[10px] 2xl:text-xs text-white text-center leading-tight font-sans mt-2 relative">
-        Cyberpunk
-        <br />
-        Frog Trader
-      </p>
-      <motion.div
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease }}
-        className="absolute bottom-2 left-3 text-[9px] 2xl:text-[10px] text-rom-fg-dim font-mono"
-      >
-        #0001
-      </motion.div>
+      {/* RIGHT/BOTTOM: Text info */}
+      <div className="flex flex-col items-start xl:items-center justify-center text-left xl:text-center w-full z-10">
+        <p className="text-base xl:text-[10px] 2xl:text-xs text-white leading-tight font-sans mt-0 xl:mt-2 relative font-bold xl:font-normal tracking-tight">
+          Cyberpunk <span className="xl:hidden"><br/></span> Pepe
+        </p>
+        
+        <div className="flex xl:block items-center justify-between w-full xl:w-auto mt-4 xl:mt-0">
+          <motion.div
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease }}
+            className="static xl:absolute bottom-2 left-3 text-sm xl:text-[9px] 2xl:text-[10px] text-rom-fg-dim font-mono"
+          >
+            #0001
+          </motion.div>
 
-      {/* Solana Logo with subtle gradient pulse */}
-      <motion.div
-        animate={{ filter: ['brightness(1)', 'brightness(1.4)', 'brightness(1)'] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease }}
-        className="absolute bottom-2 right-3"
-      >
-        <svg viewBox="0 0 120 95" className="h-2.5 2xl:h-3 w-auto" aria-hidden>
-          <defs>
-            <linearGradient id="sol-grad3" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#14F195" />
-              <stop offset="100%" stopColor="#9945FF" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M93.94 75.15H1.81c-1.65 0-2.49-2-1.32-3.18L18.93 53.4a2 2 0 0 1 1.41-.59h92.13c1.65 0 2.49 2 1.32 3.18L95.35 74.56a2 2 0 0 1-1.41.59zM18.93 1.34A2 2 0 0 1 20.34.75h92.13c1.65 0 2.49 2 1.32 3.18L95.35 22.51a2 2 0 0 1-1.41.59H1.81c-1.65 0-2.49-2-1.32-3.18L18.93 1.34zM95.35 37.39a2 2 0 0 0-1.41-.59H1.81c-1.65 0-2.49 2-1.32 3.18L18.93 58.55a2 2 0 0 0 1.41.59h92.13c1.65 0 2.49-2 1.32 3.18L95.35 37.39z"
-            fill="url(#sol-grad3)"
-          />
-        </svg>
-      </motion.div>
+          {/* Solana Logo with subtle gradient pulse */}
+          <motion.div
+            animate={{ filter: ['brightness(1)', 'brightness(1.4)', 'brightness(1)'] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease }}
+            className="static xl:absolute bottom-2 right-3 flex items-center gap-1.5"
+          >
+            <img src={solanaLogo} alt="Solana" className="h-3.5 xl:h-2.5 2xl:h-3 w-auto" />
+            <span className="xl:hidden text-[10px] text-white font-sans font-bold tracking-widest mt-0.5">SOLANA</span>
+          </motion.div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -140,7 +140,7 @@ function ApiCard({ inView }: { inView: boolean }) {
         <Line idx={1} inView={inView}>
           <div className="mt-5 leading-[1.85]">
             <Brace>{'{'}</Brace>
-            <KV k="title" v='"Cyberpunk Frog Trader"' />
+            <KV k="title" v='"Cyberpunk Pepe"' />
             <KV k="theme" v='"cyberpunk"' />
             <KV k="characters" v='["frog_trader"]' />
             <KV k="style" v='"anime"' />
