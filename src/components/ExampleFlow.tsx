@@ -386,24 +386,65 @@ function MintStep() {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// Step 5 — connection lines draw in + nodes pulse + new connections appear
+// Step 5 — Community Evolves: floating nodes, glowing halos, ambient
+// particles, drawn-in connection web. Mix of green + cyan accents for vivid
+// depth. Nodes bob in place independently so the field feels alive.
+const COMMUNITY_BOB_EASE = [0.45, 0.05, 0.55, 0.95] as [number, number, number, number]
+
 function CommunityStep() {
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.4 })
 
-  const lines = [
-    { x1: '25%', y1: '10%', x2: '85%', y2: '45%', delay: 0.2 },
-    { x1: '85%', y1: '45%', x2: '40%', y2: '85%', delay: 0.4 },
-    { x1: '40%', y1: '85%', x2: '25%', y2: '10%', delay: 0.6 },
-    { x1: '85%', y1: '45%', x2: '70%', y2: '90%', delay: 0.8 },
-    { x1: '40%', y1: '85%', x2: '70%', y2: '90%', delay: 1.0 },
+  const nodes = [
+    {
+      id: 1, seed: 'f1', accent: 'green' as const,
+      pos: { top: '8%', left: '14%' }, size: 'size-8 2xl:size-10',
+      bobY: 6, bobDur: 3.6, bobDelay: 0, glow: 14, ringDelay: 0,
+    },
+    {
+      id: 2, seed: 'f2', accent: 'cyan' as const,
+      pos: { top: '34%', right: '6%' }, size: 'size-10 2xl:size-12',
+      bobY: 8, bobDur: 4.2, bobDelay: 0.6, glow: 22, ringDelay: 0.4,
+    },
+    {
+      id: 3, seed: 'f3', accent: 'green' as const,
+      pos: { bottom: '12%', left: '22%' }, size: 'size-9 2xl:size-11',
+      bobY: 7, bobDur: 3.9, bobDelay: 1.1, glow: 18, ringDelay: 0.8,
+    },
+    {
+      id: 4, seed: 'f4', accent: 'cyan' as const,
+      pos: { bottom: '6%', right: '36%' }, size: 'size-6 2xl:size-7',
+      bobY: 5, bobDur: 4.7, bobDelay: 1.6, glow: 12, ringDelay: 1.2,
+    },
+    {
+      id: 5, seed: 'f5', accent: 'green' as const,
+      pos: { top: '52%', left: '4%' }, size: 'size-5 2xl:size-7',
+      bobY: 5, bobDur: 5.0, bobDelay: 2.1, glow: 10, ringDelay: 1.6,
+    },
   ]
 
-  const nodes = [
-    { className: 'top-[5%] left-[15%] size-6 2xl:size-8', seed: 'f1', opacity: 'opacity-60', delay: 0.15 },
-    { className: 'top-[35%] right-[5%] size-8 2xl:size-10', seed: 'f2', opacity: '', delay: 0.25, glow: true },
-    { className: 'bottom-[10%] left-[25%] size-7 2xl:size-9', seed: 'f3', opacity: 'opacity-80', delay: 0.35 },
-    { className: 'bottom-[5%] right-[40%] size-5 2xl:size-6', seed: 'f4', opacity: 'opacity-50', delay: 0.45 },
+  // Lines connect node anchor positions (% of container). Floats are small
+  // so the lines stay visually attached to the nodes throughout the bob.
+  const center = (n: (typeof nodes)[number]) => {
+    const x =
+      'left' in n.pos
+        ? parseFloat(n.pos.left as string)
+        : 100 - parseFloat(n.pos.right as string)
+    const y =
+      'top' in n.pos
+        ? parseFloat(n.pos.top as string)
+        : 100 - parseFloat(n.pos.bottom as string)
+    return { x, y }
+  }
+
+  const lines = [
+    { from: 1, to: 2, delay: 0.3 },
+    { from: 2, to: 3, delay: 0.5 },
+    { from: 3, to: 1, delay: 0.7 },
+    { from: 2, to: 4, delay: 0.9 },
+    { from: 3, to: 4, delay: 1.1 },
+    { from: 5, to: 1, delay: 1.3 },
+    { from: 5, to: 3, delay: 1.5 },
   ]
 
   return (
@@ -411,48 +452,162 @@ function CommunityStep() {
       ref={ref}
       className="h-48 xl:h-[220px] 2xl:h-[280px] border border-rom-border/50 rounded-xl bg-[#040a06] p-3 flex items-center justify-center relative overflow-hidden"
     >
-      <div className="relative w-full h-[80%] max-w-[120px] 2xl:max-w-[150px] mx-auto xl:max-w-none">
-        {nodes.map((n, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.45, ease, delay: n.delay }}
-            className={`absolute ${n.className} rounded-full border border-rom-green bg-black z-10 overflow-hidden ${
-              n.glow ? 'shadow-[0_0_12px_rgba(0,255,120,0.4)]' : ''
-            }`}
-          >
-            <AssetImage seed={n.seed} alt="f" className={`w-full h-full object-cover ${n.opacity}`} />
-            {/* Pulse ring */}
-            <motion.span
-              aria-hidden
-              className="absolute inset-0 rounded-full pointer-events-none border border-rom-green/60"
-              animate={{ scale: [1, 1.4, 1.4], opacity: [0.7, 0, 0] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                ease,
-                delay: i * 0.4,
-              }}
-            />
-          </motion.div>
-        ))}
-        <svg className="absolute inset-0 w-full h-full" stroke="rgba(0,255,120,0.4)" strokeWidth="1.5">
-          {lines.map((l, i) => (
-            <motion.line
-              key={i}
-              x1={l.x1}
-              y1={l.y1}
-              x2={l.x2}
-              y2={l.y2}
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={inView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
-              transition={{ duration: 0.7, ease, delay: l.delay }}
-            />
-          ))}
+      {/* Ambient drift particles — give the empty space a "living" feel */}
+      <AmbientParticles inView={inView} />
+
+      <div className="relative w-full h-full">
+        {/* Connection web — lines draw in via stroke-dashoffset */}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="comm-line-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="oklch(0.85 0.22 145 / 0.55)" />
+              <stop offset="100%" stopColor="oklch(0.85 0.18 200 / 0.55)" />
+            </linearGradient>
+          </defs>
+          {lines.map((l, i) => {
+            const a = nodes.find((n) => n.id === l.from)!
+            const b = nodes.find((n) => n.id === l.to)!
+            const ca = center(a)
+            const cb = center(b)
+            return (
+              <motion.line
+                key={i}
+                x1={ca.x}
+                y1={ca.y}
+                x2={cb.x}
+                y2={cb.y}
+                stroke="url(#comm-line-grad)"
+                strokeWidth="0.5"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={
+                  inView
+                    ? { pathLength: 1, opacity: 0.85 }
+                    : { pathLength: 0, opacity: 0 }
+                }
+                transition={{ duration: 0.85, ease, delay: l.delay }}
+              />
+            )
+          })}
         </svg>
+
+        {/* Floating nodes */}
+        {nodes.map((n) => {
+          const halo =
+            n.accent === 'cyan'
+              ? 'oklch(0.85 0.18 200 / 0.55)'
+              : 'oklch(0.85 0.22 145 / 0.55)'
+          const ring =
+            n.accent === 'cyan'
+              ? 'oklch(0.85 0.18 200 / 0.7)'
+              : 'oklch(0.85 0.22 145 / 0.7)'
+          const border =
+            n.accent === 'cyan' ? 'border-rom-cyan-bright/70' : 'border-rom-green/70'
+          return (
+            <div key={n.id} className="absolute" style={n.pos}>
+              <motion.div
+                className={`relative ${n.size} rounded-full border-[1.5px] ${border} bg-black z-10 overflow-hidden`}
+                style={{ boxShadow: `0 0 ${n.glow}px ${halo}` }}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={
+                  inView
+                    ? { opacity: 1, scale: 1, y: [0, -n.bobY, 0] }
+                    : { opacity: 0, scale: 0.5, y: 0 }
+                }
+                transition={{
+                  opacity: { duration: 0.55, delay: 0.15 + n.id * 0.08, ease },
+                  scale: { duration: 0.55, delay: 0.15 + n.id * 0.08, ease },
+                  y: {
+                    duration: n.bobDur,
+                    delay: 0.6 + n.bobDelay,
+                    repeat: Infinity,
+                    ease: COMMUNITY_BOB_EASE,
+                  },
+                }}
+              >
+                <AssetImage seed={n.seed} alt="" className="w-full h-full object-cover" />
+                {/* Concentric ping ring */}
+                <motion.span
+                  aria-hidden
+                  className="absolute inset-0 rounded-full pointer-events-none border-[1.5px]"
+                  style={{ borderColor: ring }}
+                  animate={{ scale: [1, 1.7, 1.7], opacity: [0.7, 0, 0] }}
+                  transition={{
+                    duration: 2.4,
+                    repeat: Infinity,
+                    ease,
+                    delay: n.ringDelay,
+                  }}
+                />
+              </motion.div>
+            </div>
+          )
+        })}
       </div>
     </div>
+  )
+}
+
+// 12 small drift particles, mixed green+cyan, drift up + sideways.
+function AmbientParticles({ inView }: { inView: boolean }) {
+  // Stable random per render — useMemo would also work; this re-runs only
+  // when the parent re-renders (rare for this tile).
+  const particles = useRef(
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 0.7 + Math.random() * 1.3,
+      driftY: 6 + Math.random() * 10,
+      driftX: -3 + Math.random() * 6,
+      duration: 7 + Math.random() * 7,
+      delay: -Math.random() * 12,
+      accent: Math.random() > 0.55 ? 'cyan' : 'green',
+    }))
+  ).current
+
+  return (
+    <>
+      {particles.map((p) => {
+        const color =
+          p.accent === 'cyan' ? 'oklch(0.92 0.20 200)' : 'oklch(0.92 0.24 145)'
+        return (
+          <motion.span
+            key={p.id}
+            aria-hidden
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              background: color,
+              boxShadow: `0 0 ${p.size * 4}px ${color}`,
+            }}
+            initial={{ opacity: 0 }}
+            animate={
+              inView
+                ? {
+                    y: [0, -p.driftY, 0],
+                    x: [0, p.driftX, 0],
+                    opacity: [0.15, 0.65, 0.15],
+                  }
+                : { opacity: 0 }
+            }
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              ease: COMMUNITY_BOB_EASE,
+            }}
+          />
+        )
+      })}
+    </>
   )
 }
 
@@ -492,42 +647,121 @@ function EarnStep() {
         {val.toFixed(2)} SOL
       </p>
 
-      <div className="absolute bottom-3 left-0 right-0 h-16 2xl:h-20 px-3 opacity-90">
+      <div className="absolute bottom-3 left-0 right-0 h-16 2xl:h-20 px-3 opacity-95">
         <svg viewBox="0 0 100 40" className="w-full h-full" preserveAspectRatio="none">
           <defs>
             <linearGradient id="grad-graph" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#00FF78" />
               <stop offset="100%" stopColor="transparent" />
             </linearGradient>
+            <linearGradient id="grad-graph-line" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#00FF78" stopOpacity="0.6" />
+              <stop offset="60%" stopColor="#00FF78" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#9CFFCB" stopOpacity="1" />
+            </linearGradient>
+            {/* Path used for the filled area (curve + bottom corners back to baseline) */}
+            <path
+              id="earn-curve-fill"
+              d="M0,30 C4,29 6,25 10,25 C14,25 16,35 20,35 C28,35 32,15 40,15 C44,15 46,20 50,20 C58,20 62,5 70,5 C76,5 79,15 85,15 C92,15 95,2 100,0 L100,40 L0,40 Z"
+            />
+            {/* Path used for the line (just the curve) — also serves as the
+                tracer dot's motion path. */}
+            <path
+              id="earn-curve-line"
+              d="M0,30 C4,29 6,25 10,25 C14,25 16,35 20,35 C28,35 32,15 40,15 C44,15 46,20 50,20 C58,20 62,5 70,5 C76,5 79,15 85,15 C92,15 95,2 100,0"
+              fill="none"
+            />
           </defs>
-          {/* Filled area — fades in after line draws */}
-          <motion.path
-            d="M0,30 L10,25 L20,35 L40,15 L50,20 L70,5 L85,15 L100,0 L100,40 L0,40 Z"
+
+          {/* Filled gradient area — fades in once line is drawn */}
+          <motion.use
+            href="#earn-curve-fill"
             fill="url(#grad-graph)"
             initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 0.25 } : { opacity: 0 }}
+            animate={inView ? { opacity: 0.32 } : { opacity: 0 }}
             transition={{ duration: 0.8, ease, delay: 1.2 }}
           />
-          {/* Line — draws in */}
-          <motion.path
-            d="M0,30 L10,25 L20,35 L40,15 L50,20 L70,5 L85,15 L100,0"
-            fill="none"
-            stroke="rgba(0,255,120,0.85)"
-            strokeWidth="2"
+
+          {/* Soft glow under the line */}
+          <motion.use
+            href="#earn-curve-line"
+            stroke="#00FF78"
+            strokeWidth="4"
+            strokeOpacity="0.18"
+            strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
             initial={{ pathLength: 0 }}
             animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
             transition={{ duration: 1.4, ease, delay: 0.2 }}
           />
-          {/* Tip pulse on the final point */}
+
+          {/* Line — draws in with a gradient stroke, then idles */}
+          <motion.use
+            href="#earn-curve-line"
+            stroke="url(#grad-graph-line)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            initial={{ pathLength: 0 }}
+            animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
+            transition={{ duration: 1.4, ease, delay: 0.2 }}
+          />
+
+          {/* Tracer dot — continuously walks along the curve once it's drawn.
+              Uses SMIL animateMotion via mpath referencing the line path. */}
+          <circle r="1.4" fill="#9CFFCB" filter="url(#earn-tip-glow)">
+            <animate
+              attributeName="opacity"
+              values="0; 1; 1; 0"
+              keyTimes="0; 0.05; 0.95; 1"
+              dur="3.4s"
+              begin="1.7s"
+              repeatCount="indefinite"
+            />
+            <animateMotion dur="3.4s" begin="1.7s" repeatCount="indefinite">
+              <mpath href="#earn-curve-line" />
+            </animateMotion>
+          </circle>
+
+          <filter id="earn-tip-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.8" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* Pulsing dot anchored at the line's tip (final value) */}
           <motion.circle
             cx="100"
             cy="0"
-            r="2"
-            fill="#00FF78"
+            r="1.6"
+            fill="#9CFFCB"
             initial={{ opacity: 0, scale: 0 }}
             animate={inView ? { opacity: [0, 1, 1], scale: [0, 1.4, 1] } : { opacity: 0 }}
             transition={{ duration: 0.6, ease, delay: 1.6 }}
+          />
+          {/* Outer pulse ring on the tip */}
+          <motion.circle
+            cx="100"
+            cy="0"
+            r="2.4"
+            fill="none"
+            stroke="#00FF78"
+            strokeWidth="0.6"
+            initial={{ opacity: 0 }}
+            animate={
+              inView
+                ? { opacity: [0, 0.7, 0], r: [2.4, 5, 5] }
+                : { opacity: 0 }
+            }
+            transition={{
+              duration: 2,
+              ease,
+              delay: 1.8,
+              repeat: Infinity,
+              repeatDelay: 0.4,
+            }}
           />
         </svg>
       </div>
